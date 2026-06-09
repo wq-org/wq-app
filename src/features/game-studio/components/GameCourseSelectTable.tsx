@@ -12,11 +12,12 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Text } from '@/components/ui/text'
+import { getThemeBackgroundStyle } from '@/lib/themes'
 
 type GameCourseSelectTableProps = {
   courses: readonly Course[]
   loading?: boolean
-  selectedCourseId: string | null
+  selectedCourseIds: string[]
   onSelectCourse: (courseId: string, checked: boolean) => void
   emptyLabel: string
   kursenameColumnLabel: string
@@ -27,7 +28,7 @@ type GameCourseSelectTableProps = {
 export function GameCourseSelectTable({
   courses,
   loading = false,
-  selectedCourseId,
+  selectedCourseIds,
   onSelectCourse,
   emptyLabel,
   kursenameColumnLabel,
@@ -67,12 +68,13 @@ export function GameCourseSelectTable({
             <TableHead className="w-10">
               <span className="sr-only">{selectAllAriaLabel}</span>
             </TableHead>
+            <TableHead className="w-10 px-2" />
             <TableHead>{kursenameColumnLabel}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {courses.map((course) => {
-            const checked = selectedCourseId === course.id
+            const checked = selectedCourseIds.includes(course.id)
             const handleRowSelect = () => onSelectCourse(course.id, !checked)
 
             return (
@@ -87,6 +89,13 @@ export function GameCourseSelectTable({
                     checked={checked}
                     onCheckedChange={(value) => onSelectCourse(course.id, value === true)}
                     aria-label={selectCourseAriaLabel(course.title)}
+                  />
+                </TableCell>
+                <TableCell className="px-2">
+                  <div
+                    className="size-7 rounded-md"
+                    style={getThemeBackgroundStyle(course.theme_id)}
+                    aria-hidden
                   />
                 </TableCell>
                 <TableCell>

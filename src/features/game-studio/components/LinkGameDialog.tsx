@@ -19,7 +19,7 @@ import { GameCourseSelectTable } from './GameCourseSelectTable'
 
 export type LinkGameDialogProps = {
   gameId: string
-  linkedCourseId?: string | null
+  linkedCourseIds?: string[]
   open: boolean
   onOpenChange: (open: boolean) => void
   onLinked?: () => void
@@ -27,17 +27,17 @@ export type LinkGameDialogProps = {
 
 export function LinkGameDialog({
   gameId,
-  linkedCourseId = null,
+  linkedCourseIds = [],
   open,
   onOpenChange,
   onLinked,
 }: LinkGameDialogProps) {
   const { t } = useTranslation('features.gameStudio')
-  const { courses, loading, selectedCourseId, linking, canConfirm, selectCourse, handleConfirm } =
+  const { courses, loading, selectedCourseIds, linking, canConfirm, selectCourse, handleConfirm } =
     useLinkGameDialog({
       gameId,
       open,
-      linkedCourseId,
+      linkedCourseIds,
       onOpenChange,
       onLinked,
     })
@@ -66,7 +66,7 @@ export function LinkGameDialog({
         <GameCourseSelectTable
           courses={courses}
           loading={loading}
-          selectedCourseId={selectedCourseId}
+          selectedCourseIds={selectedCourseIds}
           onSelectCourse={selectCourse}
           emptyLabel={t('linkGameDialog.emptyCourses')}
           kursenameColumnLabel={t('linkGameDialog.kursename')}

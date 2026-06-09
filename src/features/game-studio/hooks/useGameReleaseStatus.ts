@@ -1,15 +1,18 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { getGameForStudio, getLatestPublishedGameVersion } from '../api/gameStudioApi'
-import type { PublishedGameVersion } from '../types/game-version.types'
+
+import { fetchGameDraftSnapshot, fetchLatestPublishedGameSnapshot } from '../api/gameReleaseApi'
+import type { GameDraftSnapshot } from '../api/gameReleaseApi'
 import type { GameDraftDiff } from '../types/game-version.types'
+import type { PublishedGameVersion } from '../types/game-version.types'
 import { buildGameReleaseDiff } from '../utils/gameLifecycle.utils'
-import type { FlowGameConfig } from '../types/game-studio.types'
 
 type UseGameReleaseStatusParams = {
   gameId: string | undefined
+  enabled?: boolean
 }
 
 type UseGameReleaseStatusResult = {
+  draft: GameDraftSnapshot | null
   live: PublishedGameVersion | null
   diff: GameDraftDiff | null
   courseId: string | null
@@ -22,48 +25,76 @@ type UseGameReleaseStatusResult = {
 
 export function useGameReleaseStatus({
   gameId,
+  enabled = true,
 }: UseGameReleaseStatusParams): UseGameReleaseStatusResult {
+  const [draft, setDraft] = useState<GameDraftSnapshot | null>(null)
   const [live, setLive] = useState<PublishedGameVersion | null>(null)
-  const [currentContent, setCurrentContent] = useState<FlowGameConfig | null>(null)
-  const [courseId, setCourseId] = useState<string | null>(null)
+  const [deliveryCount, setDeliveryCount] = useState(0)
+  const [offlineDeliveryCount, setOfflineDeliveryCount] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const fetch = useCallback(async () => {
-    if (!gameId) return
+    const trimmedGameId = gameId?.trim()
+    if (!trimmedGameId || !enabled) {
+      setDraft(null)
+      setLive(null)
+      setDeliveryCount(0)
+      setOfflineDeliveryCount(0)
+      setLoading(false)
+      setError(null)
+      return
+    }
+
     setLoading(true)
     setError(null)
+
     try {
-      const [game, publishedVersion] = await Promise.all([
-        getGameForStudio(gameId),
-        getLatestPublishedGameVersion(gameId),
+      const [nextDraft, published] = await Promise.all([
+        fetchGameDraftSnapshot(trimmedGameId),
+        fetchLatestPublishedGameSnapshot(trimmedGameId),
       ])
-      setCurrentContent(game?.game_content ?? null)
-      setCourseId(game?.course_id ?? null)
-      setLive(publishedVersion)
+
+      setDraft(nextDraft)
+      setLive(published.live)
+      setDeliveryCount(published.deliveryCount)
+      setOfflineDeliveryCount(published.offlineDeliveryCount)
     } catch (err) {
       console.error('[useGameReleaseStatus]', err)
+      setDraft(null)
+      setLive(null)
+      setDeliveryCount(0)
+      setOfflineDeliveryCount(0)
       setError(err instanceof Error ? err.message : 'Failed to load release status')
     } finally {
       setLoading(false)
     }
-  }, [gameId])
+  }, [gameId, enabled])
 
   useEffect(() => {
     void fetch()
   }, [fetch])
 
   const diff = useMemo(() => {
-    if (!live) return null
-    return buildGameReleaseDiff(currentContent, live.content)
-  }, [live, currentContent])
+    if (!draft) return null
+    return buildGameReleaseDiff(
+      {
+        title: draft.title,
+        description: draft.description,
+        themeId: draft.themeId,
+        content: draft.content,
+      },
+      live,
+    )
+  }, [draft, live])
 
   return {
+    draft,
     live,
     diff,
-    courseId,
-    deliveryCount: 0,
-    offlineDeliveryCount: 0,
+    courseId: draft?.courseId ?? null,
+    deliveryCount,
+    offlineDeliveryCount,
     loading,
     error,
     refetch: fetch,

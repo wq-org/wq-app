@@ -41,7 +41,7 @@ export interface GameProjectCardProps {
   themeId?: ThemeId
   version?: number
   status?: 'draft' | 'published'
-  linkedCourseId?: string | null
+  linkedCourseIds?: string[]
   onOpen?: () => void
   onCourseLinkChanged?: () => void
 }
@@ -86,7 +86,7 @@ export interface GameProjectCardListProps {
     themeId?: ThemeId
     version?: number
     status?: 'draft' | 'published'
-    linkedCourseId?: string | null
+    linkedCourseIds?: string[]
   }[]
   onOpen?: (projectId: string) => void
   onCourseLinkChanged?: () => void

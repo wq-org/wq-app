@@ -10,6 +10,9 @@ export type GameVersionRow = {
   version_no: number
   status: GameVersionStatus
   content: FlowGameConfig | null
+  title: string | null
+  description: string | null
+  theme_id: ThemeId | null
   content_schema_version: number | null
   change_note: string | null
   published_at: string | null

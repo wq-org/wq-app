@@ -21,6 +21,7 @@ import { useGameReleaseStatus } from '../hooks/useGameReleaseStatus'
 import { getPublishValidationResult } from '../utils/publishValidation'
 import { GameArchiveDialog } from './GameArchiveDialog'
 import { GameDeleteDialog } from './GameDeleteDialog'
+import { GamePublishDialog } from './GamePublishDialog'
 import { GameLiveSnapshotCard } from './GameLiveSnapshotCard'
 import { GamePublishGraphIssueList } from './GamePublishGraphIssueList'
 import { GameReleasePanel } from './GameReleasePanel'
@@ -29,6 +30,7 @@ export type GameEditorSettingsPanelProps = {
   open: boolean
   onClose: () => void
   projectId: string | undefined
+  teacherId: string | undefined
   title: string
   description: string
   themeId: ThemeId
@@ -36,7 +38,7 @@ export type GameEditorSettingsPanelProps = {
   edges: Edge[]
   onSave: (payload: { title: string; description: string; theme_id: ThemeId }) => Promise<void>
   onDelete: () => void
-  onPublish: () => Promise<void>
+  onPublish: (courseIds: string[]) => Promise<void>
   onFocusNode?: (nodeId: string) => void
 }
 
@@ -44,6 +46,7 @@ export function GameEditorSettingsPanel({
   open,
   onClose,
   projectId,
+  teacherId,
   title: initialTitle,
   description: initialDescription,
   themeId: initialThemeId,
@@ -63,6 +66,7 @@ export function GameEditorSettingsPanel({
   const [moreMenuOpen, setMoreMenuOpen] = useState(false)
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [publishDialogOpen, setPublishDialogOpen] = useState(false)
 
   const {
     live,
@@ -123,18 +127,15 @@ export function GameEditorSettingsPanel({
     }
   }
 
-  const handlePublish = async () => {
-    if (!canPublish) {
-      toast.error(t('settingsPanel.toasts.publishValidationFailed'))
-      return
-    }
+  const handlePublishConfirm = async (courseIds: string[]) => {
     setIsPublishing(true)
     try {
-      await onPublish()
+      await onPublish(courseIds)
       await refetchReleaseStatus()
       toast.success(t('settingsPanel.toasts.publishSuccess'))
     } catch {
       toast.error(t('settingsPanel.toasts.publishFailed'))
+      throw new Error(t('settingsPanel.toasts.publishFailed'))
     } finally {
       setIsPublishing(false)
     }
@@ -324,9 +325,7 @@ export function GameEditorSettingsPanel({
             variant="darkblue"
             className="gap-2"
             disabled={!canPublish || isPublishing || releaseLoading}
-            onClick={() => {
-              void handlePublish()
-            }}
+            onClick={() => setPublishDialogOpen(true)}
           >
             {isPublishing ? (
               <Spinner
@@ -343,6 +342,13 @@ export function GameEditorSettingsPanel({
           </Button>
         </div>
       </div>
+
+      <GamePublishDialog
+        open={publishDialogOpen}
+        onOpenChange={setPublishDialogOpen}
+        teacherId={teacherId}
+        onPublish={handlePublishConfirm}
+      />
 
       {projectId && (
         <GameArchiveDialog

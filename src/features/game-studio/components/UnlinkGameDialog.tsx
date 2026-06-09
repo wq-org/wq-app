@@ -19,7 +19,7 @@ import { GameCourseSelectTable } from './GameCourseSelectTable'
 
 export type UnlinkGameDialogProps = {
   gameId: string
-  linkedCourseId?: string | null
+  linkedCourseIds?: string[]
   open: boolean
   onOpenChange: (open: boolean) => void
   onUnlinked?: () => void
@@ -27,24 +27,32 @@ export type UnlinkGameDialogProps = {
 
 export function UnlinkGameDialog({
   gameId,
-  linkedCourseId = null,
+  linkedCourseIds = [],
   open,
   onOpenChange,
   onUnlinked,
 }: UnlinkGameDialogProps) {
   const { t } = useTranslation('features.gameStudio')
-  const { courses, loading, selectedCourseId, unlinking, canConfirm, selectCourse, handleConfirm } =
-    useUnlinkGameDialog({
-      gameId,
-      open,
-      linkedCourseId,
-      onOpenChange,
-      onUnlinked,
-    })
+  const {
+    courses,
+    loading,
+    selectedCourseIds,
+    unlinking,
+    canConfirm,
+    selectCourse,
+    handleConfirm,
+  } = useUnlinkGameDialog({
+    gameId,
+    open,
+    linkedCourseIds,
+    onOpenChange,
+    onUnlinked,
+  })
 
-  const emptyLabel = linkedCourseId
-    ? t('unlinkGameDialog.loadFailed')
-    : t('unlinkGameDialog.noLinkedCourse')
+  const emptyLabel =
+    linkedCourseIds.length > 0
+      ? t('unlinkGameDialog.loadFailed')
+      : t('unlinkGameDialog.noLinkedCourse')
 
   return (
     <Dialog
@@ -70,7 +78,7 @@ export function UnlinkGameDialog({
         <GameCourseSelectTable
           courses={courses}
           loading={loading}
-          selectedCourseId={selectedCourseId}
+          selectedCourseIds={selectedCourseIds}
           onSelectCourse={selectCourse}
           emptyLabel={emptyLabel}
           kursenameColumnLabel={t('unlinkGameDialog.kursename')}

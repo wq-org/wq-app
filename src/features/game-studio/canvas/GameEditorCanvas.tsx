@@ -33,7 +33,8 @@ import { GAME_IF_ELSE_TYPE } from '../nodes/game-if-else/game-if-else.schema'
 import { GAME_IMAGE_PIN_TYPE } from '../nodes/game-image-pin/image-pin.schema'
 import { GAME_DRAG_DROP_MATH_TYPE } from '../nodes/game-dnd-math'
 import { GAME_OPEN_QUESTION_TYPE } from '../nodes/open-question/constants'
-import { getGameForStudio, publishGame, updateGameForStudio } from '../api/gameStudioApi'
+import { publishGameDraft } from '../api/gamePublishApi'
+import { getGameForStudio, linkGameToCourse, updateGameForStudio } from '../api/gameStudioApi'
 import { collectImagePinGalleryImages } from '../utils/collectImagePinGalleryImages'
 import { saveGameStudioDraft } from '../utils/saveGameStudioDraft'
 import { GameEditorSettingsPanel } from '../components/GameEditorSettingsPanel'
@@ -522,7 +523,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   }, [flushAutosave])
 
   const persist = useCallback(
-    async (status: 'save' | 'publish') => {
+    async (status: 'save' | 'publish', options?: { courseId?: string | null }) => {
       if (!projectId) {
         toast.error('Open a project from Game Studio to save.')
         return
@@ -547,7 +548,10 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       })
 
       if (status === 'publish') {
-        await publishGame(projectId)
+        if (options?.courseId) {
+          await updateGameForStudio(projectId, { course_id: options.courseId })
+        }
+        await publishGameDraft(projectId, options?.courseId ?? null)
       }
     },
     [projectId, getUserId, nodes, edges, gameTitle, gameThemeId],
@@ -563,14 +567,16 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     }
   }, [persist])
 
-  const handlePublish = useCallback(async () => {
-    try {
-      await persist('publish')
-    } catch (err) {
-      console.error(err)
-      throw err
-    }
-  }, [persist])
+  const handlePublish = useCallback(
+    async (courseIds: string[]) => {
+      const primaryCourseId = courseIds[0] ?? null
+      await persist('publish', { courseId: primaryCourseId })
+      if (projectId && courseIds.length > 0) {
+        await Promise.all(courseIds.map((id) => linkGameToCourse(projectId, id)))
+      }
+    },
+    [persist, projectId],
+  )
 
   const handlePreview = useCallback(async () => {
     if (!projectId) {
@@ -840,6 +846,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         open={isSettingsPanelOpen}
         onClose={() => setIsSettingsPanelOpen(false)}
         projectId={projectId}
+        teacherId={getUserId() ?? undefined}
         title={gameTitle}
         description={
           (

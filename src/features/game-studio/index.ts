@@ -112,7 +112,20 @@ export {
   getTeacherFlowGames,
   getPublishedGamesForCourse,
   getPublishedGamesFromFollowedTeachers,
+  linkGameToCourse,
+  unlinkGameFromCourse,
+  getGameLinkedCourseIds,
 } from './api/gameStudioApi'
+export { publishGameDraft } from './api/gamePublishApi'
+export type { PublishGameResult } from './api/gamePublishApi'
+export type { GameDraftSnapshot } from './api/gameReleaseApi'
+export { fetchGameDraftSnapshot, fetchLatestPublishedGameSnapshot } from './api/gameReleaseApi'
+export {
+  getLatestPublishedGameVersionId,
+  getPublishedGameVersion,
+  getDeliveredGamesForCourse,
+  countPublishedDeliveriesForGame,
+} from './api/gameVersionApi'
 export { useTeacherGameProjects } from './hooks/useTeacherGameProjects'
 export { useCourseLinkedGames } from './hooks/useCourseLinkedGames'
 export { useGameReleaseStatus } from './hooks/useGameReleaseStatus'
@@ -121,6 +134,7 @@ export {
   buildGameReleaseDiff,
   formatGamePublishedAt,
 } from './utils/gameLifecycle.utils'
+export { toPublishedGameVersion } from './utils/gameVersion.utils'
 
 // ---- Flow-traversal utilities ----
 export type {

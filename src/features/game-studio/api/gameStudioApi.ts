@@ -1,8 +1,15 @@
 import { supabase } from '@/lib/supabase'
-import type { FlowGameConfig, GameCardProps } from '../types/game-studio.types'
-import type { GameVersionRow, PublishedGameVersion } from '../types/game-version.types'
-import { getDefaultFlowGameConfig } from '../utils/gameConfigSerialization'
 import type { ThemeId } from '@/lib/themes'
+
+import { publishGameDraft } from './gamePublishApi'
+import {
+  getDeliveredGamesForCourse,
+  getLatestPublishedGameVersionId,
+  getPublishedGameVersion,
+} from './gameVersionApi'
+import type { FlowGameConfig, GameCardProps } from '../types/game-studio.types'
+import type { PublishedGameVersion } from '../types/game-version.types'
+import { getDefaultFlowGameConfig } from '../utils/gameConfigSerialization'
 
 export interface GameForStudio {
   id: string
@@ -23,30 +30,7 @@ export interface GameForStudio {
   archived_at: string | null
   created_at: string
   updated_at: string
-}
-
-type GameVersionJoinRow = {
-  title: string
-  description: string | null
-  theme_id: ThemeId
-}
-
-function toPublishedGameVersion(
-  row: GameVersionRow,
-  game: GameVersionJoinRow,
-): PublishedGameVersion {
-  return {
-    id: row.id,
-    gameId: row.game_id,
-    versionNo: row.version_no,
-    status: row.status,
-    content: row.content,
-    publishedAt: row.published_at ? new Date(row.published_at) : null,
-    createdAt: new Date(row.created_at),
-    gameTitle: game.title,
-    gameDescription: game.description,
-    themeId: game.theme_id,
-  }
+  game_course_links?: { course_id: string }[]
 }
 
 /**
@@ -126,29 +110,18 @@ export async function updateGameForStudio(
 }
 
 /**
- * Publish a game: set status to published. Caller must save the game first
- * (e.g. updateGameForStudio) before calling. Does not create a new version.
+ * Publish a game: snapshot draft into an immutable version and optionally deliver
+ * to active course deliveries. Caller must save the draft first.
  */
-export async function publishGame(gameId: string): Promise<GameForStudio> {
-  const now = new Date().toISOString()
-  const { data, error } = await supabase
-    .from('games')
-    .update({
-      status: 'published',
-      is_draft: false,
-      published_at: now,
-      updated_at: now,
-    })
-    .eq('id', gameId)
-    .select()
-    .single()
+export async function publishGame(
+  gameId: string,
+  courseId?: string | null,
+): Promise<GameForStudio> {
+  await publishGameDraft(gameId, courseId)
 
-  if (error) {
-    console.error('Error publishing game:', error)
-    throw error
-  }
-
-  return data as GameForStudio
+  const game = await getGameForStudio(gameId)
+  if (!game) throw new Error('Game not found after publish')
+  return game
 }
 
 /**
@@ -221,27 +194,50 @@ export async function getGameForStudio(gameId: string): Promise<GameForStudio | 
 export async function getLatestPublishedGameVersion(
   gameId: string,
 ): Promise<PublishedGameVersion | null> {
-  const { data: game, error: gameError } = await supabase
-    .from('games')
-    .select('current_published_version_id, title, description, theme_id')
-    .eq('id', gameId)
-    .single()
-
-  if (gameError) throw new Error(gameError.message)
-
-  const versionId = (game as { current_published_version_id: string | null })
-    .current_published_version_id
+  const versionId = await getLatestPublishedGameVersionId(gameId)
   if (!versionId) return null
+  return getPublishedGameVersion(versionId)
+}
 
-  const { data: version, error: versionError } = await supabase
-    .from('game_versions')
-    .select('id, game_id, version_no, status, content, published_at, created_at, updated_at')
-    .eq('id', versionId)
-    .single()
+/**
+ * Link a published game to an additional course (junction table).
+ * Idempotent — silently ignores if the link already exists.
+ */
+export async function linkGameToCourse(gameId: string, courseId: string): Promise<void> {
+  const { error } = await supabase
+    .from('game_course_links')
+    .upsert(
+      { game_id: gameId, course_id: courseId },
+      { onConflict: 'game_id,course_id', ignoreDuplicates: true },
+    )
 
-  if (versionError) throw new Error(versionError.message)
+  if (error) throw new Error(error.message)
+}
 
-  return toPublishedGameVersion(version as unknown as GameVersionRow, game as GameVersionJoinRow)
+/**
+ * Remove a course link for a game.
+ */
+export async function unlinkGameFromCourse(gameId: string, courseId: string): Promise<void> {
+  const { error } = await supabase
+    .from('game_course_links')
+    .delete()
+    .eq('game_id', gameId)
+    .eq('course_id', courseId)
+
+  if (error) throw new Error(error.message)
+}
+
+/**
+ * Get all course IDs linked to a game via the junction table.
+ */
+export async function getGameLinkedCourseIds(gameId: string): Promise<string[]> {
+  const { data, error } = await supabase
+    .from('game_course_links')
+    .select('course_id')
+    .eq('game_id', gameId)
+
+  if (error) throw new Error(error.message)
+  return (data ?? []).map((row: { course_id: string }) => row.course_id)
 }
 
 export async function archiveGame(gameId: string): Promise<void> {
@@ -263,40 +259,20 @@ export async function softDeleteGame(gameId: string): Promise<void> {
 }
 
 /**
- * Published flow games linked to a course (`games.course_id`).
- * Used on published course overview — same games students see when the course is linked at publish time.
+ * Published flow games delivered to a course via game_deliveries.
+ * Reads immutable version snapshots — draft edits on games do not affect this list.
  */
 export async function getPublishedGamesForCourse(courseId: string): Promise<GameCardProps[]> {
-  const { data, error } = await supabase
-    .from('games')
-    .select('id, title, description, version, status, theme_id')
-    .eq('course_id', courseId)
-    .eq('game_type', 'flow')
-    .eq('status', 'published')
-    .order('updated_at', { ascending: false })
+  const rows = await getDeliveredGamesForCourse(courseId)
 
-  if (error) {
-    console.error('Error fetching published games for course:', error)
-    throw error
-  }
-
-  return (data || []).map(
-    (row: {
-      id: string
-      title: string
-      description: string | null
-      version: number | null
-      status: string | null
-      theme_id: ThemeId
-    }) => ({
-      id: row.id,
-      title: row.title || 'Untitled Game',
-      description: row.description ?? 'No description available',
-      themeId: row.theme_id,
-      version: row.version ?? undefined,
-      status: 'published' as const,
-    }),
-  )
+  return rows.map((row) => ({
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    themeId: row.themeId as ThemeId,
+    version: row.version,
+    status: 'published' as const,
+  }))
 }
 
 /**
@@ -306,10 +282,11 @@ export async function getTeacherFlowGames(teacherId: string): Promise<GameForStu
   const { data, error } = await supabase
     .from('games')
     .select(
-      'id, title, description, teacher_id, institution_id, course_id, game_type, theme_id, status, version, published_version, current_published_version_id, archived_at, created_at, updated_at',
+      'id, title, description, teacher_id, institution_id, course_id, game_type, theme_id, status, version, published_version, current_published_version_id, archived_at, created_at, updated_at, game_course_links(course_id)',
     )
     .eq('teacher_id', teacherId)
     .eq('game_type', 'flow')
+    .is('deleted_at', null)
     .order('updated_at', { ascending: false })
 
   if (error) throw new Error(error.message)
@@ -348,9 +325,20 @@ export async function getPublishedGamesFromFollowedTeachers(): Promise<GameCardP
 
   const { data, error } = await supabase
     .from('games')
-    .select('id, title, description, version, status, theme_id')
+    .select(
+      `
+      id,
+      current_published_version_id,
+      game_versions!games_current_published_version_id_fkey (
+        title,
+        description,
+        theme_id,
+        version_no
+      )
+    `,
+    )
     .in('teacher_id', followedIds)
-    .eq('status', 'published')
+    .not('current_published_version_id', 'is', null)
     .order('updated_at', { ascending: false })
     .limit(50)
 
@@ -359,21 +347,37 @@ export async function getPublishedGamesFromFollowedTeachers(): Promise<GameCardP
     throw error
   }
 
-  return (data || []).map(
+  return (data ?? []).flatMap(
     (row: {
       id: string
-      title: string
-      description: string | null
-      version: number | null
-      status: string | null
-      theme_id: ThemeId
-    }) => ({
-      id: row.id,
-      title: row.title || 'Untitled Game',
-      description: row.description ?? 'No description available',
-      themeId: row.theme_id,
-      version: row.version ?? undefined,
-      status: (row.status === 'published' ? 'published' : 'draft') as 'draft' | 'published',
-    }),
+      game_versions:
+        | {
+            title: string | null
+            description: string | null
+            theme_id: ThemeId | null
+            version_no: number
+          }
+        | {
+            title: string | null
+            description: string | null
+            theme_id: ThemeId | null
+            version_no: number
+          }[]
+        | null
+    }) => {
+      const version = Array.isArray(row.game_versions) ? row.game_versions[0] : row.game_versions
+      if (!version) return []
+
+      return [
+        {
+          id: row.id,
+          title: version.title?.trim() || 'Untitled Game',
+          description: version.description?.trim() || 'No description available',
+          themeId: (version.theme_id ?? 'blue') as ThemeId,
+          version: version.version_no,
+          status: 'published' as const,
+        },
+      ]
+    },
   )
 }
