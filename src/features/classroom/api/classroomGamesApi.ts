@@ -57,6 +57,12 @@ type GameRunAnalyticsDetailRow = GameRunRow & {
   game_versions: GameVersionContentSnapshot | GameVersionContentSnapshot[] | null
 }
 
+function readGameVersionContent(
+  gameVersions: GameVersionContentSnapshot | GameVersionContentSnapshot[] | null | undefined,
+): { nodes?: Node[]; edges?: Edge[] } | null | undefined {
+  return firstRelation(gameVersions)?.content ?? undefined
+}
+
 function firstRelation<T>(value: T | T[] | null | undefined): T | null {
   if (value == null) return null
   return Array.isArray(value) ? (value[0] ?? null) : value
@@ -255,9 +261,8 @@ export async function getGameRunAnalyticsDetail(
   if (versionError) throw new Error(versionError.message)
   if (!versionRow) return null
 
-  const row = versionRow as GameRunAnalyticsDetailRow
-  const versionContent = firstRelation(row.game_versions)?.content
-
+  const row = versionRow as unknown as GameRunAnalyticsDetailRow
+  const versionContent = readGameVersionContent(row.game_versions)
   const base = mapGameRunRows([row])[0]
   if (!base) return null
 

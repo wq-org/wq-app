@@ -86,7 +86,8 @@ export function GamePlayLeaveProvider({
       if (!(target instanceof Element)) return
 
       const anchor = target.closest('a[href]')
-      if (!(anchor instanceof HTMLAnchorElement) || anchor.target === '_blank') return
+      if (!anchor) return
+      if (anchor.getAttribute('target') === '_blank') return
 
       const href = anchor.getAttribute('href')
       if (!href || href.startsWith('#')) return
