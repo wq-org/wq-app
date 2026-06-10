@@ -9,6 +9,7 @@ import {
   PublishedLessonReader,
   PublishedTopicView,
   usePublishedCourseVersion,
+  buildClassroomGameAnalyticsRoute,
   buildClassroomPublishedLessonRoute,
   buildClassroomPublishedTopicRoute,
   buildClassroomPublishedGameRoute,
@@ -56,6 +57,11 @@ export function ClassroomPublishedCoursePage() {
   const handleGameOpen = (gameId: string) => {
     if (!classroomId || !courseId) return
     navigate(buildClassroomPublishedGameRoute(classroomId, courseId, gameId))
+  }
+
+  const handleGameAnalyticsOpen = (gameId: string) => {
+    if (!classroomId) return
+    navigate(buildClassroomGameAnalyticsRoute(classroomId, gameId))
   }
 
   if (!classroomId || !courseId) {
@@ -112,6 +118,7 @@ export function ClassroomPublishedCoursePage() {
         classroomContextLabel={t('pages.classroomDetail.publishedCourse.contextLabel')}
         onTopicView={handleTopicView}
         onGameOpen={handleGameOpen}
+        onGameAnalyticsOpen={handleGameAnalyticsOpen}
         onVersionChange={() => undefined}
         onCompareToDraft={handleCompareToDraft}
       />

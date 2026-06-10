@@ -5,9 +5,11 @@ import { isThemeId } from '@/lib/themes'
 
 import type {
   ClassroomDeliveredGame,
+  ClassroomGamePlayContent,
   GameRunAnalyticsDetail,
   GameRunAnalyticsItem,
   GameRunParticipantDetail,
+  RecordClassroomGameRunInput,
 } from '../types/classroom-game.types'
 import {
   parseGameRunComponentScores,
@@ -277,4 +279,169 @@ export async function getClassroomDeliveredGame(
 ): Promise<ClassroomDeliveredGame | null> {
   const games = await listClassroomDeliveredGames(classroomId)
   return games.find((game) => game.id === gameId) ?? null
+}
+
+type PlayContentDeliveryRow = {
+  id: string
+  game_id: string
+  game_version_id: string
+  game_versions: DeliveredGameVersionSnapshot | DeliveredGameVersionSnapshot[] | null
+}
+
+const PLAY_CONTENT_SELECT = `
+  id,
+  game_id,
+  game_version_id,
+  game_versions!inner (
+    title,
+    description,
+    theme_id,
+    version_no,
+    content
+  )
+` as const
+
+function mapPlayContentRow(
+  row: PlayContentDeliveryRow,
+  classroomId: string,
+): ClassroomGamePlayContent | null {
+  const version = firstRelation(row.game_versions)
+  if (!version) return null
+
+  const themeId = version.theme_id && isThemeId(version.theme_id) ? version.theme_id : 'blue'
+
+  return {
+    gameId: row.game_id,
+    gameDeliveryId: row.id,
+    gameVersionId: row.game_version_id,
+    classroomId,
+    title: version.title?.trim() || 'Untitled Game',
+    themeId,
+    versionNo: version.version_no,
+    nodes: version.content?.nodes ?? [],
+    edges: version.content?.edges ?? [],
+  }
+}
+
+/**
+ * Resolves the delivery-pinned playable content for a game delivered to a
+ * classroom (directly or via one of its course deliveries). The version is the
+ * delivery's `game_version_id`, so an assigned game does not change underneath
+ * players when the teacher republishes.
+ */
+export async function getClassroomGamePlayContent(
+  classroomId: string,
+  gameId: string,
+): Promise<ClassroomGamePlayContent | null> {
+  const { data: directRows, error: directError } = await supabase
+    .from('game_deliveries')
+    .select(PLAY_CONTENT_SELECT)
+    .eq('classroom_id', classroomId)
+    .eq('game_id', gameId)
+    .eq('status', 'published')
+    .not('published_at', 'is', null)
+    .limit(1)
+
+  if (directError) throw new Error(directError.message)
+
+  const directRow = (directRows ?? [])[0] as PlayContentDeliveryRow | undefined
+  if (directRow) return mapPlayContentRow(directRow, classroomId)
+
+  const { data: courseDeliveries, error: courseDeliveriesError } = await supabase
+    .from('course_deliveries')
+    .select('id')
+    .eq('classroom_id', classroomId)
+    .is('deleted_at', null)
+
+  if (courseDeliveriesError) throw new Error(courseDeliveriesError.message)
+
+  const courseDeliveryIds = (courseDeliveries ?? []).map((row: { id: string }) => row.id)
+  if (courseDeliveryIds.length === 0) return null
+
+  const { data: linkedRows, error: linkedError } = await supabase
+    .from('game_deliveries')
+    .select(PLAY_CONTENT_SELECT)
+    .in('course_delivery_id', courseDeliveryIds)
+    .eq('game_id', gameId)
+    .eq('status', 'published')
+    .not('published_at', 'is', null)
+    .limit(1)
+
+  if (linkedError) throw new Error(linkedError.message)
+
+  const linkedRow = (linkedRows ?? [])[0] as PlayContentDeliveryRow | undefined
+  return linkedRow ? mapPlayContentRow(linkedRow, classroomId) : null
+}
+
+/**
+ * Persists one completed play-through as game_run → game_session →
+ * game_session_participant. The full walkthrough (per-node results + chat
+ * transcript) is stored in session_payload; RLS limits inserts to the caller's
+ * own run/participation, and the bind_game_run_version trigger validates the
+ * delivery/version pairing and fills institution_id and run_context.
+ */
+export async function recordClassroomGameRun(input: RecordClassroomGameRunInput): Promise<string> {
+  const { data: auth, error: authError } = await supabase.auth.getUser()
+  if (authError) throw new Error(authError.message)
+
+  const userId = auth.user?.id
+  if (!userId) throw new Error('Not authenticated')
+
+  const endedAt = new Date().toISOString()
+  const startedAt = input.startedAt ?? endedAt
+
+  const { data: run, error: runError } = await supabase
+    .from('game_runs')
+    .insert({
+      game_id: input.gameId,
+      classroom_id: input.classroomId,
+      game_delivery_id: input.gameDeliveryId,
+      game_version_id: input.gameVersionId,
+      mode: 'solo',
+      status: 'completed',
+      started_by: userId,
+      started_at: startedAt,
+      ended_at: endedAt,
+    })
+    .select('id, institution_id')
+    .single()
+
+  if (runError) throw new Error(runError.message)
+
+  const runRow = run as { id: string; institution_id: string }
+
+  const { data: session, error: sessionError } = await supabase
+    .from('game_sessions')
+    .insert({
+      game_run_id: runRow.id,
+      institution_id: runRow.institution_id,
+      started_at: startedAt,
+      ended_at: endedAt,
+    })
+    .select('id')
+    .single()
+
+  if (sessionError) throw new Error(sessionError.message)
+
+  const sessionPayload = {
+    schemaVersion: 1,
+    totalScore: input.score,
+    maxScore: input.maxScore,
+    resultsByNode: input.resultsByNode,
+    chatHistory: input.chatHistory,
+  }
+
+  const { error: participantError } = await supabase.from('game_session_participants').insert({
+    game_session_id: (session as { id: string }).id,
+    institution_id: runRow.institution_id,
+    user_id: userId,
+    score: input.score,
+    session_payload: sessionPayload,
+    started_at: startedAt,
+    completed_at: endedAt,
+  })
+
+  if (participantError) throw new Error(participantError.message)
+
+  return runRow.id
 }

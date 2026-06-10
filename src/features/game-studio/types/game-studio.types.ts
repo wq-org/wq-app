@@ -54,6 +54,8 @@ export interface GameProjectCardCompactProps {
   status?: 'draft' | 'published'
   className?: string
   onView?: (id: string) => void
+  /** When provided, shows the card menu with a "view analytics" action. */
+  onViewAnalytics?: (id: string) => void
 }
 
 export interface GameCardProps {

@@ -68,6 +68,17 @@ export {
 
 // ---- Player runtime ----
 export {
+  GamePreviewPlayFlow,
+  type GamePreviewPlayFlowProps,
+  type GamePlaySessionResult,
+  type GamePlaySessionSnapshot,
+} from './components/GamePreviewPlayFlow'
+export {
+  buildPlaySessionChatHistory,
+  type GamePlayChatMessage,
+} from './utils/buildPlaySessionChatHistory'
+export { computePlayPreviewSessionMaxScore } from './utils/playPreviewSessionScore'
+export {
   GameChatPlayer,
   GameChatMessage,
   useGameChatSession,

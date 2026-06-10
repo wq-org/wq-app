@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { GameRunAnalyticsPanel, getClassroomDeliveredGame } from '@/features/classroom'
 
-export function GameRunAnalyticsPage() {
+export function StudentGameHistoryPage() {
   const { t } = useTranslation('features.teacher')
   const { classroomId, gameId } = useParams<{ classroomId: string; gameId: string }>()
   const [gameTitle, setGameTitle] = useState<string | null>(null)
@@ -33,7 +33,7 @@ export function GameRunAnalyticsPage() {
   if (!trimmedClassroomId || !trimmedGameId) {
     return (
       <AppShell
-        role="teacher"
+        role="student"
         className="flex flex-col gap-6"
       >
         <div className="container py-10">
@@ -49,11 +49,11 @@ export function GameRunAnalyticsPage() {
     )
   }
 
-  const backHref = `/teacher/dashboard/classroom/${trimmedClassroomId}`
+  const backHref = `/student/dashboard/classroom/${trimmedClassroomId}`
 
   return (
     <AppShell
-      role="teacher"
+      role="student"
       className="flex flex-col gap-8 animate-in fade-in-0 slide-in-from-bottom-4"
     >
       <div className="container py-6">
@@ -83,7 +83,7 @@ export function GameRunAnalyticsPage() {
             muted
             className="mt-2"
           >
-            {t('pages.gameRunAnalytics.description')}
+            {t('pages.gameRunAnalytics.myHistoryDescription')}
           </Text>
         </div>
 
@@ -91,6 +91,7 @@ export function GameRunAnalyticsPage() {
           <GameRunAnalyticsPanel
             classroomId={trimmedClassroomId}
             gameId={trimmedGameId}
+            ownOnly
           />
         </div>
       </div>

@@ -81,7 +81,9 @@
         "gamesUntitled": "Untitled game",
         "gamesNoDescription": "No description",
         "gamesMenuAriaLabel": "Game options",
-        "gamesViewAnalytics": "View analytics"
+        "gamesViewAnalytics": "View analytics",
+        "gamesPlay": "Play",
+        "gamesPlayAriaLabel": "Play {{title}}"
       },
       "publishedCourse": {
         "backToClassroom": "Back to classroom",
@@ -115,6 +117,44 @@
         "totalScore": "Total score: {{score}} / {{maxScore}}",
         "noComponentBreakdown": "No per-component breakdown is stored for this session yet.",
         "componentScore": "{{score}} / {{maxScore}}"
+      },
+      "myHistoryDescription": "Review your own play sessions, scores, and chat history.",
+      "breadcrumb": {
+        "students": "Students",
+        "myAttempts": "My attempts"
+      },
+      "students": {
+        "lastPlayed": "Last played {{playedAt}}",
+        "attempts": "{{count}} attempts"
+      },
+      "attempts": {
+        "title": "Attempts",
+        "score": "Score: {{score}}",
+        "selectHint": "Select an attempt to see the score breakdown and chat history."
+      },
+      "chatHistory": {
+        "title": "Chat history",
+        "empty": "No chat history was stored for this attempt.",
+        "messageScore": "{{score}} / {{maxScore}} points"
+      }
+    },
+    "classroomGamePlay": {
+      "invalidLink": "This game link is invalid.",
+      "loading": "Loading game…",
+      "loadError": "Could not load this game.",
+      "notAvailable": "This game is not available for this classroom.",
+      "teacherPreviewNotice": "Preview — results are not saved.",
+      "saving": "Saving your result…",
+      "savedScore": "Saved · {{score}} / {{maxScore}} points",
+      "saveError": "Your result could not be saved.",
+      "retry": "Retry",
+      "leaveGame": {
+        "badge": "Leave game",
+        "title": "Leave this game?",
+        "descriptionStudent": "Your progress so far will be saved. Any segments you have not reached yet will be marked as unplayed.",
+        "descriptionTeacher": "You are previewing this game. Leaving will discard your in-progress session — nothing is saved in teacher preview mode.",
+        "cancel": "Keep playing",
+        "confirm": "Leave game"
       }
     }
   },

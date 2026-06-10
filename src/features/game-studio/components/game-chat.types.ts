@@ -11,6 +11,8 @@ export type GameChatImagePinDescriptor = {
   src: string
   alt?: string
   rect?: GameImagePinRect
+  /** When false, hides the target rectangle overlay until after submission. Defaults to true. */
+  showTargetRect?: boolean
   /** When set, the image becomes a dnd-kit drop target with this id. Requires an enclosing DndContext. */
   droppableId?: string
 }

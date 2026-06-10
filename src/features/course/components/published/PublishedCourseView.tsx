@@ -19,6 +19,7 @@ type PublishedCourseViewProps = {
   classroomContextLabel?: string | null
   onTopicView: (topicId: string) => void
   onGameOpen: (gameId: string) => void
+  onGameAnalyticsOpen?: (gameId: string) => void
   onVersionChange: (courseVersionId: string) => void
   onCompareToDraft?: () => void
   onOpenEditor?: () => void
@@ -33,6 +34,7 @@ export function PublishedCourseView({
   classroomContextLabel,
   onTopicView,
   onGameOpen,
+  onGameAnalyticsOpen,
   onVersionChange,
   onCompareToDraft,
   onOpenEditor,
@@ -60,6 +62,7 @@ export function PublishedCourseView({
           themeId={tree.themeId}
           onTopicView={onTopicView}
           onGameOpen={onGameOpen}
+          onGameAnalyticsOpen={onGameAnalyticsOpen}
         />
       </TabsContent>
 

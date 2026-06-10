@@ -129,7 +129,7 @@ export function GamePreviewSessionShell({
       </BlurredScrollArea>
 
       {footerContent ? (
-        <div className="z-10 flex shrink-0 flex-col gap-3 border-t border-border/60 bg-background px-1 pt-3 pb-4 shadow-[0_-6px_16px_-8px_rgba(0,0,0,0.12)]">
+        <div className="sticky bottom-0 z-10 flex shrink-0 flex-col gap-3 border-t border-border/60 bg-background/95 px-1 pt-3 pb-4 shadow-[0_-6px_16px_-8px_rgba(0,0,0,0.12)] backdrop-blur-sm supports-[backdrop-filter]:bg-background/80">
           {footerContent}
         </div>
       ) : null}

@@ -62,6 +62,7 @@ export function toSessionNodeResult(
     outcome,
     correct: outcome === 'correct' ? 1 : 0,
     wrong: outcome === 'correct' ? 0 : 1,
+    played: true,
     ...(ifElseBranch ? { ifElseBranch } : {}),
   }
 }

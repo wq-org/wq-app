@@ -370,7 +370,14 @@ export function useImagePinGame({
     if (!latestQuestionMessageId || isLatestSubmitted) return state.messages
     return state.messages.map((m) =>
       m.id === latestQuestionMessageId && m.image
-        ? { ...m, image: { ...m.image, droppableId: PIN_IMAGE_DROPPABLE_ID } }
+        ? {
+            ...m,
+            image: {
+              ...m.image,
+              droppableId: PIN_IMAGE_DROPPABLE_ID,
+              showTargetRect: false,
+            },
+          }
         : m,
     )
   }, [state.messages, latestQuestionMessageId, isLatestSubmitted])

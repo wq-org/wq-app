@@ -37,7 +37,14 @@ function GameChatImagePin(props: ImagePinViewProps) {
   return <GameChatImagePinStatic {...props} />
 }
 
-function GameChatImagePinStatic({ src, alt, rect, className, children }: ImagePinViewProps) {
+function GameChatImagePinStatic({
+  src,
+  alt,
+  rect,
+  showTargetRect = true,
+  className,
+  children,
+}: ImagePinViewProps) {
   const [dims, setDims] = useState<{ w: number; h: number } | null>(null)
 
   useEffect(() => {
@@ -52,6 +59,7 @@ function GameChatImagePinStatic({ src, alt, rect, className, children }: ImagePi
         src={src}
         alt={alt}
         rect={rect}
+        showTargetRect={showTargetRect}
         dims={dims}
         onDims={setDims}
       />
@@ -66,6 +74,7 @@ function GameChatImagePinDroppable({
   src,
   alt,
   rect,
+  showTargetRect = true,
   className,
   children,
   droppableId,
@@ -92,6 +101,7 @@ function GameChatImagePinDroppable({
         src={src}
         alt={alt}
         rect={rect}
+        showTargetRect={showTargetRect}
         dims={dims}
         onDims={setDims}
       />
@@ -104,11 +114,19 @@ type MediaProps = {
   src: string
   alt?: string
   rect: ImagePinViewProps['rect']
+  showTargetRect?: boolean
   dims: { w: number; h: number } | null
   onDims: (dims: { w: number; h: number }) => void
 }
 
-function GameChatImagePinMedia({ src, alt, rect, dims, onDims }: MediaProps) {
+function GameChatImagePinMedia({
+  src,
+  alt,
+  rect,
+  showTargetRect = true,
+  dims,
+  onDims,
+}: MediaProps) {
   return (
     <>
       <img
@@ -124,7 +142,7 @@ function GameChatImagePinMedia({ src, alt, rect, dims, onDims }: MediaProps) {
           })
         }
       />
-      {rect && dims ? (
+      {rect && dims && showTargetRect ? (
         <svg
           className="pointer-events-none absolute inset-0 h-full w-full"
           viewBox={`0 0 ${dims.w} ${dims.h}`}

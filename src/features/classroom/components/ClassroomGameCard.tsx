@@ -1,6 +1,6 @@
-import { useCallback } from 'react'
+import { useCallback, useRef, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ChartLine, Ellipsis, Gamepad2 } from 'lucide-react'
+import { ChartLine, EllipsisVertical, Gamepad2, Play } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -12,7 +12,10 @@ import { COLORS, isThemeId, type ThemeId } from '@/lib/themes'
 import { lineClampClassName } from '@/lib/text-clamp'
 import { cn } from '@/lib/utils'
 
-import { buildClassroomGameAnalyticsRoute } from '../utils/classroomGameRoute.utils'
+import {
+  buildClassroomGameAnalyticsRoute,
+  buildClassroomGamePlayRoute,
+} from '../utils/classroomGameRoute.utils'
 
 const THEME_ICON_SURFACE: Record<ThemeId, string> = {
   violet: 'border-violet-500/20 bg-violet-500/10',
@@ -60,6 +63,7 @@ export function ClassroomGameCard({
   const { t } = useTranslation('features.teacher')
   const navigate = useNavigate()
   const popover = useDisclosure()
+  const ignoreNextCardClickRef = useRef(false)
 
   const resolvedTheme: ThemeId = themeId && isThemeId(themeId) ? themeId : 'blue'
   const themeLabel = themeId && isThemeId(themeId) ? COLORS[themeId].label : COLORS.blue.label
@@ -71,16 +75,48 @@ export function ClassroomGameCard({
     ? description
     : t('pages.classroomDetail.sections.gamesNoDescription')
 
-  const handleViewAnalytics = useCallback(() => {
+  const handleViewAnalytics = useCallback(
+    (event: MouseEvent) => {
+      event.stopPropagation()
+      event.preventDefault()
+      ignoreNextCardClickRef.current = true
+      popover.onClose()
+      window.requestAnimationFrame(() => {
+        navigate(buildClassroomGameAnalyticsRoute(classroomId, id))
+      })
+    },
+    [classroomId, id, navigate, popover],
+  )
+
+  const handlePlay = useCallback(() => {
     popover.onClose()
-    navigate(buildClassroomGameAnalyticsRoute(classroomId, id))
+    navigate(buildClassroomGamePlayRoute(classroomId, id))
   }, [classroomId, id, navigate, popover])
+
+  const handleCardClick = useCallback(() => {
+    if (ignoreNextCardClickRef.current) {
+      ignoreNextCardClickRef.current = false
+      return
+    }
+    handlePlay()
+  }, [handlePlay])
 
   return (
     <Card
+      onClick={handleCardClick}
+      onKeyDown={(event) => {
+        if (event.target !== event.currentTarget) return
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          handleCardClick()
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={t('pages.classroomDetail.sections.gamesPlayAriaLabel', { title: resolvedTitle })}
       className={cn(
         className,
-        'relative w-53 h-35 rounded-3xl hover:border-blue-500 duration-200 ease-in-out animate-in fade-in-0 slide-in-from-left-4',
+        'relative w-53 h-35 cursor-pointer rounded-3xl hover:border-blue-500 duration-200 ease-in-out animate-in fade-in-0 slide-in-from-left-4',
       )}
     >
       <Popover
@@ -96,13 +132,26 @@ export function ClassroomGameCard({
             aria-label={t('pages.classroomDetail.sections.gamesMenuAriaLabel')}
             onClick={(event) => event.stopPropagation()}
           >
-            <Ellipsis className="size-4" />
+            <EllipsisVertical className="size-4" />
           </Button>
         </PopoverTrigger>
         <PopoverContent
           align="end"
           className="w-52 rounded-lg bg-popover/80 p-2 backdrop-blur-md dark:bg-zinc-900/80"
         >
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start"
+            onClick={(event) => {
+              event.stopPropagation()
+              handlePlay()
+            }}
+          >
+            <Play className="size-4" />
+            {t('pages.classroomDetail.sections.gamesPlay')}
+          </Button>
           <Button
             type="button"
             variant="ghost"

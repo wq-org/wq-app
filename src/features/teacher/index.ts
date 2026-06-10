@@ -9,6 +9,7 @@ export {
   ClassroomCourseTopicLessonPublishedPage,
 } from './pages/classroom-published-course'
 export { GameRunAnalyticsPage } from './pages/game-run-analytics'
+export { ClassroomGamePlayPage } from './pages/classroom-game-play'
 export { TeacherCoursesPage } from './pages/courses'
 export { TeacherSchedulePage } from './pages/schedule'
 export { TeacherCloudPage } from './pages/cloud'

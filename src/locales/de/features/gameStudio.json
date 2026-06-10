@@ -297,6 +297,8 @@
   },
   "gameProjectCard": {
     "untitledProject": "Unbenanntes Projekt",
+    "menuAriaLabel": "Spieloptionen",
+    "viewAnalytics": "Analysen",
     "noDescription": "Keine Beschreibung",
     "imageAlt": "Spielprojekt",
     "open": "\u00d6ffnen",

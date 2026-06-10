@@ -10,11 +10,13 @@ import { GameProjectCardCompact, useCourseLinkedGames } from '@/features/game-st
 type PublishedCourseGamesSectionProps = {
   courseId: string
   onGameOpen: (gameId: string) => void
+  onGameAnalyticsOpen?: (gameId: string) => void
 }
 
 export function PublishedCourseGamesSection({
   courseId,
   onGameOpen,
+  onGameAnalyticsOpen,
 }: PublishedCourseGamesSectionProps) {
   const { t } = useTranslation('features.course')
   const { games, loading } = useCourseLinkedGames(courseId)
@@ -58,6 +60,7 @@ export function PublishedCourseGamesSection({
                 description={game.description}
                 themeId={game.themeId}
                 onView={onGameOpen}
+                onViewAnalytics={onGameAnalyticsOpen}
               />
             ))}
           </div>

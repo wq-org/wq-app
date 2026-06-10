@@ -31,7 +31,7 @@ import {
 } from '../image-pin.schema'
 import type { ImagePinSubmissionVariant, NormalizedPinPoint } from '../imagePinValidation'
 import { resolvePlayPreviewFooterMaxScore } from '../../../utils/playPreviewSessionScore'
-import { fireImagePinPreviewConfetti, useImagePinGame } from '../hooks/useImagePinGame'
+import { useImagePinGame } from '../hooks/useImagePinGame'
 import { useResolvedGameImagePinPreviewSrc } from '../hooks/useResolvedGameImagePinPreviewSrc'
 import { ImagePin } from './ImagePin'
 import { ImagePinChatInput } from './ImagePinChatInput'
@@ -178,26 +178,14 @@ export function ImagePinPreview({
     if (continuousSession) return
     if (!resolvedSession || sessionResolvedReportedRef.current) return
     sessionResolvedReportedRef.current = true
-    if (embedded && resolvedSession.shouldCelebrate) {
-      fireImagePinPreviewConfetti()
-    }
     onSessionResolved?.({ score: resolvedSession.score })
-  }, [continuousSession, embedded, onSessionResolved, resolvedSession])
+  }, [continuousSession, onSessionResolved, resolvedSession])
 
   useEffect(() => {
     if (!isSessionComplete || sessionCompleteReportedRef.current) return
     sessionCompleteReportedRef.current = true
-    if (continuousSession && resolvedSession?.shouldCelebrate) {
-      fireImagePinPreviewConfetti()
-    }
     onSessionComplete?.({ score: earnedScore })
-  }, [
-    continuousSession,
-    earnedScore,
-    isSessionComplete,
-    onSessionComplete,
-    resolvedSession?.shouldCelebrate,
-  ])
+  }, [continuousSession, earnedScore, isSessionComplete, onSessionComplete])
 
   const prompts = [
     {

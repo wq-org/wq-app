@@ -6,9 +6,11 @@ export type { ClassroomCardListItem } from './components/ClassroomCardList'
 export { ClassroomCoursesPanel } from './components/ClassroomCoursesPanel'
 export { ClassroomGameCard } from './components/ClassroomGameCard'
 export { ClassroomGameCardList } from './components/ClassroomGameCardList'
+export { ClassroomGamePlayPanel } from './components/ClassroomGamePlayPanel'
 export { ClassroomGamesPanel } from './components/ClassroomGamesPanel'
 export { ClassroomStudentsPanel } from './components/ClassroomStudentsPanel'
 export { GameRunAnalyticsDetailPanel } from './components/GameRunAnalyticsDetail'
+export { GameRunAnalyticsPanel } from './components/GameRunAnalyticsPanel'
 export { GameRunAnalyticsRunCard } from './components/GameRunAnalyticsRunCard'
 export {
   getClassroomDeliveredGame,
@@ -18,7 +20,11 @@ export {
 export { useClassroomGames } from './hooks/useClassroomGames'
 export { useClassroomDetail } from './hooks/useClassroomDetail'
 export { useGameRunAnalytics, useGameRunAnalyticsDetail } from './hooks/useGameRunAnalytics'
-export { buildClassroomGameAnalyticsRoute } from './utils/classroomGameRoute.utils'
+export {
+  buildClassroomGameAnalyticsRoute,
+  buildClassroomGamePlayRoute,
+  buildStudentClassroomGameHistoryRoute,
+} from './utils/classroomGameRoute.utils'
 export { useTeacherClassrooms } from './hooks/useTeacherClassrooms'
 export type { ClassroomSummary, TeacherClassroomListRow } from './types/classroom.types'
 

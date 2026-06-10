@@ -1,9 +1,12 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useRef, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Gamepad2 } from 'lucide-react'
+import { ChartBar, EllipsisVertical, Gamepad2 } from 'lucide-react'
 
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Text } from '@/components/ui/text'
+import { useDisclosure } from '@/hooks/use-disclosure'
 import { COLORS, isThemeId, type ThemeId } from '@/lib/themes'
 import { lineClampClassName } from '@/lib/text-clamp'
 import { cn } from '@/lib/utils'
@@ -42,8 +45,11 @@ export function GameProjectCardCompact({
   themeId,
   className,
   onView = () => {},
+  onViewAnalytics,
 }: GameProjectCardCompactProps) {
   const { t } = useTranslation('features.gameStudio')
+  const popover = useDisclosure()
+  const ignoreNextCardClickRef = useRef(false)
   const resolvedTheme: ThemeId = themeId && isThemeId(themeId) ? themeId : 'blue'
 
   const themeLabel = useMemo(
@@ -58,18 +64,72 @@ export function GameProjectCardCompact({
   const resolvedDescription = description?.trim() ? description : t('gameProjectCard.noDescription')
 
   const handleClick = useCallback(() => {
+    if (ignoreNextCardClickRef.current) {
+      ignoreNextCardClickRef.current = false
+      return
+    }
     onView(id)
   }, [id, onView])
+
+  const handleViewAnalytics = useCallback(
+    (event: MouseEvent) => {
+      event.stopPropagation()
+      event.preventDefault()
+      ignoreNextCardClickRef.current = true
+      popover.onClose()
+      window.requestAnimationFrame(() => {
+        onViewAnalytics?.(id)
+      })
+    },
+    [id, onViewAnalytics, popover],
+  )
 
   return (
     <Card
       onClick={handleClick}
       className={cn(
         className,
-        'w-53 h-35 rounded-3xl hover:border-blue-500 duration-200 ease-in-out cursor animate-in fade-in-0 slide-in-from-left-4',
+        'relative w-53 h-35 rounded-3xl hover:border-blue-500 duration-200 ease-in-out cursor animate-in fade-in-0 slide-in-from-left-4',
       )}
     >
-      <CardHeader className="flex flex-row items-center gap-2 space-y-0">
+      {onViewAnalytics ? (
+        <Popover
+          open={popover.isOpen}
+          onOpenChange={popover.onToggle}
+        >
+          <PopoverTrigger asChild>
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              className="absolute top-3 right-3 z-10 size-8 rounded-full bg-background/80 shadow-sm backdrop-blur-sm hover:bg-background"
+              aria-label={t('gameProjectCard.menuAriaLabel')}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <EllipsisVertical className="size-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            align="end"
+            className="w-52 rounded-lg bg-popover/80 p-2 backdrop-blur-md dark:bg-zinc-900/80"
+          >
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start"
+              onClick={handleViewAnalytics}
+            >
+              <ChartBar className="size-4" />
+              {t('gameProjectCard.viewAnalytics')}
+            </Button>
+          </PopoverContent>
+        </Popover>
+      ) : null}
+
+      <CardHeader
+        className={cn('flex flex-row items-center gap-2 space-y-0', onViewAnalytics && 'pr-12')}
+      >
         <div
           className={cn('rounded-lg border p-2', iconSurfaceClass)}
           aria-label={themeLabel}
