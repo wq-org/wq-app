@@ -12,6 +12,7 @@ type TeacherGameProject = {
   themeId?: ThemeId
   version?: number
   status: GameProjectStatus
+  linkedCourseIds: string[]
 }
 
 type UseTeacherGameProjectsResult = {
@@ -43,8 +44,9 @@ export function useTeacherGameProjects(teacherId?: string): UseTeacherGameProjec
         title: game.title,
         description: game.description ?? undefined,
         themeId: game.theme_id,
-        version: game.version ?? undefined,
+        version: game.published_version ?? 1,
         status: (game.status === 'published' ? 'published' : 'draft') as 'draft' | 'published',
+        linkedCourseIds: (game.game_course_links ?? []).map((l) => l.course_id),
       }))
 
       setProjects(mapped)

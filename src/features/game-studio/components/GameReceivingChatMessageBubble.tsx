@@ -1,3 +1,5 @@
+'use client'
+
 import {
   chatBubbleEnterAnimation,
   chatBubbleVariants,
@@ -12,6 +14,7 @@ import type { GameChatMessageBubbleProps } from './game-chat.types'
 export function GameReceivingChatMessageBubble({
   text,
   time,
+  layout = 'default',
   image,
   imageChildren,
   className,
@@ -27,9 +30,19 @@ export function GameReceivingChatMessageBubble({
     messageId != null ? `${messageId}-${resolvedStatus}` : `${text}-${time}-${resolvedStatus}`
   const showImage = Boolean(image) && resolvedStatus !== 'loading'
 
+  const isPlayLayout = layout === 'play'
+
   return (
-    <div className={cn('flex max-w-[88%] items-end justify-end gap-2', className)}>
-      <div className="flex min-w-0 max-w-[78%] flex-col items-end">
+    <div
+      className={cn(
+        'flex items-end justify-end gap-2',
+        isPlayLayout ? 'w-full max-w-[92%]' : 'max-w-[88%]',
+        className,
+      )}
+    >
+      <div
+        className={cn('flex min-w-0 flex-col items-end', isPlayLayout ? 'w-full' : 'max-w-[78%]')}
+      >
         {showImage && image ? (
           <GameChatImage
             {...image}

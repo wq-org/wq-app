@@ -13,18 +13,13 @@ import type { ThemeId } from '@/lib/themes'
 import { FieldInput } from '@/components/ui/field-input'
 import { FieldTextarea } from '@/components/ui/field-textarea'
 import { Spinner } from '@/components/ui/spinner'
-import { GameStudioVersionsPopover } from './GameStudioVersionsPopover'
-
 export function GameSettingsDrawer({
   open,
   onOpenChange,
   title: initialTitle = '',
   description: initialDescription = '',
   themeId: initialThemeId = 'blue',
-  version = 1,
-  rollbackVersions = [],
   onSave,
-  onRollback,
   onDelete,
 }: SettingsDrawerProps) {
   const { t } = useTranslation('features.gameStudio')
@@ -64,19 +59,6 @@ export function GameSettingsDrawer({
     }
   }
 
-  const handleRollback = async (versionId: string) => {
-    if (!onRollback) return
-
-    try {
-      await onRollback(versionId)
-      toast.success(t('settingsDrawer.toasts.rolledBack'))
-      handleClose()
-    } catch (err) {
-      console.error(err)
-      toast.error(t('settingsDrawer.toasts.rollbackFailed'))
-    }
-  }
-
   const handleDelete = () => {
     if (!onDelete) return
 
@@ -106,12 +88,6 @@ export function GameSettingsDrawer({
         </DrawerHeader>
         <div className="flex h-full min-h-0 flex-col">
           <div className="min-h-0 flex-1 space-y-6 overflow-y-auto p-4">
-            <GameStudioVersionsPopover
-              version={version}
-              rollbackVersions={rollbackVersions}
-              onRollback={handleRollback}
-            />
-
             <FieldInput
               id="project-title"
               value={localTitle}

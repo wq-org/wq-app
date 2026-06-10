@@ -21,6 +21,7 @@ type PublishedCourseTopicListProps = {
   themeId?: ThemeId
   onTopicView: (topicId: string) => void
   onGameOpen: (gameId: string) => void
+  onGameAnalyticsOpen?: (gameId: string) => void
 }
 
 export function PublishedCourseTopicList({
@@ -31,6 +32,7 @@ export function PublishedCourseTopicList({
   themeId,
   onTopicView,
   onGameOpen,
+  onGameAnalyticsOpen,
 }: PublishedCourseTopicListProps) {
   const { t } = useTranslation('features.course')
   const [searchQuery, setSearchQuery] = useState('')
@@ -80,6 +82,7 @@ export function PublishedCourseTopicList({
       <PublishedCourseGamesSection
         courseId={courseId}
         onGameOpen={onGameOpen}
+        onGameAnalyticsOpen={onGameAnalyticsOpen}
       />
 
       {topics.length === 0 ? (

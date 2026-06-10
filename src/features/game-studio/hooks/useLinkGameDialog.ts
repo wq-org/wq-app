@@ -4,13 +4,13 @@ import { toast } from 'sonner'
 
 import { useUser } from '@/contexts/user'
 
-import { updateGameForStudio } from '../api/gameStudioApi'
+import { linkGameToCourse } from '../api/gameStudioApi'
 import { useTeacherPublishedCourses } from './useTeacherPublishedCourses'
 
 type UseLinkGameDialogArgs = {
   gameId: string
   open: boolean
-  linkedCourseId?: string | null
+  linkedCourseIds?: string[]
   onOpenChange: (open: boolean) => void
   onLinked?: () => void
 }
@@ -18,7 +18,7 @@ type UseLinkGameDialogArgs = {
 export function useLinkGameDialog({
   gameId,
   open,
-  linkedCourseId,
+  linkedCourseIds = [],
   onOpenChange,
   onLinked,
 }: UseLinkGameDialogArgs) {
@@ -27,32 +27,37 @@ export function useLinkGameDialog({
   const teacherId = getUserId()
 
   const { courses, loading } = useTeacherPublishedCourses(teacherId ?? undefined, open)
-  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null)
+  const [selectedCourseIds, setSelectedCourseIds] = useState<string[]>([])
   const [linking, setLinking] = useState(false)
 
   useEffect(() => {
     if (!open) {
-      setSelectedCourseId(null)
+      setSelectedCourseIds([])
       setLinking(false)
       return
     }
-
-    setSelectedCourseId(linkedCourseId ?? null)
-  }, [open, linkedCourseId])
+    setSelectedCourseIds([...linkedCourseIds])
+  }, [open]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const selectCourse = useCallback((courseId: string, checked: boolean) => {
-    setSelectedCourseId(checked ? courseId : null)
+    setSelectedCourseIds((prev) =>
+      checked
+        ? prev.includes(courseId)
+          ? prev
+          : [...prev, courseId]
+        : prev.filter((id) => id !== courseId),
+    )
   }, [])
 
-  const canConfirm =
-    Boolean(selectedCourseId) && selectedCourseId !== linkedCourseId && !linking && !loading
+  const newlySelected = selectedCourseIds.filter((id) => !linkedCourseIds.includes(id))
+  const canConfirm = newlySelected.length > 0 && !linking && !loading
 
   const handleConfirm = useCallback(async () => {
-    if (!selectedCourseId || !canConfirm) return
+    if (newlySelected.length === 0 || !canConfirm) return
 
     setLinking(true)
     try {
-      await updateGameForStudio(gameId, { course_id: selectedCourseId })
+      await Promise.all(newlySelected.map((courseId) => linkGameToCourse(gameId, courseId)))
       toast.success(t('linkGameDialog.toasts.linkedSuccess'))
       onOpenChange(false)
       onLinked?.()
@@ -62,12 +67,12 @@ export function useLinkGameDialog({
     } finally {
       setLinking(false)
     }
-  }, [canConfirm, gameId, onLinked, onOpenChange, selectedCourseId, t])
+  }, [canConfirm, gameId, newlySelected, onLinked, onOpenChange, t])
 
   return {
     courses,
     loading,
-    selectedCourseId,
+    selectedCourseIds,
     linking,
     canConfirm,
     selectCourse,

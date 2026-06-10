@@ -18,3 +18,4 @@ export {
   StudentPublishedLessonPage,
   StudentPublishedTopicPage,
 } from './pages/published-course'
+export { StudentGameHistoryPage } from './pages/game-history'

@@ -6,35 +6,38 @@ import { useLocation, useParams } from 'react-router-dom'
 import { AppShell } from '@/components/layout'
 import { DashboardSection } from '@/features/dashboard'
 import { Text } from '@/components/ui/text'
-
-import { ClassroomCoursesPanel } from '../components/ClassroomCoursesPanel'
-import { ClassroomStudentsPanel } from '../components/ClassroomStudentsPanel'
-import { useClassroomDetail } from '../hooks/useClassroomDetail'
+import {
+  ClassroomCoursesPanel,
+  ClassroomGamesPanel,
+  ClassroomStudentsPanel,
+  useClassroomDetail,
+} from '@/features/classroom'
 
 type ClassroomLocationState = {
   name?: string
 }
 
 type SectionSpec = {
-  id: 'students' | 'courses'
+  id: 'courses' | 'games' | 'schedule' | 'students'
   icon: LucideIcon
   titleKey: string
 }
 
 const CLASSROOM_SECTIONS: SectionSpec[] = [
   {
-    id: 'students',
-    icon: Users,
-    titleKey: 'pages.classroomDetail.sections.studentsTitle',
-  },
-  {
     id: 'courses',
     icon: BookOpen,
     titleKey: 'pages.classroomDetail.sections.coursesTitle',
   },
+
+  {
+    id: 'students',
+    icon: Users,
+    titleKey: 'pages.classroomDetail.sections.studentsTitle',
+  },
 ]
 
-export function ClassroomDetailPage() {
+export function TeacherClassroomDetailPage() {
   const { t } = useTranslation('features.teacher')
   const { classroomId } = useParams<{ classroomId: string }>()
   const location = useLocation()
@@ -116,11 +119,24 @@ export function ClassroomDetailPage() {
                   classroomId={classroomId}
                   parentLoading={loading}
                 />
-              ) : (
+              ) : spec.id === 'courses' ? (
                 <ClassroomCoursesPanel
                   classroomId={classroomId}
                   parentLoading={loading}
                 />
+              ) : spec.id === 'games' ? (
+                <ClassroomGamesPanel
+                  classroomId={classroomId}
+                  parentLoading={loading}
+                />
+              ) : (
+                <Text
+                  as="p"
+                  variant="body"
+                  className="text-sm text-muted-foreground"
+                >
+                  {t('pages.classroomDetail.sections.schedulePlaceholder')}
+                </Text>
               )}
             </DashboardSection>
           ))}
@@ -129,3 +145,6 @@ export function ClassroomDetailPage() {
     </AppShell>
   )
 }
+
+/** @deprecated Use TeacherClassroomDetailPage */
+export const TeacherClassroomPage = TeacherClassroomDetailPage

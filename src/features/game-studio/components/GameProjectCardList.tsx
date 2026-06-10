@@ -53,7 +53,7 @@ export function GameProjectCardList({
             themeId={project.themeId}
             version={project.version}
             status={project.status}
-            linkedCourseId={project.linkedCourseId}
+            linkedCourseIds={project.linkedCourseIds}
             onOpen={() => handleOpen(project.id)}
             onCourseLinkChanged={onCourseLinkChanged}
           />

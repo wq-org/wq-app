@@ -33,7 +33,7 @@ import {
   OPEN_COMMAND_UPLOAD_EVENT,
   type OpenCommandAddEventDetail,
 } from '../constants/commandPaletteEvents'
-import { isGameStudioPreviewPath } from '../utils/isGameStudioPreviewPath'
+import { isCommandPaletteHiddenPath } from '../utils/isCommandPaletteHiddenPath'
 
 const activeStyles = {
   text: 'text-blue-500',
@@ -111,7 +111,7 @@ export function CommandPalette({
   const navigate = useNavigate()
   const { getRole } = useUser()
   const { t } = useTranslation('features.commandPalette')
-  const isGamePreview = isGameStudioPreviewPath(location.pathname)
+  const isGamePreview = isCommandPaletteHiddenPath(location.pathname)
 
   const normalizedContextRole = normalizeCommandRole(commandBarContext)
   const normalizedUserRole = normalizeCommandRole(getRole())

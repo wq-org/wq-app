@@ -68,6 +68,17 @@ export {
 
 // ---- Player runtime ----
 export {
+  GamePreviewPlayFlow,
+  type GamePreviewPlayFlowProps,
+  type GamePlaySessionResult,
+  type GamePlaySessionSnapshot,
+} from './components/GamePreviewPlayFlow'
+export {
+  buildPlaySessionChatHistory,
+  type GamePlayChatMessage,
+} from './utils/buildPlaySessionChatHistory'
+export { computePlayPreviewSessionMaxScore } from './utils/playPreviewSessionScore'
+export {
   GameChatPlayer,
   GameChatMessage,
   useGameChatSession,
@@ -89,6 +100,14 @@ export type {
   SerializableEdge,
   SerializableNode,
 } from './types/game-studio.types'
+export type {
+  GameVersionStatus,
+  GameVersionRow,
+  PublishedGameVersion,
+  GameLifecycleState,
+  GameDraftDiff,
+  GameDraftDiffSummary,
+} from './types/game-version.types'
 
 // ---- API ----
 export type { GameForStudio, UpdateGameForStudioPayload } from './api/gameStudioApi'
@@ -98,12 +117,35 @@ export {
   publishGame,
   unpublishGame,
   getGameForStudio,
+  getLatestPublishedGameVersion,
+  archiveGame,
+  softDeleteGame,
   getTeacherFlowGames,
   getPublishedGamesForCourse,
   getPublishedGamesFromFollowedTeachers,
+  linkGameToCourse,
+  unlinkGameFromCourse,
+  getGameLinkedCourseIds,
 } from './api/gameStudioApi'
+export { publishGameDraft } from './api/gamePublishApi'
+export type { PublishGameResult } from './api/gamePublishApi'
+export type { GameDraftSnapshot } from './api/gameReleaseApi'
+export { fetchGameDraftSnapshot, fetchLatestPublishedGameSnapshot } from './api/gameReleaseApi'
+export {
+  getLatestPublishedGameVersionId,
+  getPublishedGameVersion,
+  getDeliveredGamesForCourse,
+  countPublishedDeliveriesForGame,
+} from './api/gameVersionApi'
 export { useTeacherGameProjects } from './hooks/useTeacherGameProjects'
 export { useCourseLinkedGames } from './hooks/useCourseLinkedGames'
+export { useGameReleaseStatus } from './hooks/useGameReleaseStatus'
+export {
+  resolveGameLifecycleState,
+  buildGameReleaseDiff,
+  formatGamePublishedAt,
+} from './utils/gameLifecycle.utils'
+export { toPublishedGameVersion } from './utils/gameVersion.utils'
 
 // ---- Flow-traversal utilities ----
 export type {

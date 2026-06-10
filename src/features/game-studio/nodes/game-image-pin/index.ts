@@ -5,7 +5,9 @@ import type {
   GameNodePreviewComponent,
   GameNodeRegistryEntry,
 } from '../_registry/game-node-registry.types'
-import { ImagePinDialog, ImagePinNode, ImagePinPreview } from './components'
+import { ImagePinDialog } from './components/ImagePinDialog'
+import { ImagePinNode } from './components/ImagePinNode'
+import { ImagePinPreview } from './components/ImagePinPreview'
 import {
   GAME_IMAGE_PIN_TYPE,
   gameImagePinDefaultConfig,

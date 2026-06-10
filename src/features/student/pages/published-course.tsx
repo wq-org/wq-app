@@ -15,6 +15,7 @@ import {
   findPublishedTopicInTree,
   usePublishedCourseVersion,
 } from '@/features/course'
+import { ClassroomGamePlayPanel, buildStudentClassroomGameHistoryRoute } from '@/features/classroom'
 
 function useTrimmedStudentPublishedParams() {
   const { classroomId, courseId, topicId, lessonId } = useParams<{
@@ -50,6 +51,11 @@ export function StudentPublishedCoursePage() {
   const handleGameOpen = (gameId: string) => {
     if (!classroomId || !courseId) return
     navigate(buildStudentPublishedGameRoute(classroomId, courseId, gameId))
+  }
+
+  const handleGameHistoryOpen = (gameId: string) => {
+    if (!classroomId) return
+    navigate(buildStudentClassroomGameHistoryRoute(classroomId, gameId))
   }
 
   if (!classroomId || !courseId) {
@@ -106,6 +112,7 @@ export function StudentPublishedCoursePage() {
         classroomContextLabel={t('publishedCourse.contextLabel')}
         onTopicView={handleTopicView}
         onGameOpen={handleGameOpen}
+        onGameAnalyticsOpen={handleGameHistoryOpen}
         onVersionChange={() => undefined}
       />
     </PublishedCoursePageShell>
@@ -261,12 +268,37 @@ export function StudentPublishedLessonPage() {
 }
 
 export function StudentPublishedCourseGamePage() {
+  const { t } = useTranslation('features.student')
+  const { classroomId } = useTrimmedStudentPublishedParams()
+  const { gameId } = useParams<{ gameId: string }>()
+
+  const trimmedGameId = gameId?.trim()
+
+  if (!classroomId || !trimmedGameId) {
+    return (
+      <PublishedCoursePageShell role="student">
+        <Text
+          as="p"
+          variant="body"
+          muted
+        >
+          {t('publishedCourse.invalidLink')}
+        </Text>
+      </PublishedCoursePageShell>
+    )
+  }
+
   return (
     <PublishedCoursePageShell
       role="student"
       layout="fullBleed"
     >
-      {null}
+      <div className="flex h-[calc(100dvh-5rem)] min-h-0 flex-col px-4 py-4">
+        <ClassroomGamePlayPanel
+          classroomId={classroomId}
+          gameId={trimmedGameId}
+        />
+      </div>
     </PublishedCoursePageShell>
   )
 }

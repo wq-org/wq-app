@@ -16,7 +16,7 @@ export function GameProjectCard({
   themeId,
   version,
   status = 'draft',
-  linkedCourseId = null,
+  linkedCourseIds = [],
   onOpen,
   onCourseLinkChanged,
 }: GameProjectCardProps) {
@@ -54,7 +54,7 @@ export function GameProjectCard({
         </Badge>
         <GameProjectCardCourseMenu
           gameId={id}
-          linkedCourseId={linkedCourseId}
+          linkedCourseIds={linkedCourseIds}
           status={status}
           onCourseLinkChanged={onCourseLinkChanged}
         />

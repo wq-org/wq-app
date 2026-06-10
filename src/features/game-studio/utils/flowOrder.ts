@@ -54,6 +54,8 @@ export interface SessionNodeResult {
   wrong: number
   score: number
   outcome: 'correct' | 'wrong'
+  /** False when the player left before reaching this node; omitted/true when played. */
+  played?: boolean
   /** Set when a compound If/Else preview segment completes (branch taken). */
   ifElseBranch?: 'A' | 'B'
 }

@@ -12,14 +12,14 @@ import { UnlinkGameDialog } from './UnlinkGameDialog'
 
 type GameProjectCardCourseMenuProps = {
   gameId: string
-  linkedCourseId?: string | null
+  linkedCourseIds?: string[]
   status?: 'draft' | 'published'
   onCourseLinkChanged?: () => void
 }
 
 export function GameProjectCardCourseMenu({
   gameId,
-  linkedCourseId = null,
+  linkedCourseIds = [],
   status = 'draft',
   onCourseLinkChanged,
 }: GameProjectCardCourseMenuProps) {
@@ -80,7 +80,7 @@ export function GameProjectCardCourseMenu({
               variant="ghost"
               size="sm"
               className="justify-start"
-              disabled={!linkedCourseId}
+              disabled={linkedCourseIds.length === 0}
               onClick={handleOpenUnlinkDialog}
             >
               <Unlink className="size-4" />
@@ -92,14 +92,14 @@ export function GameProjectCardCourseMenu({
 
       <LinkGameDialog
         gameId={gameId}
-        linkedCourseId={linkedCourseId}
+        linkedCourseIds={linkedCourseIds}
         open={linkDialog.isOpen}
         onOpenChange={linkDialog.onToggle}
         onLinked={onCourseLinkChanged}
       />
       <UnlinkGameDialog
         gameId={gameId}
-        linkedCourseId={linkedCourseId}
+        linkedCourseIds={linkedCourseIds}
         open={unlinkDialog.isOpen}
         onOpenChange={unlinkDialog.onToggle}
         onUnlinked={onCourseLinkChanged}

@@ -33,17 +33,11 @@ import { GAME_IF_ELSE_TYPE } from '../nodes/game-if-else/game-if-else.schema'
 import { GAME_IMAGE_PIN_TYPE } from '../nodes/game-image-pin/image-pin.schema'
 import { GAME_DRAG_DROP_MATH_TYPE } from '../nodes/game-dnd-math'
 import { GAME_OPEN_QUESTION_TYPE } from '../nodes/open-question/constants'
-import {
-  getGameForStudio,
-  publishGame,
-  unpublishGame,
-  updateGameForStudio,
-} from '../api/gameStudioApi'
+import { publishGameDraft } from '../api/gamePublishApi'
+import { getGameForStudio, linkGameToCourse, updateGameForStudio } from '../api/gameStudioApi'
 import { collectImagePinGalleryImages } from '../utils/collectImagePinGalleryImages'
 import { saveGameStudioDraft } from '../utils/saveGameStudioDraft'
-import { GameSettingsDrawer } from '../components/GameSettingsDrawer'
-import { GamePublishDrawer } from '../components/GamePublishDrawer'
-import { deleteGame } from '@/features/command-palette'
+import { GameEditorSettingsPanel } from '../components/GameEditorSettingsPanel'
 import { GameEditorSidebar } from './GameEditorSidebar'
 import { GameEditorToolbar } from './GameEditorToolbar'
 import { isGameNodeRegistryEntryEnabled } from '../utils/isInstitutionFeatureEnabledForKey'
@@ -130,11 +124,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   const [openDialogNodeId, setOpenDialogNodeId] = useState<string | null>(null)
   const [gameTitle, setGameTitle] = useState<string>(DEFAULT_TITLE)
   const [gameThemeId, setGameThemeId] = useState<ThemeId>('blue')
-  const [projectVersion, setProjectVersion] = useState<number>(1)
-  const [gameStatus, setGameStatus] = useState<'draft' | 'published'>('draft')
-  const [gameCourseId, setGameCourseId] = useState<string | null>(null)
-  const [isSettingsDrawerOpen, setIsSettingsDrawerOpen] = useState(false)
-  const [isPublishDrawerOpen, setIsPublishDrawerOpen] = useState(false)
+  const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false)
   const [interactionMode, setInteractionMode] = useState<'pan' | 'select'>('select')
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
@@ -170,9 +160,6 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
 
         setGameTitle(game.title || DEFAULT_TITLE)
         setGameThemeId(game.theme_id || 'blue')
-        setProjectVersion(game.version ?? 1)
-        setGameStatus(game.status === 'published' ? 'published' : 'draft')
-        setGameCourseId(game.course_id ?? null)
         institutionIdRef.current = game.institution_id ?? null
 
         const config = game.game_content
@@ -561,12 +548,10 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       })
 
       if (status === 'publish') {
-        if (options?.courseId !== undefined) {
+        if (options?.courseId) {
           await updateGameForStudio(projectId, { course_id: options.courseId })
-          setGameCourseId(options.courseId)
         }
-        await publishGame(projectId)
-        setGameStatus('published')
+        await publishGameDraft(projectId, options?.courseId ?? null)
       }
     },
     [projectId, getUserId, nodes, edges, gameTitle, gameThemeId],
@@ -583,31 +568,15 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   }, [persist])
 
   const handlePublish = useCallback(
-    async (options?: { courseId?: string | null }) => {
-      try {
-        await persist('publish', options)
-      } catch (err) {
-        console.error(err)
-        throw err
+    async (courseIds: string[]) => {
+      const primaryCourseId = courseIds[0] ?? null
+      await persist('publish', { courseId: primaryCourseId })
+      if (projectId && courseIds.length > 0) {
+        await Promise.all(courseIds.map((id) => linkGameToCourse(projectId, id)))
       }
     },
-    [persist],
+    [persist, projectId],
   )
-
-  const handleUnpublish = useCallback(async () => {
-    if (!projectId) {
-      toast.error('Open a project from Game Studio to unpublish.')
-      return
-    }
-    try {
-      await unpublishGame(projectId)
-      setGameStatus('draft')
-      toast.success('Project unpublished.')
-    } catch (err) {
-      console.error(err)
-      toast.error('Failed to unpublish project.')
-    }
-  }, [projectId])
 
   const handlePreview = useCallback(async () => {
     if (!projectId) {
@@ -658,24 +627,9 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
     [projectId],
   )
 
-  const handleSettingsRollback = useCallback(async (versionId: string) => {
-    toast.info(`Rolling back to version ${versionId}`)
-  }, [])
-
-  const handleSettingsDelete = useCallback(async () => {
-    if (!projectId) {
-      toast.error('No project to delete')
-      return
-    }
-    try {
-      await deleteGame(projectId)
-      toast.success('Project deleted')
-      navigate('/teacher/game-studio')
-    } catch (err) {
-      console.error(err)
-      toast.error('Failed to delete project')
-    }
-  }, [projectId, navigate])
+  const handleSettingsDelete = useCallback(() => {
+    navigate('/teacher/game-studio')
+  }, [navigate])
 
   const handlePublishFocusNode = useCallback((nodeId: string) => {
     setNodes((prev) => prev.map((node) => ({ ...node, selected: node.id === nodeId })))
@@ -855,10 +809,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
             onSave={handleSave}
             onPreview={handlePreview}
             onLeave={handleLeave}
-            onPublish={() => setIsPublishDrawerOpen(true)}
-            onUnpublish={handleUnpublish}
-            isPublished={gameStatus === 'published'}
-            onOpenSettings={() => setIsSettingsDrawerOpen(true)}
+            onOpenSettings={() => setIsSettingsPanelOpen(true)}
           />
 
           {dimensions.width > 0 && dimensions.height > 0 && (
@@ -891,10 +842,11 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         </div>
       </div>
 
-      <GameSettingsDrawer
-        open={isSettingsDrawerOpen}
-        onOpenChange={setIsSettingsDrawerOpen}
+      <GameEditorSettingsPanel
+        open={isSettingsPanelOpen}
+        onClose={() => setIsSettingsPanelOpen(false)}
         projectId={projectId}
+        teacherId={getUserId() ?? undefined}
         title={gameTitle}
         description={
           (
@@ -903,20 +855,11 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
               | undefined
           )?.description ?? ''
         }
-        version={projectVersion}
-        rollbackVersions={[]}
-        onSave={handleSettingsSave}
         themeId={gameThemeId}
-        onRollback={handleSettingsRollback}
-        onDelete={handleSettingsDelete}
-      />
-      <GamePublishDrawer
-        open={isPublishDrawerOpen}
-        onOpenChange={setIsPublishDrawerOpen}
         nodes={nodes}
         edges={edges}
-        teacherId={getUserId() ?? undefined}
-        linkedCourseId={gameCourseId}
+        onSave={handleSettingsSave}
+        onDelete={handleSettingsDelete}
         onPublish={handlePublish}
         onFocusNode={handlePublishFocusNode}
       />

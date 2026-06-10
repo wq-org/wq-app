@@ -4,12 +4,12 @@ import { toast } from 'sonner'
 
 import { getCourseById, type Course } from '@/features/course'
 
-import { updateGameForStudio } from '../api/gameStudioApi'
+import { getGameLinkedCourseIds, unlinkGameFromCourse } from '../api/gameStudioApi'
 
 type UseUnlinkGameDialogArgs = {
   gameId: string
   open: boolean
-  linkedCourseId?: string | null
+  linkedCourseIds?: string[]
   onOpenChange: (open: boolean) => void
   onUnlinked?: () => void
 }
@@ -17,62 +17,72 @@ type UseUnlinkGameDialogArgs = {
 export function useUnlinkGameDialog({
   gameId,
   open,
-  linkedCourseId,
+  linkedCourseIds = [],
   onOpenChange,
   onUnlinked,
 }: UseUnlinkGameDialogArgs) {
   const { t } = useTranslation('features.gameStudio')
-  const [linkedCourse, setLinkedCourse] = useState<Course | null>(null)
+  const [linkedCourses, setLinkedCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(false)
-  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null)
+  const [selectedCourseIds, setSelectedCourseIds] = useState<string[]>([])
   const [unlinking, setUnlinking] = useState(false)
 
   useEffect(() => {
     if (!open) {
-      setLinkedCourse(null)
-      setSelectedCourseId(null)
+      setLinkedCourses([])
+      setSelectedCourseIds([])
       setUnlinking(false)
       setLoading(false)
       return
     }
 
-    if (!linkedCourseId) {
-      setLinkedCourse(null)
-      setSelectedCourseId(null)
-      return
-    }
-
-    setSelectedCourseId(linkedCourseId)
     setLoading(true)
 
-    getCourseById(linkedCourseId)
-      .then((course) => {
-        setLinkedCourse(course)
+    const resolveIds =
+      linkedCourseIds.length > 0 ? Promise.resolve(linkedCourseIds) : getGameLinkedCourseIds(gameId)
+
+    resolveIds
+      .then((ids) => {
+        if (ids.length === 0) {
+          setLinkedCourses([])
+          setSelectedCourseIds([])
+          setLoading(false)
+          return
+        }
+        return Promise.all(ids.map((id) => getCourseById(id).catch(() => null))).then((results) => {
+          const courses = results.filter((c): c is Course => c !== null)
+          setLinkedCourses(courses)
+          setLoading(false)
+        })
       })
       .catch((error) => {
-        console.error('[useUnlinkGameDialog] load linked course failed', error)
-        setLinkedCourse(null)
+        console.error('[useUnlinkGameDialog] load linked courses failed', error)
+        setLinkedCourses([])
+        setLoading(false)
         toast.error(t('unlinkGameDialog.toasts.loadFailed'))
       })
-      .finally(() => {
-        setLoading(false)
-      })
-  }, [linkedCourseId, open, t])
+  }, [open]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const courses = useMemo(() => (linkedCourse ? [linkedCourse] : []), [linkedCourse])
+  const courses = useMemo(() => linkedCourses, [linkedCourses])
 
   const selectCourse = useCallback((courseId: string, checked: boolean) => {
-    setSelectedCourseId(checked ? courseId : null)
+    setSelectedCourseIds((prev) =>
+      checked
+        ? prev.includes(courseId)
+          ? prev
+          : [...prev, courseId]
+        : prev.filter((id) => id !== courseId),
+    )
   }, [])
 
-  const canConfirm = Boolean(selectedCourseId) && !unlinking && !loading
+  const canConfirm = selectedCourseIds.length > 0 && !unlinking && !loading
 
   const handleConfirm = useCallback(async () => {
-    if (!selectedCourseId || !canConfirm) return
+    if (selectedCourseIds.length === 0 || !canConfirm) return
 
     setUnlinking(true)
     try {
-      await updateGameForStudio(gameId, { course_id: null })
+      await Promise.all(selectedCourseIds.map((courseId) => unlinkGameFromCourse(gameId, courseId)))
       toast.success(t('unlinkGameDialog.toasts.unlinkedSuccess'))
       onOpenChange(false)
       onUnlinked?.()
@@ -82,12 +92,12 @@ export function useUnlinkGameDialog({
     } finally {
       setUnlinking(false)
     }
-  }, [canConfirm, gameId, onOpenChange, onUnlinked, selectedCourseId, t])
+  }, [canConfirm, gameId, onOpenChange, onUnlinked, selectedCourseIds, t])
 
   return {
     courses,
     loading,
-    selectedCourseId,
+    selectedCourseIds,
     unlinking,
     canConfirm,
     selectCourse,

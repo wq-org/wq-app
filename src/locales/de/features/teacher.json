@@ -42,6 +42,7 @@
     },
     "classroomDetail": {
       "titleFallback": "Klassenraum",
+      "backToDashboard": "Zurück zum Dashboard",
       "invalidId": "Dieser Klassenraum-Link ist ungültig.",
       "loading": "Klassenraum wird geladen …",
       "loadError": "Klassenraum-Details konnten nicht geladen werden.",
@@ -67,14 +68,92 @@
         "coursesSearchLabel": "Kurse durchsuchen",
         "coursesSearchPlaceholder": "Nach Kurstitel suchen …",
         "coursesEmpty": "Für diesen Klassenraum wurden noch keine Kurse veröffentlicht.",
-        "coursesNoMatches": "Keine Kurse entsprechen deiner Suche."
+        "coursesNoMatches": "Keine Kurse entsprechen deiner Suche.",
+        "gamesTitle": "Spiele",
+        "gamesLoading": "Spiele werden geladen …",
+        "gamesLoadError": "Spiele für diesen Klassenraum konnten nicht geladen werden.",
+        "gamesSearchLabel": "Spiele durchsuchen",
+        "gamesSearchPlaceholder": "Nach Spieltitel suchen …",
+        "gamesEmpty": "Für diesen Klassenraum wurden noch keine Spiele ausgeliefert.",
+        "gamesEmptyDescription": "Veröffentlichte Spiele aus Kursen in diesem Klassenraum erscheinen hier.",
+        "gamesNoMatches": "Keine Spiele entsprechen deiner Suche.",
+        "gamesUntitled": "Unbenanntes Spiel",
+        "gamesNoDescription": "Keine Beschreibung",
+        "gamesMenuAriaLabel": "Spieloptionen",
+        "gamesViewAnalytics": "Analysen anzeigen",
+        "gamesPlay": "Spielen",
+        "gamesPlayAriaLabel": "{{title}} spielen"
       },
       "publishedCourse": {
-        "backToClassroom": "Zur\u00fcck zum Klassenraum",
-        "contextLabel": "Live-Version f\u00fcr diesen Klassenraum \u2014 das sehen Lernende.",
-        "invalidLink": "Dieser Klassenraum-Kurs-Link ist ung\u00fcltig.",
+        "backToClassroom": "Zurück zum Klassenraum",
+        "contextLabel": "Live-Version für diesen Klassenraum — das sehen Lernende.",
+        "invalidLink": "Dieser Klassenraum-Kurs-Link ist ungültig.",
         "notDelivered": "Dieser Kurs wurde in diesen Klassenraum nicht ausgeliefert.",
         "loadError": "Die ausgelieferte Kurs-Snapshot-Ansicht konnte nicht geladen werden."
+      }
+    },
+    "gameRunAnalytics": {
+      "titleFallback": "Spielanalysen",
+      "description": "Klassenraum-Spielsitzungen, Punkte und Aufschlüsselungen nach Komponenten einsehen.",
+      "invalidLink": "Dieser Analyse-Link ist ungültig.",
+      "loading": "Spieldurchläufe werden geladen …",
+      "loadError": "Spielanalysen konnten nicht geladen werden.",
+      "runsTitle": "Spielsitzungen",
+      "emptyTitle": "Noch keine Spielsitzungen",
+      "emptyDescription": "Sobald Lernende dieses Spiel im Klassenraum spielen, erscheinen die Sitzungen hier.",
+      "runCard": {
+        "title": "Sitzung · {{playedAt}}",
+        "participants": "{{count}} Spieler",
+        "topScore": "Beste Punktzahl: {{score}}"
+      },
+      "detail": {
+        "title": "Sitzungsdetails",
+        "loading": "Sitzungsdetails werden geladen …",
+        "loadError": "Sitzungsdetails konnten nicht geladen werden.",
+        "selectRun": "Wähle eine Spielsitzung, um Komponentenpunkte und Spieleraufschlüsselungen zu sehen.",
+        "playedAt": "Gespielt am {{playedAt}}",
+        "noParticipants": "Für diese Sitzung wurden keine Teilnehmerergebnisse gespeichert.",
+        "totalScore": "Gesamtpunktzahl: {{score}} / {{maxScore}}",
+        "noComponentBreakdown": "Für diese Sitzung ist noch keine Aufschlüsselung nach Komponenten gespeichert.",
+        "componentScore": "{{score}} / {{maxScore}}"
+      },
+      "myHistoryDescription": "Sieh dir deine eigenen Spielsitzungen, Punktzahlen und den Chatverlauf an.",
+      "breadcrumb": {
+        "students": "Lernende",
+        "myAttempts": "Meine Versuche"
+      },
+      "students": {
+        "lastPlayed": "Zuletzt gespielt {{playedAt}}",
+        "attempts": "{{count}} Versuche"
+      },
+      "attempts": {
+        "title": "Versuche",
+        "score": "Punktzahl: {{score}}",
+        "selectHint": "Wähle einen Versuch, um Punkteaufschlüsselung und Chatverlauf zu sehen."
+      },
+      "chatHistory": {
+        "title": "Chatverlauf",
+        "empty": "Für diesen Versuch wurde kein Chatverlauf gespeichert.",
+        "messageScore": "{{score}} / {{maxScore}} Punkte"
+      }
+    },
+    "classroomGamePlay": {
+      "invalidLink": "Dieser Spiel-Link ist ungültig.",
+      "loading": "Spiel wird geladen …",
+      "loadError": "Dieses Spiel konnte nicht geladen werden.",
+      "notAvailable": "Dieses Spiel ist für diesen Klassenraum nicht verfügbar.",
+      "teacherPreviewNotice": "Vorschau — Ergebnisse werden nicht gespeichert.",
+      "saving": "Ergebnis wird gespeichert …",
+      "savedScore": "Gespeichert · {{score}} / {{maxScore}} Punkte",
+      "saveError": "Dein Ergebnis konnte nicht gespeichert werden.",
+      "retry": "Erneut versuchen",
+      "leaveGame": {
+        "badge": "Spiel verlassen",
+        "title": "Dieses Spiel verlassen?",
+        "descriptionStudent": "Dein bisheriger Fortschritt wird gespeichert. Noch nicht erreichte Abschnitte werden als ungespielt markiert.",
+        "descriptionTeacher": "Du siehst eine Vorschau dieses Spiels. Beim Verlassen wird deine laufende Sitzung verworfen — in der Lehrervorschau wird nichts gespeichert.",
+        "cancel": "Weiterspielen",
+        "confirm": "Spiel verlassen"
       }
     }
   },

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Joystick } from 'lucide-react'
+import { Gamepad2, Joystick } from 'lucide-react'
 
 import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
 import { LoadingPage } from '@/components/shared'
@@ -10,11 +10,13 @@ import { GameProjectCardCompact, useCourseLinkedGames } from '@/features/game-st
 type PublishedCourseGamesSectionProps = {
   courseId: string
   onGameOpen: (gameId: string) => void
+  onGameAnalyticsOpen?: (gameId: string) => void
 }
 
 export function PublishedCourseGamesSection({
   courseId,
   onGameOpen,
+  onGameAnalyticsOpen,
 }: PublishedCourseGamesSectionProps) {
   const { t } = useTranslation('features.course')
   const { games, loading } = useCourseLinkedGames(courseId)
@@ -36,7 +38,7 @@ export function PublishedCourseGamesSection({
         <Empty className="flex-none rounded-xl border-dashed border-border/70 bg-muted/20 p-4 md:p-6">
           <EmptyHeader>
             <EmptyMedia variant="icon">
-              <Joystick className="size-6" />
+              <Gamepad2 className="size-6" />
             </EmptyMedia>
             <EmptyTitle>{t('published.gamesSection.emptyTitle')}</EmptyTitle>
             <EmptyDescription>{t('published.gamesSection.emptyDescription')}</EmptyDescription>
@@ -58,6 +60,7 @@ export function PublishedCourseGamesSection({
                 description={game.description}
                 themeId={game.themeId}
                 onView={onGameOpen}
+                onViewAnalytics={onGameAnalyticsOpen}
               />
             ))}
           </div>

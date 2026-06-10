@@ -9,13 +9,14 @@ import {
   PublishedLessonReader,
   PublishedTopicView,
   usePublishedCourseVersion,
+  buildClassroomGameAnalyticsRoute,
   buildClassroomPublishedLessonRoute,
   buildClassroomPublishedTopicRoute,
   buildClassroomPublishedGameRoute,
   buildCourseReleaseReviewRoute,
   findPublishedTopicInTree,
   findPublishedLessonInTopic,
-} from '@/features/course'
+} from '@/features/classroom'
 
 function useTrimmedClassroomPublishedParams() {
   const { classroomId, courseId, topicId, lessonId } = useParams<{
@@ -56,6 +57,11 @@ export function ClassroomPublishedCoursePage() {
   const handleGameOpen = (gameId: string) => {
     if (!classroomId || !courseId) return
     navigate(buildClassroomPublishedGameRoute(classroomId, courseId, gameId))
+  }
+
+  const handleGameAnalyticsOpen = (gameId: string) => {
+    if (!classroomId) return
+    navigate(buildClassroomGameAnalyticsRoute(classroomId, gameId))
   }
 
   if (!classroomId || !courseId) {
@@ -112,6 +118,7 @@ export function ClassroomPublishedCoursePage() {
         classroomContextLabel={t('pages.classroomDetail.publishedCourse.contextLabel')}
         onTopicView={handleTopicView}
         onGameOpen={handleGameOpen}
+        onGameAnalyticsOpen={handleGameAnalyticsOpen}
         onVersionChange={() => undefined}
         onCompareToDraft={handleCompareToDraft}
       />
@@ -223,6 +230,7 @@ export function ClassroomCourseTopicLessonPublishedPage() {
   if (isLoading) {
     return (
       <PublishedCoursePageShell layout="fullBleed">
+        <div className="container py-6"></div>
         <div className="flex items-center justify-center py-16">
           <Spinner
             variant="gray"
@@ -251,6 +259,7 @@ export function ClassroomCourseTopicLessonPublishedPage() {
 
   return (
     <PublishedCoursePageShell layout="fullBleed">
+      <div className="container py-6"></div>
       <PublishedLessonReader
         lesson={lesson}
         themeId={tree.themeId}

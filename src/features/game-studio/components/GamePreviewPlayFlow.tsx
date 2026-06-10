@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, useMemo } from 'react'
+import { Fragment, useEffect, useMemo, useRef } from 'react'
 import { Flag } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { Edge, Node } from '@xyflow/react'
@@ -14,21 +14,51 @@ import { getIncomingGameplayNode } from '../nodes/game-if-else/game-if-else.util
 import { GameIfElsePreview } from '../nodes/game-if-else/GameIfElsePreview'
 import type { GameIfElseNodeData } from '../nodes/game-if-else/game-if-else.schema'
 import { IfElseEmbeddedNodePreview } from '../nodes/game-if-else/IfElseEmbeddedNodePreview'
+import type { SessionResultsByNode } from '../utils/flowOrder'
+import {
+  buildPlaySessionChatHistory,
+  type GamePlayChatMessage,
+} from '../utils/buildPlaySessionChatHistory'
 import { GamePreviewSegmentAnchor } from './game-preview-session/GamePreviewSegmentAnchor'
 import { GamePreviewSessionShell } from './game-preview-session/GamePreviewSessionShell'
 import { useGamePreviewPlaySession } from './useGamePreviewPlaySession'
+
+export type GamePlaySessionResult = {
+  score: number
+  maxScore: number
+  resultsByNode: SessionResultsByNode
+  chatHistory: GamePlayChatMessage[]
+}
+
+export type GamePlaySessionSnapshot = {
+  score: number
+  maxScore: number
+  resultsByNode: SessionResultsByNode
+  isComplete: boolean
+}
 
 export type GamePreviewPlayFlowProps = {
   nodes: Node[]
   edges: Edge[]
   sessionMaxScore: number
+  /** Fired once when the session reaches the End node. Absent = pure in-memory preview. */
+  onSessionComplete?: (result: GamePlaySessionResult) => void
+  /** Live session state for leave/save guards. */
+  onSessionSnapshot?: (snapshot: GamePlaySessionSnapshot) => void
 }
 
-export function GamePreviewPlayFlow({ nodes, edges, sessionMaxScore }: GamePreviewPlayFlowProps) {
+export function GamePreviewPlayFlow({
+  nodes,
+  edges,
+  sessionMaxScore,
+  onSessionComplete,
+  onSessionSnapshot,
+}: GamePreviewPlayFlowProps) {
   const { t } = useTranslation('features.gameStudio')
   const {
     revealedSegments,
     resultsByNode,
+    cumulativeScore,
     isComplete,
     activeSegmentId,
     hasPlayableGraph,
@@ -41,6 +71,38 @@ export function GamePreviewPlayFlow({ nodes, edges, sessionMaxScore }: GamePrevi
     () => Object.values(resultsByNode).reduce((sum, row) => sum + row.score, 0),
     [resultsByNode],
   )
+
+  const liveScore = cumulativeScore > 0 ? cumulativeScore : completedScoreBaseline
+
+  useEffect(() => {
+    onSessionSnapshot?.({
+      score: liveScore,
+      maxScore: sessionMaxScore,
+      resultsByNode,
+      isComplete,
+    })
+  }, [isComplete, liveScore, onSessionSnapshot, resultsByNode, sessionMaxScore])
+
+  const hasFiredCompleteRef = useRef(false)
+
+  useEffect(() => {
+    if (!isComplete || hasFiredCompleteRef.current || !onSessionComplete) return
+    hasFiredCompleteRef.current = true
+    onSessionComplete({
+      score: completedScoreBaseline,
+      maxScore: sessionMaxScore,
+      resultsByNode,
+      chatHistory: buildPlaySessionChatHistory(nodes, edges, resultsByNode),
+    })
+  }, [
+    isComplete,
+    onSessionComplete,
+    completedScoreBaseline,
+    sessionMaxScore,
+    resultsByNode,
+    nodes,
+    edges,
+  ])
 
   if (!hasPlayableGraph) {
     return (

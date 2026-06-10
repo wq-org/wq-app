@@ -59,7 +59,7 @@ export function TeacherCoursesPage() {
       role="teacher"
       className="flex flex-col gap-8 animate-in fade-in-0 slide-in-from-bottom-4"
     >
-      <div className="container py-6">
+      <div className="container py-6 pb-32">
         <div className="flex flex-col gap-6">
           <div className="mx-auto max-w-xl space-y-2 text-center">
             <Text
