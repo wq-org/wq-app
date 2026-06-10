@@ -1,4 +1,5 @@
 {
+  "loadError": "Could not load your cloud files.",
   "heading": {
     "lineOne": "your",
     "lineTwo": "cloud."

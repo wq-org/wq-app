@@ -20,7 +20,9 @@ export function useTeacherCloudFiles() {
   const institutionId = profile?.userInstitutionId ?? null
   const userId = profile?.user_id ?? null
   const role = profile?.role as UserRole | undefined
-  const fetchEnabled = Boolean(institutionId && userId && role === 'teacher')
+  const fetchEnabled = Boolean(
+    institutionId && userId && (role === 'teacher' || role === 'student'),
+  )
 
   const loadInitial = useCallback(async () => {
     if (!fetchEnabled || !institutionId || !userId || !role) {

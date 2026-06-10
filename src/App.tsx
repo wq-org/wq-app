@@ -19,7 +19,7 @@ import {
   StudentDashboard,
   StudentSettingsPage,
   StudentChat,
-  StudentFilesPage,
+  StudentCloudPage,
   StudentNotesPage,
   StudentTasksPage,
   StudentViewPage,
@@ -1102,13 +1102,22 @@ const App = () => {
                   }
                 />
                 <Route
-                  path="files"
+                  path="cloud"
                   element={
                     <RequireAuth>
                       <RequireOnboarding>
-                        <StudentFilesPage />
+                        <StudentCloudPage />
                       </RequireOnboarding>
                     </RequireAuth>
+                  }
+                />
+                <Route
+                  path="files"
+                  element={
+                    <Navigate
+                      to="/student/cloud"
+                      replace
+                    />
                   }
                 />
                 <Route

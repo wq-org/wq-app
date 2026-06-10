@@ -1,4 +1,5 @@
 {
+  "loadError": "Cloud-Dateien konnten nicht geladen werden.",
   "heading": {
     "lineOne": "deine",
     "lineTwo": "cloud."
