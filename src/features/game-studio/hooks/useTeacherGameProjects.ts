@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import type { ThemeId } from '@/lib/themes'
 
 import { getTeacherFlowGames } from '../api/gameStudioApi'
+import { resolveGameLinkedCourseIds } from '../utils/gameCourseLink.utils'
 
 type GameProjectStatus = 'draft' | 'published'
 
@@ -46,7 +47,7 @@ export function useTeacherGameProjects(teacherId?: string): UseTeacherGameProjec
         themeId: game.theme_id,
         version: game.published_version ?? 1,
         status: (game.status === 'published' ? 'published' : 'draft') as 'draft' | 'published',
-        linkedCourseIds: (game.game_course_links ?? []).map((l) => l.course_id),
+        linkedCourseIds: resolveGameLinkedCourseIds(game),
       }))
 
       setProjects(mapped)

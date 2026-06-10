@@ -53,6 +53,7 @@ export type ClassroomGamePlayContent = {
   gameVersionId: string
   classroomId: string
   title: string
+  description: string
   themeId: ThemeId
   versionNo: number
   nodes: Node[]

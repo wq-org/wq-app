@@ -314,17 +314,18 @@
   },
   "linkGameDialog": {
     "title": "Mit Kurs verkn\u00fcpfen",
-    "description": "W\u00e4hle einen Kurs, mit dem dieses Spiel verkn\u00fcpft werden soll.",
+    "description": "W\u00e4hle einen online ver\u00f6ffentlichten Kurs, mit dem dieses Spiel verkn\u00fcpft werden soll.",
     "kursename": "Kursename",
     "selectCourseColumn": "Kurs ausw\u00e4hlen",
     "selectCourseAriaLabel": "{{title}} ausw\u00e4hlen",
-    "emptyCourses": "Noch keine ver\u00f6ffentlichten Kurse vorhanden.",
+    "emptyCourses": "Noch keine online ver\u00f6ffentlichten Kurse vorhanden.",
     "cancel": "Abbrechen",
     "confirm": "Kurs verkn\u00fcpfen",
     "linking": "Wird verkn\u00fcpft\u2026",
     "toasts": {
       "linkedSuccess": "Spiel mit Kurs verkn\u00fcpft",
-      "linkedFailed": "Spiel konnte nicht mit Kurs verkn\u00fcpft werden"
+      "linkedFailed": "Spiel konnte nicht mit Kurs verkn\u00fcpft werden",
+      "courseNotLive": "Nur online ver\u00f6ffentlichte Kurse k\u00f6nnen mit einem Spiel verkn\u00fcpft werden."
     }
   },
   "unlinkGameDialog": {

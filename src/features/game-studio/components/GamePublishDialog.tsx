@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowUp } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -25,6 +25,7 @@ type GamePublishDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   teacherId: string | undefined
+  linkedCourseIds?: string[]
   onPublish: (courseIds: string[]) => Promise<void>
 }
 
@@ -32,6 +33,7 @@ export function GamePublishDialog({
   open,
   onOpenChange,
   teacherId,
+  linkedCourseIds = [],
   onPublish,
 }: GamePublishDialogProps) {
   const { t } = useTranslation('features.gameStudio')
@@ -39,6 +41,10 @@ export function GamePublishDialog({
   const [isPublishing, setIsPublishing] = useState(false)
 
   const { courses, loading: coursesLoading } = useTeacherPublishedCourses(teacherId, open)
+
+  useEffect(() => {
+    if (open) setSelectedCourseIds([...linkedCourseIds])
+  }, [open]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleToggleCourse = (courseId: string) => {
     setSelectedCourseIds((prev) =>

@@ -106,7 +106,11 @@ export function GameChatHistory({
     </div>
   )
 
-  const columnClassName = cn('w-full min-w-0', isPlayLayout && 'mx-auto max-w-2xl', className)
+  const columnClassName = cn(
+    'w-full min-w-0',
+    isPlayLayout && !flat && 'mx-auto max-w-2xl',
+    className,
+  )
 
   if (flat) {
     return <div className={columnClassName}>{messageList}</div>
@@ -116,7 +120,7 @@ export function GameChatHistory({
     <div
       className={cn(
         'flex min-h-0 w-full min-w-0 flex-col overflow-hidden rounded-[1.25rem]',
-        isPlayLayout && 'mx-auto max-w-2xl',
+        isPlayLayout && !flat && 'mx-auto max-w-2xl',
         className,
       )}
     >

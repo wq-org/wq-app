@@ -46,7 +46,7 @@ const GameStudio = () => {
               themeId: g.theme_id,
               version: g.version ?? undefined,
               status: g.status === 'published' ? 'published' : 'draft',
-              linkedCourseId: g.course_id ?? null,
+              linkedCourseIds: (g.game_course_links ?? []).map((l) => l.course_id),
             })),
           )
         })

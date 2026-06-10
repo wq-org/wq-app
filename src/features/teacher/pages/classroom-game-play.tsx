@@ -27,7 +27,7 @@ export function ClassroomGamePlayPage() {
 
   return (
     <PublishedCoursePageShell layout="fullBleed">
-      <div className="flex h-[calc(100dvh-5rem)] min-h-0 flex-col px-4 py-4">
+      <div className="container flex h-[calc(100dvh-5rem)] min-h-0 flex-col py-4">
         <ClassroomGamePlayPanel
           classroomId={trimmedClassroomId}
           gameId={trimmedGameId}

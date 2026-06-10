@@ -56,7 +56,7 @@ function GameChatImagePinStatic({
   if (!src) return null
 
   return (
-    <div className={cn('relative w-full overflow-hidden rounded-2xl shadow-sm', className)}>
+    <div className={cn('relative w-full overflow-hidden rounded-2xl', className)}>
       <GameChatImagePinMedia
         src={src}
         alt={alt}
@@ -94,7 +94,7 @@ function GameChatImagePinDroppable({
     <div
       ref={setNodeRef}
       className={cn(
-        'relative w-full overflow-hidden rounded-2xl shadow-sm transition-shadow',
+        'relative w-full overflow-hidden rounded-2xl transition-shadow',
         isOver && 'ring-2 ring-[#0000FF] ring-offset-2 ring-offset-background',
         className,
       )}

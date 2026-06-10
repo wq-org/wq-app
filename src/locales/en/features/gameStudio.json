@@ -177,9 +177,9 @@
   },
   "publishDialog": {
     "title": "Publish game",
-    "description": "Your game will go live for students. Optionally link it to one of your published courses.",
+    "description": "Your game will go live for students. Optionally link it to one of your online published courses.",
     "courseSectionLabel": "Link to a course (optional)",
-    "noCoursesHint": "No published courses found. You can publish without linking.",
+    "noCoursesHint": "No online published courses found. You can publish without linking.",
     "selectCourseAriaLabel": "Select {{title}}",
     "confirm": "Publish",
     "publishing": "Publishing…",
@@ -404,17 +404,18 @@
   },
   "linkGameDialog": {
     "title": "Link to course",
-    "description": "Choose a course to link this game to.",
+    "description": "Choose an online published course to link this game to.",
     "kursename": "Course name",
     "selectCourseColumn": "Select course",
     "selectCourseAriaLabel": "Select {{title}}",
-    "emptyCourses": "No published courses available yet.",
+    "emptyCourses": "No online published courses available yet.",
     "cancel": "Cancel",
     "confirm": "Link course",
     "linking": "Linking…",
     "toasts": {
       "linkedSuccess": "Game linked to course",
-      "linkedFailed": "Could not link game to course"
+      "linkedFailed": "Could not link game to course",
+      "courseNotLive": "Only online published courses can be linked to a game."
     }
   },
   "unlinkGameDialog": {

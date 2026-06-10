@@ -178,8 +178,8 @@ const Dashboard = () => {
     const all = courseCards
     return {
       all: [...all],
-      published: all.filter((c) => c.is_published),
-      drafts: all.filter((c) => !c.is_published),
+      published: all.filter((c) => c.releaseStatus === 'live'),
+      drafts: all.filter((c) => c.releaseStatus === 'draft'),
     } as const
   }, [courseCards])
 

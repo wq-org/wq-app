@@ -296,6 +296,7 @@
   },
   "card": {
     "published": "Published",
+    "offline": "Offline",
     "unpublished": "Unpublished",
     "version": "v{{version}}",
     "open": "Open",

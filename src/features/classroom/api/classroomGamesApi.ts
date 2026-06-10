@@ -327,6 +327,7 @@ function mapPlayContentRow(
     gameVersionId: row.game_version_id,
     classroomId,
     title: version.title?.trim() || 'Untitled Game',
+    description: version.description?.trim() || '',
     themeId,
     versionNo: version.version_no,
     nodes: version.content?.nodes ?? [],

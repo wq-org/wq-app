@@ -2,18 +2,25 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Badge } from '@/components/ui/badge'
-import type { CourseCardProps } from '../types/course.types'
+import type { CourseCardProps, CourseCardReleaseStatus } from '../types/course.types'
 import { useTranslation } from 'react-i18next'
 import { Text } from '@/components/ui/text'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { getThemeBackgroundStyle } from '@/lib/themes'
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card'
+const RELEASE_BADGE_VARIANT: Record<CourseCardReleaseStatus, 'default' | 'secondary' | 'outline'> =
+  {
+    live: 'default',
+    offline: 'outline',
+    draft: 'secondary',
+  }
+
 export function CourseCard({
   id,
   title,
   description,
-  is_published = false,
+  releaseStatus = 'draft',
   image,
   themeId,
   teacherAvatar,
@@ -22,6 +29,12 @@ export function CourseCard({
 }: CourseCardProps) {
   const { t } = useTranslation('features.course')
   const { url: teacherAvatarUrl } = useAvatarUrl(teacherAvatar)
+
+  const releaseBadgeLabel = {
+    live: t('card.published'),
+    offline: t('card.offline'),
+    draft: t('card.unpublished'),
+  }[releaseStatus]
 
   return (
     <Card className="flex h-full w-[320px] flex-col py-0 px-0 rounded-4xl shadow-xl transition-all duration-200 hover:shadow-2xl cursor-pointer animate-in fade-in-0 slide-in-from-bottom-4">
@@ -51,21 +64,12 @@ export function CourseCard({
             </div>
           )}
         </AspectRatio>
-        {is_published ? (
-          <Badge
-            variant="default"
-            className="absolute top-3 right-3"
-          >
-            {t('card.published')}
-          </Badge>
-        ) : (
-          <Badge
-            variant="secondary"
-            className="absolute top-3 right-3"
-          >
-            {t('card.unpublished')}
-          </Badge>
-        )}
+        <Badge
+          variant={RELEASE_BADGE_VARIANT[releaseStatus]}
+          className="absolute top-3 right-3"
+        >
+          {releaseBadgeLabel}
+        </Badge>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col p-6">
         <div className="flex items-start gap-3">

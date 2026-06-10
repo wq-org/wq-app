@@ -3,6 +3,7 @@ import { getUserInstitutionId } from '@/features/auth'
 import type { ThemeId } from '@/lib/themes'
 import type { Course, CourseTeacherProfile, UpdateCourseData } from '../types/course.types'
 import type { ClassroomCourseListItem } from '../types/course-version.types'
+import { getCourseDeliveryStatusCountsByCourseIds } from './courseVersionApi'
 
 /**
  * Create a new course
@@ -77,26 +78,64 @@ export async function getTeacherCourses(teacherId: string): Promise<Course[]> {
     throw error
   }
 
-  return ((data || []) as TeacherCourseRow[]).map(mapTeacherCourseRow)
+  const courses = ((data || []) as TeacherCourseRow[]).map(mapTeacherCourseRow)
+  const deliveryCounts = await getCourseDeliveryStatusCountsByCourseIds(courses.map((c) => c.id))
+
+  return courses.map((course) => {
+    const counts = deliveryCounts[course.id]
+    return {
+      ...course,
+      student_visible_delivery_count: counts?.studentVisibleDeliveryCount ?? 0,
+      offline_delivery_count: counts?.offlineDeliveryCount ?? 0,
+    }
+  })
 }
 
-/** Published courses for the teacher (e.g. optional game link on publish). */
+type LiveCourseDeliveryRow = {
+  course_id: string
+  courses: Course | Course[] | null
+}
+
+function normalizeLiveCourseEmbed(value: LiveCourseDeliveryRow['courses']): Course | null {
+  if (value == null) return null
+  return Array.isArray(value) ? (value[0] ?? null) : value
+}
+
+/** Live published courses (active/scheduled deliveries) eligible for game linking. */
 export async function getTeacherPublishedCourses(teacherId: string): Promise<Course[]> {
   const { data, error } = await supabase
-    .from('courses')
+    .from('course_deliveries')
     .select(
-      'id, title, description, teacher_id, institution_id, theme_id, is_published, created_at, updated_at',
+      `
+      course_id,
+      courses!inner (
+        id, title, description, teacher_id, institution_id, theme_id, is_published, created_at, updated_at
+      )
+    `,
     )
-    .eq('teacher_id', teacherId)
-    .eq('is_published', true)
-    .order('title', { ascending: true })
+    .eq('courses.teacher_id', teacherId)
+    .is('deleted_at', null)
+    .in('status', ['active', 'scheduled'])
 
   if (error) {
-    console.error('Error fetching published courses:', error)
+    console.error('Error fetching live published courses:', error)
     throw error
   }
 
-  return (data || []) as Course[]
+  const seenCourseIds = new Set<string>()
+  const courses: Course[] = []
+
+  for (const row of (data ?? []) as LiveCourseDeliveryRow[]) {
+    if (seenCourseIds.has(row.course_id)) continue
+
+    const course = normalizeLiveCourseEmbed(row.courses)
+    if (!course) continue
+
+    seenCourseIds.add(row.course_id)
+    courses.push(course)
+  }
+
+  return courses.sort((left, right) => left.title.localeCompare(right.title))
 }
 
 type ClassroomCourseDeliveryRow = {

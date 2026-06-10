@@ -6,6 +6,8 @@ export interface CourseTeacherProfile {
   avatar_url: string | null
 }
 
+export type CourseCardReleaseStatus = 'live' | 'offline' | 'draft'
+
 export interface Course {
   id: string // uuid
   title: string // text
@@ -20,6 +22,10 @@ export interface Course {
   teacher_profile?: CourseTeacherProfile | null
   /** Latest published course_versions.version_no; populated by getTeacherCourses. */
   published_version_no?: number | null
+  /** Active or scheduled deliveries visible to students; populated by getTeacherCourses. */
+  student_visible_delivery_count?: number
+  /** Deliveries temporarily hidden from students; populated by getTeacherCourses. */
+  offline_delivery_count?: number
 }
 
 // Type for creating a new course (no id, created_at, updated_at)
@@ -46,6 +52,7 @@ export interface CourseCardProps {
   title: string
   description: string
   is_published?: boolean
+  releaseStatus?: CourseCardReleaseStatus
   image?: string
   themeId?: ThemeId
   teacherAvatar?: string

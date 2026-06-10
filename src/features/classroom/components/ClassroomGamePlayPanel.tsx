@@ -193,27 +193,38 @@ export function ClassroomGamePlayPanel({ classroomId, gameId }: ClassroomGamePla
       onNavigateAway={handleNavigateAway}
     >
       <div className="flex h-full min-h-0 flex-1 flex-col gap-3">
-        {!isStudent ? (
-          <div className="flex shrink-0 flex-wrap items-center justify-between gap-2">
+        <header className="shrink-0 space-y-1 text-center">
+          <Text
+            as="h1"
+            variant="h3"
+            className="text-lg font-semibold"
+          >
+            {content.title}
+          </Text>
+          {content.description ? (
             <Text
-              as="h1"
-              variant="h3"
-              className="text-lg font-semibold"
+              as="p"
+              variant="body"
+              muted
             >
-              {content.title}
+              {content.description}
             </Text>
+          ) : null}
+          {!isStudent ? (
             <Text
               as="p"
               variant="small"
               muted
-              className="inline-flex items-center gap-1.5"
+              className="flex items-center justify-center gap-1.5 pt-1"
             >
-              <Eye className="size-4" />
+              <Eye className="size-4 shrink-0" />
               {t('pages.classroomGamePlay.teacherPreviewNotice')}
             </Text>
-          </div>
-        ) : shouldShowSaveError ? (
-          <div className="flex shrink-0 justify-end">
+          ) : null}
+        </header>
+
+        {shouldShowSaveError ? (
+          <div className="flex shrink-0 justify-center">
             <span className="inline-flex items-center gap-2">
               <Text
                 as="p"

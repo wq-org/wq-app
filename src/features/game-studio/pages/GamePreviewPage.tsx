@@ -25,7 +25,7 @@ export function GamePreviewPage() {
   const sessionMaxScore = useMemo(() => computePlayPreviewSessionMaxScore(nodes), [nodes])
 
   return (
-    <div className="mx-auto flex h-full min-h-0 w-full max-w-5xl flex-col overflow-hidden px-4 pt-4 pb-2">
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden pt-4 pb-2">
       <Text
         as="h1"
         variant="h3"

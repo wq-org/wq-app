@@ -36,6 +36,7 @@ import { GAME_OPEN_QUESTION_TYPE } from '../nodes/open-question/constants'
 import { publishGameDraft } from '../api/gamePublishApi'
 import { getGameForStudio, linkGameToCourse, updateGameForStudio } from '../api/gameStudioApi'
 import { collectImagePinGalleryImages } from '../utils/collectImagePinGalleryImages'
+import { resolveGameLinkedCourseIds } from '../utils/gameCourseLink.utils'
 import { saveGameStudioDraft } from '../utils/saveGameStudioDraft'
 import { GameEditorSettingsPanel } from '../components/GameEditorSettingsPanel'
 import { GameEditorSidebar } from './GameEditorSidebar'
@@ -124,6 +125,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   const [openDialogNodeId, setOpenDialogNodeId] = useState<string | null>(null)
   const [gameTitle, setGameTitle] = useState<string>(DEFAULT_TITLE)
   const [gameThemeId, setGameThemeId] = useState<ThemeId>('blue')
+  const [linkedCourseIds, setLinkedCourseIds] = useState<string[]>([])
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false)
   const [interactionMode, setInteractionMode] = useState<'pan' | 'select'>('select')
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
@@ -160,6 +162,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
 
         setGameTitle(game.title || DEFAULT_TITLE)
         setGameThemeId(game.theme_id || 'blue')
+        setLinkedCourseIds(resolveGameLinkedCourseIds(game))
         institutionIdRef.current = game.institution_id ?? null
 
         const config = game.game_content
@@ -540,10 +543,10 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
 
       await saveGameStudioDraft({
         projectId,
-        nodes,
-        edges,
-        gameTitle,
-        gameThemeId,
+        nodes: nodesRef.current,
+        edges: edgesRef.current,
+        gameTitle: gameTitleRef.current,
+        gameThemeId: gameThemeIdRef.current,
         institutionId: institutionIdRef.current,
       })
 
@@ -569,13 +572,20 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
 
   const handlePublish = useCallback(
     async (courseIds: string[]) => {
+      await flushAutosaveNow()
       const primaryCourseId = courseIds[0] ?? null
       await persist('publish', { courseId: primaryCourseId })
-      if (projectId && courseIds.length > 0) {
-        await Promise.all(courseIds.map((id) => linkGameToCourse(projectId, id)))
+      if (projectId) {
+        if (courseIds.length > 0) {
+          await Promise.all(courseIds.map((id) => linkGameToCourse(projectId, id)))
+        }
+        const game = await getGameForStudio(projectId)
+        if (game) {
+          setLinkedCourseIds(resolveGameLinkedCourseIds(game))
+        }
       }
     },
-    [persist, projectId],
+    [flushAutosaveNow, persist, projectId],
   )
 
   const handlePreview = useCallback(async () => {
@@ -611,14 +621,18 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
           theme_id: payload.theme_id,
         })
         setGameTitle(payload.title)
+        gameTitleRef.current = payload.title
         setGameThemeId(payload.theme_id)
-        setNodes((prev) =>
-          prev.map((node) =>
+        gameThemeIdRef.current = payload.theme_id
+        setNodes((prev) => {
+          const next = prev.map((node) =>
             node.type === GAME_START_TYPE
               ? { ...node, data: { ...node.data, description: payload.description } }
               : node,
-          ),
-        )
+          )
+          nodesRef.current = next
+          return next
+        })
       } catch (err) {
         console.error(err)
         throw err
@@ -858,6 +872,7 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
         themeId={gameThemeId}
         nodes={nodes}
         edges={edges}
+        linkedCourseIds={linkedCourseIds}
         onSave={handleSettingsSave}
         onDelete={handleSettingsDelete}
         onPublish={handlePublish}

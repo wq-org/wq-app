@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 
 import { useUser } from '@/contexts/user'
 
-import { linkGameToCourse } from '../api/gameStudioApi'
+import { COURSE_NOT_LIVE_FOR_GAME_LINK, linkGameToCourse } from '../api/gameStudioApi'
 import { useTeacherPublishedCourses } from './useTeacherPublishedCourses'
 
 type UseLinkGameDialogArgs = {
@@ -63,7 +63,12 @@ export function useLinkGameDialog({
       onLinked?.()
     } catch (error) {
       console.error('[useLinkGameDialog] link failed', error)
-      toast.error(t('linkGameDialog.toasts.linkedFailed'))
+      const message = error instanceof Error ? error.message : ''
+      toast.error(
+        message === COURSE_NOT_LIVE_FOR_GAME_LINK
+          ? t('linkGameDialog.toasts.courseNotLive')
+          : t('linkGameDialog.toasts.linkedFailed'),
+      )
     } finally {
       setLinking(false)
     }

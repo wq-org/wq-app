@@ -43,7 +43,7 @@ export function OpenQuestionChatInput({
       <Ai01
         className="min-w-0 flex-1"
         fullWidth
-        composerShellClassName="border-muted"
+        composerShellClassName="border-muted shadow-none"
         placeholder={placeholder}
         value={value}
         onValueChange={onValueChange}

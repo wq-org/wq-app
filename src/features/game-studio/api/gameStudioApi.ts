@@ -1,3 +1,4 @@
+import { countStudentVisibleDeliveriesForCourse } from '@/features/course'
 import { supabase } from '@/lib/supabase'
 import type { ThemeId } from '@/lib/themes'
 
@@ -9,6 +10,7 @@ import {
 } from './gameVersionApi'
 import type { FlowGameConfig, GameCardProps } from '../types/game-studio.types'
 import type { PublishedGameVersion } from '../types/game-version.types'
+import { resolveGameLinkedCourseIds } from '../utils/gameCourseLink.utils'
 import { getDefaultFlowGameConfig } from '../utils/gameConfigSerialization'
 
 export interface GameForStudio {
@@ -177,7 +179,7 @@ export async function getGameForStudio(gameId: string): Promise<GameForStudio | 
   const { data, error } = await supabase
     .from('games')
     .select(
-      'id, title, description, teacher_id, institution_id, course_id, game_type, theme_id, game_content, status, version, published_version, is_draft, published_at, current_published_version_id, archived_at, created_at, updated_at',
+      'id, title, description, teacher_id, institution_id, course_id, game_type, theme_id, game_content, status, version, published_version, is_draft, published_at, current_published_version_id, archived_at, created_at, updated_at, game_course_links(course_id)',
     )
     .eq('id', gameId)
     .single()
@@ -199,11 +201,18 @@ export async function getLatestPublishedGameVersion(
   return getPublishedGameVersion(versionId)
 }
 
+export const COURSE_NOT_LIVE_FOR_GAME_LINK = 'COURSE_NOT_LIVE_FOR_GAME_LINK'
+
 /**
  * Link a published game to an additional course (junction table).
  * Idempotent — silently ignores if the link already exists.
  */
 export async function linkGameToCourse(gameId: string, courseId: string): Promise<void> {
+  const visibleDeliveryCount = await countStudentVisibleDeliveriesForCourse(courseId)
+  if (visibleDeliveryCount === 0) {
+    throw new Error(COURSE_NOT_LIVE_FOR_GAME_LINK)
+  }
+
   const { error } = await supabase
     .from('game_course_links')
     .upsert(
@@ -225,19 +234,20 @@ export async function unlinkGameFromCourse(gameId: string, courseId: string): Pr
     .eq('course_id', courseId)
 
   if (error) throw new Error(error.message)
+
+  const game = await getGameForStudio(gameId)
+  if (game?.course_id === courseId) {
+    await updateGameForStudio(gameId, { course_id: null })
+  }
 }
 
 /**
  * Get all course IDs linked to a game via the junction table.
  */
 export async function getGameLinkedCourseIds(gameId: string): Promise<string[]> {
-  const { data, error } = await supabase
-    .from('game_course_links')
-    .select('course_id')
-    .eq('game_id', gameId)
-
-  if (error) throw new Error(error.message)
-  return (data ?? []).map((row: { course_id: string }) => row.course_id)
+  const game = await getGameForStudio(gameId)
+  if (!game) return []
+  return resolveGameLinkedCourseIds(game)
 }
 
 export async function archiveGame(gameId: string): Promise<void> {

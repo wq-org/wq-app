@@ -36,6 +36,7 @@ export type GameEditorSettingsPanelProps = {
   themeId: ThemeId
   nodes: Node[]
   edges: Edge[]
+  linkedCourseIds?: string[]
   onSave: (payload: { title: string; description: string; theme_id: ThemeId }) => Promise<void>
   onDelete: () => void
   onPublish: (courseIds: string[]) => Promise<void>
@@ -52,6 +53,7 @@ export function GameEditorSettingsPanel({
   themeId: initialThemeId,
   nodes,
   edges,
+  linkedCourseIds = [],
   onSave,
   onDelete,
   onPublish,
@@ -130,6 +132,13 @@ export function GameEditorSettingsPanel({
   const handlePublishConfirm = async (courseIds: string[]) => {
     setIsPublishing(true)
     try {
+      if (hasChanges) {
+        await onSave({
+          title: localTitle,
+          description: localDescription,
+          theme_id: localThemeId,
+        })
+      }
       await onPublish(courseIds)
       await refetchReleaseStatus()
       toast.success(t('settingsPanel.toasts.publishSuccess'))
@@ -347,6 +356,7 @@ export function GameEditorSettingsPanel({
         open={publishDialogOpen}
         onOpenChange={setPublishDialogOpen}
         teacherId={teacherId}
+        linkedCourseIds={linkedCourseIds}
         onPublish={handlePublishConfirm}
       />
 

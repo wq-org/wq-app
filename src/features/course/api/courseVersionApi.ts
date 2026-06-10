@@ -179,6 +179,50 @@ export async function countStudentVisibleDeliveriesForCourse(courseId: string): 
   return count ?? 0
 }
 
+export type CourseDeliveryStatusCounts = {
+  studentVisibleDeliveryCount: number
+  offlineDeliveryCount: number
+}
+
+/** Batch delivery visibility counts for teacher course list cards. */
+export async function getCourseDeliveryStatusCountsByCourseIds(
+  courseIds: readonly string[],
+): Promise<Record<string, CourseDeliveryStatusCounts>> {
+  const counts: Record<string, CourseDeliveryStatusCounts> = {}
+  for (const courseId of courseIds) {
+    counts[courseId] = { studentVisibleDeliveryCount: 0, offlineDeliveryCount: 0 }
+  }
+
+  if (courseIds.length === 0) {
+    return counts
+  }
+
+  const { data, error } = await supabase
+    .from('course_deliveries')
+    .select('course_id, status')
+    .in('course_id', [...courseIds])
+    .is('deleted_at', null)
+    .in('status', ['active', 'scheduled', 'offline'])
+
+  if (error) {
+    console.error('getCourseDeliveryStatusCountsByCourseIds:', error)
+    throw error
+  }
+
+  for (const row of data ?? []) {
+    const bucket = counts[row.course_id]
+    if (!bucket) continue
+
+    if (row.status === 'active' || row.status === 'scheduled') {
+      bucket.studentVisibleDeliveryCount += 1
+    } else if (row.status === 'offline') {
+      bucket.offlineDeliveryCount += 1
+    }
+  }
+
+  return counts
+}
+
 export async function countOfflineDeliveriesForCourse(courseId: string): Promise<number> {
   const { count, error } = await supabase
     .from('course_deliveries')

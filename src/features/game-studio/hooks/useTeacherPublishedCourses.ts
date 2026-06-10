@@ -7,7 +7,7 @@ type UseTeacherPublishedCoursesResult = {
   loading: boolean
 }
 
-/** Loads published courses for optional game–course linking in the publish drawer. */
+/** Loads live published courses (online deliveries) for game–course linking. */
 export function useTeacherPublishedCourses(
   teacherId: string | undefined,
   enabled: boolean,
