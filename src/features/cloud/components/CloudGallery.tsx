@@ -41,7 +41,6 @@ export function CloudGallery({
   onRefetchReady,
 }: CloudGalleryProps) {
   const { t } = useTranslation('features.cloud')
-  const { t: tTeacher } = useTranslation('features.teacher')
   const {
     fileItems,
     loading,
@@ -73,9 +72,9 @@ export function CloudGallery({
 
   useEffect(() => {
     if (error) {
-      toast.error(tTeacher('pages.cloud.loadError'))
+      toast.error(t('loadError'))
     }
-  }, [error, tTeacher])
+  }, [error, t])
 
   const galleryFiles = useMemo(() => fileItems.filter(isGalleryFile), [fileItems])
   const filtered = useSearchFilter(galleryFiles, query, SEARCH_FIELDS)
