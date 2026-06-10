@@ -86,7 +86,7 @@ export function Dashboard() {
         <DashboardSection
           title={t('dashboard.sections.courses.title')}
           icon={BookOpen}
-          classNameContainer="h-55.5 max-h-80 min-h-0"
+          classNameContainer="h-45 max-h-80 min-h-0"
           showContainerBorder
         >
           {coursesLoading ? (
