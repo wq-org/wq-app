@@ -2,9 +2,22 @@
 
 import { useEffect, useState } from 'react'
 
-import { getFileSignedUrl } from '@/features/cloud'
+import { getFileSignedUrl, lookupStoragePathByCloudFileId } from '@/features/cloud'
 
+import {
+  isSupabaseCloudSignedUrl,
+  resolveGameImagePinStoragePath,
+} from '../../../utils/gameImagePinStoragePath'
 import type { GameImagePinNodeData } from '../image-pin.schema'
+
+const SIGNED_URL_TTL_SECONDS = 3600
+
+function pickStoredPreviewFallback(storedPreview: string, storagePath: string): string {
+  if (!storedPreview) return ''
+  // Published snapshots often embed a teacher-scoped signed URL that expires.
+  if (storagePath && isSupabaseCloudSignedUrl(storedPreview)) return ''
+  return storedPreview
+}
 
 /**
  * Resolves a displayable image URL for preview/chat (signed URL from storage path).
@@ -13,31 +26,41 @@ import type { GameImagePinNodeData } from '../image-pin.schema'
 export function useResolvedGameImagePinPreviewSrc(nodeData: GameImagePinNodeData): string {
   const storedPreview =
     typeof nodeData.imagePreview === 'string' ? nodeData.imagePreview.trim() : ''
-  const filepath = typeof nodeData.filepath === 'string' ? nodeData.filepath.trim() : ''
-  const [resolvedSrc, setResolvedSrc] = useState(storedPreview)
+  const cloudFileId = typeof nodeData.cloudFileId === 'string' ? nodeData.cloudFileId.trim() : ''
+  const storagePath = resolveGameImagePinStoragePath(nodeData) ?? ''
+  const storedFallback = pickStoredPreviewFallback(storedPreview, storagePath)
+  const [resolvedSrc, setResolvedSrc] = useState(storedFallback)
 
   useEffect(() => {
-    setResolvedSrc(storedPreview)
-  }, [storedPreview])
+    setResolvedSrc(storedFallback)
+  }, [storedFallback])
 
   useEffect(() => {
-    if (!filepath) return
-
     let cancelled = false
-    getFileSignedUrl(filepath, 3600)
-      .then((freshUrl) => {
+
+    async function resolveFreshSignedUrl(): Promise<void> {
+      let path = storagePath
+      if (!path && cloudFileId) {
+        path = (await lookupStoragePathByCloudFileId(cloudFileId))?.trim() ?? ''
+      }
+      if (!path) return
+
+      try {
+        const freshUrl = await getFileSignedUrl(path, SIGNED_URL_TTL_SECONDS)
         if (cancelled) return
-        setResolvedSrc(freshUrl?.trim() || storedPreview)
-      })
-      .catch((error) => {
+        setResolvedSrc(freshUrl?.trim() || storedFallback)
+      } catch (error) {
         console.error('[useResolvedGameImagePinPreviewSrc] Failed to sign URL:', error)
-        if (!cancelled) setResolvedSrc(storedPreview)
-      })
+        if (!cancelled) setResolvedSrc(storedFallback)
+      }
+    }
+
+    void resolveFreshSignedUrl()
 
     return () => {
       cancelled = true
     }
-  }, [filepath, storedPreview])
+  }, [cloudFileId, storagePath, storedFallback])
 
   return resolvedSrc
 }

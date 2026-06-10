@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { BadgeCheck, Eye, RotateCcw } from 'lucide-react'
+import { Eye, RotateCcw } from 'lucide-react'
 
 import { LoadingPage } from '@/components/shared'
 import { GamePlayLeaveProvider } from '@/components/shared/ai-components/GamePlayLeaveProvider'
@@ -175,6 +175,16 @@ export function ClassroomGamePlayPanel({ classroomId, gameId }: ClassroomGamePla
 
   const shouldShowSaveError = isStudent && saveError !== null && !isSaving && !savedRunId
 
+  if (isStudent && isSaving) {
+    return (
+      <LoadingPage
+        variant="embedded"
+        message={t('pages.classroomGamePlay.saving')}
+        size={72}
+      />
+    )
+  }
+
   return (
     <GamePlayLeaveProvider
       labels={leaveLabels}
@@ -183,16 +193,15 @@ export function ClassroomGamePlayPanel({ classroomId, gameId }: ClassroomGamePla
       onNavigateAway={handleNavigateAway}
     >
       <div className="flex h-full min-h-0 flex-1 flex-col gap-3">
-        <div className="flex shrink-0 flex-wrap items-center justify-between gap-2">
-          <Text
-            as="h1"
-            variant="h3"
-            className="text-lg font-semibold"
-          >
-            {content.title}
-          </Text>
-
-          {!isStudent ? (
+        {!isStudent ? (
+          <div className="flex shrink-0 flex-wrap items-center justify-between gap-2">
+            <Text
+              as="h1"
+              variant="h3"
+              className="text-lg font-semibold"
+            >
+              {content.title}
+            </Text>
             <Text
               as="p"
               variant="small"
@@ -202,27 +211,9 @@ export function ClassroomGamePlayPanel({ classroomId, gameId }: ClassroomGamePla
               <Eye className="size-4" />
               {t('pages.classroomGamePlay.teacherPreviewNotice')}
             </Text>
-          ) : isSaving ? (
-            <Text
-              as="p"
-              variant="small"
-              muted
-            >
-              {t('pages.classroomGamePlay.saving')}
-            </Text>
-          ) : savedRunId && lastResult ? (
-            <Text
-              as="p"
-              variant="small"
-              className="inline-flex items-center gap-1.5 text-green-600 dark:text-green-500"
-            >
-              <BadgeCheck className="size-4" />
-              {t('pages.classroomGamePlay.savedScore', {
-                score: lastResult.score,
-                maxScore: lastResult.maxScore,
-              })}
-            </Text>
-          ) : shouldShowSaveError ? (
+          </div>
+        ) : shouldShowSaveError ? (
+          <div className="flex shrink-0 justify-end">
             <span className="inline-flex items-center gap-2">
               <Text
                 as="p"
@@ -241,8 +232,8 @@ export function ClassroomGamePlayPanel({ classroomId, gameId }: ClassroomGamePla
                 {t('pages.classroomGamePlay.retry')}
               </Button>
             </span>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
 
         <div className="flex min-h-0 flex-1 flex-col">
           <GamePreviewPlayFlow

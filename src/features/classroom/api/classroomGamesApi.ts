@@ -30,6 +30,10 @@ type DeliveredGameRow = {
   course_deliveries: { classroom_id: string } | { classroom_id: string }[] | null
 }
 
+type GameVersionContentSnapshot = {
+  content: { nodes?: Node[]; edges?: Edge[] } | null
+}
+
 type GameRunRow = {
   id: string
   mode: string
@@ -47,6 +51,10 @@ type GameRunRow = {
       profiles: { display_name: string | null; username: string | null } | null
     }>
   }> | null
+}
+
+type GameRunAnalyticsDetailRow = GameRunRow & {
+  game_versions: GameVersionContentSnapshot | GameVersionContentSnapshot[] | null
 }
 
 function firstRelation<T>(value: T | T[] | null | undefined): T | null {
@@ -247,12 +255,10 @@ export async function getGameRunAnalyticsDetail(
   if (versionError) throw new Error(versionError.message)
   if (!versionRow) return null
 
-  const versionContent = firstRelation(
-    (versionRow as { game_versions: DeliveredGameVersionSnapshot | DeliveredGameVersionSnapshot[] })
-      .game_versions,
-  )?.content
+  const row = versionRow as GameRunAnalyticsDetailRow
+  const versionContent = firstRelation(row.game_versions)?.content
 
-  const base = mapGameRunRows([versionRow as GameRunRow])[0]
+  const base = mapGameRunRows([row])[0]
   if (!base) return null
 
   const participantDetails: GameRunParticipantDetail[] = base.participants.map((participant) => {

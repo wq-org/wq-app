@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft } from 'lucide-react'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import { AppShell } from '@/components/layout'
-import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { GameRunAnalyticsPanel, getClassroomDeliveredGame } from '@/features/classroom'
 
@@ -49,27 +47,12 @@ export function GameRunAnalyticsPage() {
     )
   }
 
-  const backHref = `/teacher/dashboard/classroom/${trimmedClassroomId}`
-
   return (
     <AppShell
       role="teacher"
       className="flex flex-col gap-8 animate-in fade-in-0 slide-in-from-bottom-4"
     >
       <div className="container py-6">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="mb-6 w-fit"
-          asChild
-        >
-          <Link to={backHref}>
-            <ArrowLeft className="size-4" />
-            {t('pages.classroomDetail.publishedCourse.backToClassroom')}
-          </Link>
-        </Button>
-
         <div className="text-center">
           <Text
             as="h1"
