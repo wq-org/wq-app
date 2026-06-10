@@ -30,7 +30,7 @@ import {
 } from '@/features/student'
 import {
   TeacherDashboard,
-  TeacherClassroomPage,
+  TeacherClassroomDetailPage,
   TeacherCoursesPage,
   TeacherSchedulePage,
   TeacherSettingsPage,
@@ -41,6 +41,10 @@ import {
   TeacherNotesPage,
   TeacherTasksPage,
   TeacherViewPage,
+  ClassroomPublishedCoursePage,
+  ClassroomTopicPublishedPage,
+  ClassroomCourseTopicLessonPublishedPage,
+  GameRunAnalyticsPage,
 } from '@/features/teacher'
 import { NotFoundPage } from './user/pages/not-found'
 import {
@@ -54,11 +58,6 @@ import {
   PublishedCourseTopicLessonPage,
   PublishedCourseTopicPage,
 } from '@/features/course'
-import {
-  ClassroomCourseTopicLessonPublishedPage,
-  ClassroomPublishedCoursePage,
-  ClassroomTopicPublishedPage,
-} from '@/features/classroom'
 import { LessonRedirect, LessonRoute, LessonView } from '@/features/lesson'
 import { TopicPage, TopicView } from '@/features/topic'
 import { Onboarding } from '@/features/onboarding'
@@ -740,6 +739,16 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="dashboard/classroom/:classroomId/game/:gameId/analytics"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <GameRunAnalyticsPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
                   path="dashboard/classroom/:classroomId/course/:courseId/published/game/:gameId"
                   element={
                     <RequireAuth>
@@ -784,7 +793,7 @@ const App = () => {
                   element={
                     <RequireAuth>
                       <RequireOnboarding>
-                        <TeacherClassroomPage />
+                        <TeacherClassroomDetailPage />
                       </RequireOnboarding>
                     </RequireAuth>
                   }

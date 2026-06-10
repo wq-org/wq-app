@@ -43,6 +43,7 @@
     },
     "classroomDetail": {
       "titleFallback": "Classroom",
+      "backToDashboard": "Back to dashboard",
       "invalidId": "This classroom link is invalid.",
       "loading": "Loading classroom…",
       "loadError": "Could not load classroom details.",
@@ -68,7 +69,19 @@
         "coursesSearchLabel": "Search courses",
         "coursesSearchPlaceholder": "Search by course title…",
         "coursesEmpty": "No courses have been published to this classroom yet.",
-        "coursesNoMatches": "No courses match your search."
+        "coursesNoMatches": "No courses match your search.",
+        "gamesTitle": "Games",
+        "gamesLoading": "Loading games…",
+        "gamesLoadError": "Could not load games for this classroom.",
+        "gamesSearchLabel": "Search games",
+        "gamesSearchPlaceholder": "Search by game title…",
+        "gamesEmpty": "No games have been delivered to this classroom yet.",
+        "gamesEmptyDescription": "Published games linked to courses in this classroom will appear here.",
+        "gamesNoMatches": "No games match your search.",
+        "gamesUntitled": "Untitled game",
+        "gamesNoDescription": "No description",
+        "gamesMenuAriaLabel": "Game options",
+        "gamesViewAnalytics": "View analytics"
       },
       "publishedCourse": {
         "backToClassroom": "Back to classroom",
@@ -76,6 +89,32 @@
         "invalidLink": "This classroom course link is invalid.",
         "notDelivered": "This course is not delivered to this classroom.",
         "loadError": "Could not load the delivered course snapshot."
+      }
+    },
+    "gameRunAnalytics": {
+      "titleFallback": "Game analytics",
+      "description": "Review classroom play sessions, scores, and per-component breakdowns.",
+      "invalidLink": "This analytics link is invalid.",
+      "loading": "Loading game runs…",
+      "loadError": "Could not load game run analytics.",
+      "runsTitle": "Play sessions",
+      "emptyTitle": "No play sessions yet",
+      "emptyDescription": "When students play this game in the classroom, sessions will appear here.",
+      "runCard": {
+        "title": "Session · {{playedAt}}",
+        "participants": "{{count}} players",
+        "topScore": "Top score: {{score}}"
+      },
+      "detail": {
+        "title": "Session details",
+        "loading": "Loading session details…",
+        "loadError": "Could not load session details.",
+        "selectRun": "Select a play session to see component scores and player breakdowns.",
+        "playedAt": "Played {{playedAt}}",
+        "noParticipants": "No participant results were recorded for this session.",
+        "totalScore": "Total score: {{score}} / {{maxScore}}",
+        "noComponentBreakdown": "No per-component breakdown is stored for this session yet.",
+        "componentScore": "{{score}} / {{maxScore}}"
       }
     }
   },

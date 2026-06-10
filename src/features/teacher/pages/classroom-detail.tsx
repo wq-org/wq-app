@@ -8,6 +8,7 @@ import { DashboardSection } from '@/features/dashboard'
 import { Text } from '@/components/ui/text'
 import {
   ClassroomCoursesPanel,
+  ClassroomGamesPanel,
   ClassroomStudentsPanel,
   useClassroomDetail,
 } from '@/features/classroom'
@@ -17,7 +18,7 @@ type ClassroomLocationState = {
 }
 
 type SectionSpec = {
-  id: 'students' | 'courses'
+  id: 'courses' | 'games' | 'schedule' | 'students'
   icon: LucideIcon
   titleKey: string
 }
@@ -28,6 +29,7 @@ const CLASSROOM_SECTIONS: SectionSpec[] = [
     icon: BookOpen,
     titleKey: 'pages.classroomDetail.sections.coursesTitle',
   },
+
   {
     id: 'students',
     icon: Users,
@@ -35,7 +37,7 @@ const CLASSROOM_SECTIONS: SectionSpec[] = [
   },
 ]
 
-export function TeacherClassroomPage() {
+export function TeacherClassroomDetailPage() {
   const { t } = useTranslation('features.teacher')
   const { classroomId } = useParams<{ classroomId: string }>()
   const location = useLocation()
@@ -117,11 +119,24 @@ export function TeacherClassroomPage() {
                   classroomId={classroomId}
                   parentLoading={loading}
                 />
-              ) : (
+              ) : spec.id === 'courses' ? (
                 <ClassroomCoursesPanel
                   classroomId={classroomId}
                   parentLoading={loading}
                 />
+              ) : spec.id === 'games' ? (
+                <ClassroomGamesPanel
+                  classroomId={classroomId}
+                  parentLoading={loading}
+                />
+              ) : (
+                <Text
+                  as="p"
+                  variant="body"
+                  className="text-sm text-muted-foreground"
+                >
+                  {t('pages.classroomDetail.sections.schedulePlaceholder')}
+                </Text>
               )}
             </DashboardSection>
           ))}
@@ -130,3 +145,6 @@ export function TeacherClassroomPage() {
     </AppShell>
   )
 }
+
+/** @deprecated Use TeacherClassroomDetailPage */
+export const TeacherClassroomPage = TeacherClassroomDetailPage

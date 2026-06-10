@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SplinePointer } from 'lucide-react'
+import { Gamepad2 } from 'lucide-react'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
@@ -74,7 +74,7 @@ export function GameProjectCardCompact({
           className={cn('rounded-lg border p-2', iconSurfaceClass)}
           aria-label={themeLabel}
         >
-          <SplinePointer
+          <Gamepad2
             className={cn('h-5 w-5', iconFgClass)}
             strokeWidth={1.5}
             aria-hidden

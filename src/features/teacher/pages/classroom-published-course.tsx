@@ -15,7 +15,7 @@ import {
   buildCourseReleaseReviewRoute,
   findPublishedTopicInTree,
   findPublishedLessonInTopic,
-} from '@/features/course'
+} from '@/features/classroom'
 
 function useTrimmedClassroomPublishedParams() {
   const { classroomId, courseId, topicId, lessonId } = useParams<{
@@ -223,6 +223,7 @@ export function ClassroomCourseTopicLessonPublishedPage() {
   if (isLoading) {
     return (
       <PublishedCoursePageShell layout="fullBleed">
+        <div className="container py-6"></div>
         <div className="flex items-center justify-center py-16">
           <Spinner
             variant="gray"
@@ -251,6 +252,7 @@ export function ClassroomCourseTopicLessonPublishedPage() {
 
   return (
     <PublishedCoursePageShell layout="fullBleed">
+      <div className="container py-6"></div>
       <PublishedLessonReader
         lesson={lesson}
         themeId={tree.themeId}
