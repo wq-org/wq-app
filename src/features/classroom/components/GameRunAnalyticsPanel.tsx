@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ChartLine } from 'lucide-react'
+import { ChartLine, MousePointerClick } from 'lucide-react'
 
 import { LoadingPage } from '@/components/shared'
 import {
@@ -11,6 +11,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
+import { Badge } from '@/components/ui/badge'
+import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { Text } from '@/components/ui/text'
@@ -20,6 +22,7 @@ import { useGameRunAnalytics, useGameRunAnalyticsDetail } from '../hooks/useGame
 import { groupGameRunsByStudent } from '../utils/groupGameRunsByStudent'
 import { parseGameRunChatHistory } from '../utils/parseGameRunChatHistory'
 import { GameRunChatHistoryPanel } from './GameRunChatHistoryPanel'
+import { GameRunComponentScoreRow } from './GameRunComponentScoreRow'
 import { GameRunStudentAttemptList } from './GameRunStudentAttemptList'
 import { GameRunStudentList } from './GameRunStudentList'
 
@@ -207,29 +210,49 @@ export function GameRunAnalyticsPanel({
             >
               {t('pages.gameRunAnalytics.attempts.title')}
             </Text>
-            <GameRunStudentAttemptList
-              attempts={selectedGroup.attempts}
-              selectedRunId={selectedRunId}
-              onSelectAttempt={setSelectedRunId}
-            />
+            <BlurredScrollArea
+              className="h-[min(28rem,60vh)] rounded-2xl"
+              orientation="vertical"
+              hideScrollBar
+            >
+              <GameRunStudentAttemptList
+                attempts={selectedGroup.attempts}
+                selectedRunId={selectedRunId}
+                onSelectAttempt={setSelectedRunId}
+              />
+            </BlurredScrollArea>
           </section>
 
           <section className="flex flex-col gap-3">
             {!selectedAttempt ? (
-              <Text
-                as="p"
-                variant="small"
-                muted
-              >
-                {t('pages.gameRunAnalytics.attempts.selectHint')}
-              </Text>
+              <Empty className="min-h-[min(28rem,60vh)] rounded-2xl border border-dashed border-border/70 bg-muted/10">
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <MousePointerClick className="size-6" />
+                  </EmptyMedia>
+                  <EmptyTitle>{t('pages.gameRunAnalytics.attempts.emptyTitle')}</EmptyTitle>
+                  <EmptyDescription>
+                    {t('pages.gameRunAnalytics.attempts.selectHint')}
+                  </EmptyDescription>
+                </EmptyHeader>
+              </Empty>
             ) : (
               <Card layout="flush">
                 <CardHeader className="pt-4">
-                  <CardTitle className="text-base font-semibold">
-                    {t('pages.gameRunAnalytics.detail.playedAt', {
-                      playedAt: selectedAttemptLabel,
-                    })}
+                  <CardTitle className="flex items-center gap-2 text-base font-semibold">
+                    <span>
+                      {t('pages.gameRunAnalytics.detail.playedAt', {
+                        playedAt: selectedAttemptLabel,
+                      })}
+                    </span>
+                    {selectedAttempt?.versionNo != null && (
+                      <Badge
+                        variant="outline"
+                        className="font-mono text-xs"
+                      >
+                        v{selectedAttempt.versionNo}
+                      </Badge>
+                    )}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4 pb-4">
@@ -273,29 +296,10 @@ export function GameRunAnalyticsPanel({
                       ) : (
                         <div className="flex flex-col gap-1.5">
                           {participantDetail.componentScores.map((component) => (
-                            <div
+                            <GameRunComponentScoreRow
                               key={component.nodeId}
-                              className="flex items-center justify-between gap-3 rounded-lg bg-muted/30 px-3 py-1.5"
-                            >
-                              <Text
-                                as="span"
-                                variant="small"
-                                className="truncate"
-                              >
-                                {component.label}
-                              </Text>
-                              <Text
-                                as="span"
-                                variant="small"
-                                muted
-                                className="shrink-0"
-                              >
-                                {t('pages.gameRunAnalytics.detail.componentScore', {
-                                  score: component.score,
-                                  maxScore: component.maxScore,
-                                })}
-                              </Text>
-                            </div>
+                              component={component}
+                            />
                           ))}
                         </div>
                       )}

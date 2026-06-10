@@ -124,11 +124,20 @@
       },
       "students": {
         "lastPlayed": "Zuletzt gespielt {{playedAt}}",
-        "attempts": "{{count}} Versuche"
+        "attempts": "{{count}} Versuche",
+        "viewDetails": "Details ansehen",
+        "columns": {
+          "name": "Name",
+          "lastPlayed": "Zuletzt gespielt",
+          "playedTimes": "Gespielte Male",
+          "version": "Version",
+          "action": "Aktion"
+        }
       },
       "attempts": {
         "title": "Versuche",
         "score": "Punktzahl: {{score}}",
+        "emptyTitle": "Kein Versuch ausgewählt",
         "selectHint": "Wähle einen Versuch, um Punkteaufschlüsselung und Chatverlauf zu sehen."
       },
       "chatHistory": {

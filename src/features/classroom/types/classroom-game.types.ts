@@ -15,6 +15,7 @@ export type GameRunParticipantSummary = {
   id: string
   userId: string
   displayName: string
+  avatarUrl: string | null
   score: number
   completedAt: string | null
   sessionPayload: unknown
@@ -26,14 +27,21 @@ export type GameRunAnalyticsItem = {
   status: string
   startedAt: string | null
   endedAt: string | null
+  versionNo: number | null
+  versionTitle: string | null
   participants: readonly GameRunParticipantSummary[]
 }
 
 export type GameComponentScore = {
   nodeId: string
+  nodeType: string
   label: string
   score: number
   maxScore: number
+  /** Signed or public preview URL when the node is an Image Pin. */
+  imagePreview?: string
+  /** Storage path for re-signing expired Image Pin previews. */
+  imageFilepath?: string
 }
 
 export type GameRunParticipantDetail = GameRunParticipantSummary & {
@@ -78,12 +86,14 @@ export type GameRunStudentAttempt = {
   participantId: string
   playedAt: string | null
   score: number
+  versionNo: number | null
   sessionPayload: unknown
 }
 
 export type GameRunStudentGroup = {
   userId: string
   displayName: string
+  avatarUrl: string | null
   attemptCount: number
   bestScore: number
   lastPlayedAt: string | null

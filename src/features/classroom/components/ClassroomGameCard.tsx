@@ -136,8 +136,11 @@ export function ClassroomGameCard({
           </Button>
         </PopoverTrigger>
         <PopoverContent
+          side="bottom"
           align="end"
-          className="w-52 rounded-lg bg-popover/80 p-2 backdrop-blur-md dark:bg-zinc-900/80"
+          sideOffset={8}
+          collisionPadding={12}
+          className="w-48 rounded-lg bg-popover/80 p-2 backdrop-blur-md dark:bg-zinc-900/80"
         >
           <Button
             type="button"

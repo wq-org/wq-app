@@ -19,7 +19,7 @@ export function groupGameRunsByStudent(
 ): GameRunStudentGroup[] {
   const attemptsByUser = new Map<
     string,
-    { displayName: string; attempts: GameRunStudentAttempt[] }
+    { displayName: string; avatarUrl: string | null; attempts: GameRunStudentAttempt[] }
   >()
 
   for (const run of runs) {
@@ -29,6 +29,7 @@ export function groupGameRunsByStudent(
         participantId: participant.id,
         playedAt: participant.completedAt ?? run.startedAt ?? run.endedAt,
         score: participant.score,
+        versionNo: run.versionNo,
         sessionPayload: participant.sessionPayload,
       }
 
@@ -38,6 +39,7 @@ export function groupGameRunsByStudent(
       } else {
         attemptsByUser.set(participant.userId, {
           displayName: participant.displayName,
+          avatarUrl: participant.avatarUrl,
           attempts: [attempt],
         })
       }
@@ -54,6 +56,7 @@ export function groupGameRunsByStudent(
     groups.push({
       userId,
       displayName: entry.displayName,
+      avatarUrl: entry.avatarUrl,
       attemptCount: attempts.length,
       bestScore: attempts.reduce((max, row) => Math.max(max, row.score), 0),
       lastPlayedAt: attempts[0]?.playedAt ?? null,

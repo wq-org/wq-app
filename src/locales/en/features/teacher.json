@@ -125,11 +125,20 @@
       },
       "students": {
         "lastPlayed": "Last played {{playedAt}}",
-        "attempts": "{{count}} attempts"
+        "attempts": "{{count}} attempts",
+        "viewDetails": "View details",
+        "columns": {
+          "name": "Name",
+          "lastPlayed": "Last played",
+          "playedTimes": "Played times",
+          "version": "Version",
+          "action": "Action"
+        }
       },
       "attempts": {
         "title": "Attempts",
         "score": "Score: {{score}}",
+        "emptyTitle": "No attempt selected",
         "selectHint": "Select an attempt to see the score breakdown and chat history."
       },
       "chatHistory": {

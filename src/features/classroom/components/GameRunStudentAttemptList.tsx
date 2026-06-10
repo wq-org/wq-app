@@ -55,15 +55,25 @@ export function GameRunStudentAttemptList({
             )}
           >
             <CardContent className="flex items-center justify-between gap-3 px-4">
-              <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-                <CalendarClock className="size-4" />
-                <Text
-                  as="span"
-                  variant="small"
-                >
-                  {playedAt}
-                </Text>
-              </span>
+              <div className="flex min-w-0 items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <CalendarClock className="size-4 shrink-0" />
+                  <Text
+                    as="span"
+                    variant="small"
+                  >
+                    {playedAt}
+                  </Text>
+                </span>
+                {attempt.versionNo != null && (
+                  <Badge
+                    variant="outline"
+                    className="shrink-0 font-mono text-xs"
+                  >
+                    v{attempt.versionNo}
+                  </Badge>
+                )}
+              </div>
               <Badge variant="secondary">
                 {t('pages.gameRunAnalytics.attempts.score', { score: attempt.score })}
               </Badge>

@@ -2,10 +2,10 @@ import { useTranslation } from 'react-i18next'
 
 import { LoadingPage } from '@/components/shared'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
 import { Text } from '@/components/ui/text'
 
 import type { GameRunAnalyticsDetail } from '../types/classroom-game.types'
+import { GameRunComponentScoreRow } from './GameRunComponentScoreRow'
 
 type GameRunAnalyticsDetailProps = {
   detail: GameRunAnalyticsDetail | null
@@ -122,29 +122,11 @@ export function GameRunAnalyticsDetailPanel({
                   {t('pages.gameRunAnalytics.detail.noComponentBreakdown')}
                 </Text>
               ) : (
-                participant.componentScores.map((component, index) => (
-                  <div key={component.nodeId}>
-                    {index > 0 ? <Separator className="mb-3" /> : null}
-                    <div className="flex items-center justify-between gap-3">
-                      <Text
-                        as="p"
-                        variant="body"
-                        className="text-sm font-medium"
-                      >
-                        {component.label}
-                      </Text>
-                      <Text
-                        as="p"
-                        variant="small"
-                        className="tabular-nums"
-                      >
-                        {t('pages.gameRunAnalytics.detail.componentScore', {
-                          score: component.score,
-                          maxScore: component.maxScore,
-                        })}
-                      </Text>
-                    </div>
-                  </div>
+                participant.componentScores.map((component) => (
+                  <GameRunComponentScoreRow
+                    key={component.nodeId}
+                    component={component}
+                  />
                 ))
               )}
             </CardContent>

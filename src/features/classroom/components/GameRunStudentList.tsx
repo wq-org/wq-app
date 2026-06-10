@@ -1,10 +1,17 @@
 import { useTranslation } from 'react-i18next'
-import { CalendarClock, Trophy } from 'lucide-react'
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { Text } from '@/components/ui/text'
+import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { cn } from '@/lib/utils'
 
 import type { GameRunStudentGroup } from '../types/classroom-game.types'
@@ -23,6 +30,78 @@ function formatPlayedAt(value: string | null, locale: string): string {
   return new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' }).format(date)
 }
 
+type GameRunStudentTableRowProps = {
+  group: GameRunStudentGroup
+  selected: boolean
+  lastPlayed: string
+  onSelectStudent: (userId: string) => void
+}
+
+function GameRunStudentTableRow({
+  group,
+  selected,
+  lastPlayed,
+  onSelectStudent,
+}: GameRunStudentTableRowProps) {
+  const { t } = useTranslation('features.teacher')
+  const { url: avatarUrl } = useAvatarUrl(group.avatarUrl)
+  const latestVersionNo = group.attempts[0]?.versionNo ?? null
+
+  const handleViewDetails = () => {
+    onSelectStudent(group.userId)
+  }
+
+  return (
+    <TableRow
+      data-state={selected ? 'selected' : undefined}
+      className={cn(selected && 'bg-blue-500/5')}
+    >
+      <TableCell>
+        <div className="flex items-center gap-3">
+          <Avatar size="md">
+            {avatarUrl ? (
+              <AvatarImage
+                src={avatarUrl}
+                alt={group.displayName}
+              />
+            ) : null}
+            <AvatarFallback>{getStudentInitial(group.displayName)}</AvatarFallback>
+          </Avatar>
+          <Text
+            as="span"
+            variant="small"
+            bold
+            className="truncate"
+          >
+            {group.displayName}
+          </Text>
+        </div>
+      </TableCell>
+      <TableCell className="text-muted-foreground">{lastPlayed}</TableCell>
+      <TableCell className="text-muted-foreground">
+        {t('pages.gameRunAnalytics.students.attempts', { count: group.attemptCount })}
+      </TableCell>
+      <TableCell>
+        {latestVersionNo != null ? (
+          <span className="font-mono text-sm text-muted-foreground">v{latestVersionNo}</span>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        )}
+      </TableCell>
+      <TableCell className="text-right">
+        <Button
+          type="button"
+          variant="darkblue"
+          size="sm"
+          onClick={handleViewDetails}
+        >
+          {t('pages.gameRunAnalytics.students.viewDetails')}
+        </Button>
+      </TableCell>
+    </TableRow>
+  )
+}
+
 export function GameRunStudentList({
   groups,
   selectedUserId,
@@ -31,67 +110,31 @@ export function GameRunStudentList({
   const { t, i18n } = useTranslation('features.teacher')
 
   return (
-    <div className="flex flex-col gap-3">
-      {groups.map((group) => {
-        const selected = selectedUserId === group.userId
-        const lastPlayed = formatPlayedAt(group.lastPlayedAt, i18n.language)
-
-        const handleClick = () => onSelectStudent(group.userId)
-
-        return (
-          <Card
-            key={group.userId}
-            role="button"
-            tabIndex={0}
-            onClick={handleClick}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault()
-                handleClick()
-              }
-            }}
-            layout="flush"
-            className={cn(
-              'cursor-pointer py-3 transition-colors hover:border-blue-500',
-              selected && 'border-blue-500 bg-blue-500/5',
-            )}
-          >
-            <CardContent className="flex items-center gap-3 px-4">
-              <Avatar size="md">
-                <AvatarFallback>{getStudentInitial(group.displayName)}</AvatarFallback>
-              </Avatar>
-
-              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <Text
-                  as="p"
-                  variant="small"
-                  bold
-                  className="truncate"
-                >
-                  {group.displayName}
-                </Text>
-                <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <CalendarClock className="size-3.5" />
-                  {t('pages.gameRunAnalytics.students.lastPlayed', { playedAt: lastPlayed })}
-                </span>
-              </div>
-
-              <div className="flex shrink-0 items-center gap-2">
-                <Badge variant="secondary">
-                  {t('pages.gameRunAnalytics.students.attempts', { count: group.attemptCount })}
-                </Badge>
-                <Badge
-                  variant="secondary"
-                  className="inline-flex items-center gap-1"
-                >
-                  <Trophy className="size-3.5" />
-                  {group.bestScore}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-        )
-      })}
+    <div className="rounded-2xl border bg-card shadow-sm ring-1 ring-black/5">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>{t('pages.gameRunAnalytics.students.columns.name')}</TableHead>
+            <TableHead>{t('pages.gameRunAnalytics.students.columns.lastPlayed')}</TableHead>
+            <TableHead>{t('pages.gameRunAnalytics.students.columns.playedTimes')}</TableHead>
+            <TableHead>{t('pages.gameRunAnalytics.students.columns.version')}</TableHead>
+            <TableHead className="text-right">
+              {t('pages.gameRunAnalytics.students.columns.action')}
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {groups.map((group) => (
+            <GameRunStudentTableRow
+              key={group.userId}
+              group={group}
+              selected={selectedUserId === group.userId}
+              lastPlayed={formatPlayedAt(group.lastPlayedAt, i18n.language)}
+              onSelectStudent={onSelectStudent}
+            />
+          ))}
+        </TableBody>
+      </Table>
     </div>
   )
 }

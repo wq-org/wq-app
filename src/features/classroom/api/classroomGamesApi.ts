@@ -30,8 +30,10 @@ type DeliveredGameRow = {
   course_deliveries: { classroom_id: string } | { classroom_id: string }[] | null
 }
 
-type GameVersionContentSnapshot = {
-  content: { nodes?: Node[]; edges?: Edge[] } | null
+type GameVersionSnapshot = {
+  title?: string | null
+  version_no?: number
+  content?: { nodes?: Node[]; edges?: Edge[] } | null
 }
 
 type GameRunRow = {
@@ -40,6 +42,7 @@ type GameRunRow = {
   status: string
   started_at: string | null
   ended_at: string | null
+  game_versions?: GameVersionSnapshot | GameVersionSnapshot[] | null
   game_sessions: Array<{
     id: string
     game_session_participants: Array<{
@@ -48,17 +51,17 @@ type GameRunRow = {
       score: number
       session_payload: unknown
       completed_at: string | null
-      profiles: { display_name: string | null; username: string | null } | null
+      profiles: {
+        display_name: string | null
+        username: string | null
+        avatar_url: string | null
+      } | null
     }>
   }> | null
 }
 
-type GameRunAnalyticsDetailRow = GameRunRow & {
-  game_versions: GameVersionContentSnapshot | GameVersionContentSnapshot[] | null
-}
-
 function readGameVersionContent(
-  gameVersions: GameVersionContentSnapshot | GameVersionContentSnapshot[] | null | undefined,
+  gameVersions: GameVersionSnapshot | GameVersionSnapshot[] | null | undefined,
 ): { nodes?: Node[]; edges?: Edge[] } | null | undefined {
   return firstRelation(gameVersions)?.content ?? undefined
 }
@@ -159,11 +162,13 @@ export async function listClassroomDeliveredGames(
 
 function mapGameRunRows(rows: GameRunRow[]): GameRunAnalyticsItem[] {
   return rows.map((row) => {
+    const versionMeta = firstRelation(row.game_versions)
     const participants = (row.game_sessions ?? []).flatMap((session) =>
       (session.game_session_participants ?? []).map((participant) => ({
         id: participant.id,
         userId: participant.user_id,
         displayName: resolveDisplayName(participant.profiles),
+        avatarUrl: participant.profiles?.avatar_url?.trim() || null,
         score: participant.score,
         completedAt: participant.completed_at,
         sessionPayload: participant.session_payload,
@@ -176,6 +181,8 @@ function mapGameRunRows(rows: GameRunRow[]): GameRunAnalyticsItem[] {
       status: row.status,
       startedAt: row.started_at,
       endedAt: row.ended_at,
+      versionNo: versionMeta?.version_no ?? null,
+      versionTitle: versionMeta?.title?.trim() || null,
       participants,
     }
   })
@@ -194,6 +201,10 @@ export async function listGameRunAnalytics(
       status,
       started_at,
       ended_at,
+      game_versions (
+        title,
+        version_no
+      ),
       game_sessions (
         id,
         game_session_participants (
@@ -204,7 +215,8 @@ export async function listGameRunAnalytics(
           completed_at,
           profiles (
             display_name,
-            username
+            username,
+            avatar_url
           )
         )
       )
@@ -235,6 +247,8 @@ export async function getGameRunAnalyticsDetail(
       ended_at,
       game_version_id,
       game_versions (
+        title,
+        version_no,
         content
       ),
       game_sessions (
@@ -247,7 +261,8 @@ export async function getGameRunAnalyticsDetail(
           completed_at,
           profiles (
             display_name,
-            username
+            username,
+            avatar_url
           )
         )
       )
@@ -261,7 +276,7 @@ export async function getGameRunAnalyticsDetail(
   if (versionError) throw new Error(versionError.message)
   if (!versionRow) return null
 
-  const row = versionRow as unknown as GameRunAnalyticsDetailRow
+  const row = versionRow as unknown as GameRunRow
   const versionContent = readGameVersionContent(row.game_versions)
   const base = mapGameRunRows([row])[0]
   if (!base) return null
