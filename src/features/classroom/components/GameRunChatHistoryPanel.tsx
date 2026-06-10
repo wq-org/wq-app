@@ -25,7 +25,7 @@ export function GameRunChatHistoryPanel({ messages }: GameRunChatHistoryPanelPro
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded-2xl bg-muted/20 p-3">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-2 rounded-2xl bg-muted/20 p-2">
       {messages.map((message) => {
         const isPlayer = message.direction === 'receiving'
         const hasScore = typeof message.score === 'number'
@@ -37,7 +37,7 @@ export function GameRunChatHistoryPanel({ messages }: GameRunChatHistoryPanelPro
           >
             <div
               className={cn(
-                'max-w-[85%] rounded-2xl px-3 py-2',
+                'max-w-[92%] rounded-2xl px-3 py-2',
                 isPlayer
                   ? 'bg-blue-500/10 text-foreground dark:bg-blue-500/20'
                   : 'bg-background shadow-sm ring-1 ring-foreground/5',

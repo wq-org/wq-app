@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useState, type ReactNode } from 'react'
 import { useDroppable } from '@dnd-kit/core'
 import { cn } from '@/lib/utils'
@@ -41,7 +43,7 @@ function GameChatImagePinStatic({
   src,
   alt,
   rect,
-  showTargetRect = true,
+  showTargetRect = false,
   className,
   children,
 }: ImagePinViewProps) {
@@ -74,7 +76,7 @@ function GameChatImagePinDroppable({
   src,
   alt,
   rect,
-  showTargetRect = true,
+  showTargetRect = false,
   className,
   children,
   droppableId,
@@ -123,7 +125,7 @@ function GameChatImagePinMedia({
   src,
   alt,
   rect,
-  showTargetRect = true,
+  showTargetRect = false,
   dims,
   onDims,
 }: MediaProps) {

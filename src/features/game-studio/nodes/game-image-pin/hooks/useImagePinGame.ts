@@ -367,19 +367,20 @@ export function useImagePinGame({
   }, [latestQuestionMessageId, hasActiveQuestion])
 
   const displayMessages = useMemo<GameChatHistoryMessage[]>(() => {
-    if (!latestQuestionMessageId || isLatestSubmitted) return state.messages
-    return state.messages.map((m) =>
-      m.id === latestQuestionMessageId && m.image
-        ? {
-            ...m,
-            image: {
-              ...m.image,
-              droppableId: PIN_IMAGE_DROPPABLE_ID,
-              showTargetRect: false,
-            },
-          }
-        : m,
-    )
+    return state.messages.map((m) => {
+      if (!m.image || m.image.variant !== 'image-pin') return m
+
+      const isActiveQuestion = m.id === latestQuestionMessageId && !isLatestSubmitted
+
+      return {
+        ...m,
+        image: {
+          ...m.image,
+          showTargetRect: false,
+          ...(isActiveQuestion ? { droppableId: PIN_IMAGE_DROPPABLE_ID } : {}),
+        },
+      }
+    })
   }, [state.messages, latestQuestionMessageId, isLatestSubmitted])
 
   const getSubmissionForMessage = (message: GameChatHistoryMessage): ImagePinSubmission | null => {
