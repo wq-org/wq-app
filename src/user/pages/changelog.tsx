@@ -37,7 +37,7 @@ export default function ChangelogPage() {
         <Changelog>
           <ChangelogHeader
             title="Product Changelog"
-            description="A running record of the latest shipped work across course creation, onboarding, lesson previews, and game tools."
+            description="A running record of the latest shipped work for teachers and students — course and classroom publishing, delivered games with play and analytics, Game Studio lifecycle, lesson previews, and onboarding."
             updatedAt={changelogEntries[0]?.date}
           />
 

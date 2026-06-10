@@ -20,6 +20,56 @@ export type SiteChangelogEntry = {
 
 export const changelogEntries: SiteChangelogEntry[] = [
   {
+    id: '2026-06-10-classroom-delivered-games-play-and-analytics',
+    date: '10 June 2026',
+    title:
+      'Play delivered games in the classroom, review student scores and chat history, and leave safely mid-session',
+    summary:
+      'Games linked to published courses now show up on classroom detail alongside courses and students. Teachers can preview any delivered game without saving results, open per-game analytics to see who played and how they scored, and drill into each attempt with a full chat walkthrough. Students play the same real game runtime, have their completed sessions saved automatically, can leave early with progress preserved, and revisit their own attempt history. Game sessions feel more focused—the command palette stays hidden during play, chat inputs stay pinned at the bottom, and Image Pin tap targets are hidden in live play so learners are not distracted by editor overlays.',
+    bullets: [
+      'Teachers: classroom detail now has a Games section — search delivered games by title and browse them in a horizontal card strip; games appear when they are linked to a course published in that classroom',
+      'Teachers: tap a game card or choose Play from the card menu to open the full play session — you preview in-memory only; a clear notice reminds you that results are not saved in teacher preview mode',
+      'Teachers: choose View analytics from the card menu (without accidentally starting play) to open a dedicated analytics page for that game in the classroom',
+      'Teachers: analytics shows students who have played, how many attempts each made, and when they last played — select a student, then an attempt, to see total score, per-component breakdown, and the stored chat history for that run',
+      'Teachers: breadcrumb navigation lets you step back from attempt detail → student attempts → all students without losing context',
+      'Students: play delivered games from your classroom through the same step-by-step runtime teachers use in Game Simulation — Image Pin, Drag & Drop Math, Open Question, If/Else routing, and End',
+      'Students: when you finish a game, your score, per-node results, and full chat walkthrough are saved once per session so your teacher can review how you worked through each step',
+      'Students: if you need to leave before finishing, a Leave game badge opens a confirmation dialog — confirming saves your progress so far; any steps you have not reached yet are recorded as unplayed rather than lost',
+      'Students: open your own game history from the analytics route in student mode — you see only your attempts, with the same score breakdown and chat history your teacher sees for your runs',
+      'Students: after a successful save you see your final score; if saving fails you get a clear error with a Retry action instead of a silent drop',
+      'Everyone: the command palette automatically hides on classroom game play routes so the session stays immersive and inputs are not covered by floating UI',
+      'Everyone: play chat uses a wider layout with inputs pinned in the session footer; Image Pin tap-region outlines stay hidden during live play so students see a clean picture, not editor guides',
+      'Teachers: pages that sit above the command palette gained extra bottom padding so primary actions are not hidden behind the floating palette on smaller screens',
+      'Internal: game runs persist `session_payload` with chat history and `played` flags per node; leave guard uses navigation traps compatible with BrowserRouter (no `useBlocker`); analytics API typing hardened for stable builds',
+    ],
+    badges: ['feature', 'new', 'improvement', 'fix'],
+  },
+  {
+    id: '2026-06-09-game-studio-lifecycle-and-snapshot-publish',
+    date: '9–10 June 2026',
+    title:
+      'Game Studio: unified lifecycle settings, immutable publish snapshots, and link one game to multiple courses',
+    summary:
+      'Game publishing now follows the same deliberate lifecycle model as courses. Settings, live snapshot, draft-vs-live diff, publish, archive, and delete live in one panel instead of split drawers and toolbar toggles. Publishing creates an immutable game version snapshot (title, description, theme frozen at publish time) plus deliveries to classrooms through linked courses—draft edits no longer leak into what students play. Teachers can link a published game to several published courses at once, review what changed since the live version before republishing, and manage archive or soft-delete from the same surface.',
+    bullets: [
+      'Teachers: open Settings from the Game Studio canvas to reach one unified panel — edit title, description, and theme, see validation issues, and manage the full release lifecycle without switching between separate drawers',
+      'Teachers: the Live snapshot card shows what students currently receive — published version number, when it went live, and how many classrooms have an active delivery',
+      'Teachers: the Release diff section compares your draft to the live snapshot so you can see title, description, and theme changes before you publish an update',
+      'Teachers: publish still runs the same graph validation (Start/End wiring, per-node readiness, If/Else branches) — tap any listed issue to jump the canvas to that node; blocking errors must be fixed before publish, warnings can proceed',
+      'Teachers: the publish dialog lets you optionally link the game to one or more published courses in a checkbox table — linking is optional; publishing without a course still creates the version snapshot',
+      'Teachers: link one published game to multiple courses via `game_course_links` — classrooms that receive those courses automatically see the game in their Games section',
+      'Teachers: draft title, description, and theme edits no longer change what enrolled students play — delivered views read the frozen snapshot from the published game version',
+      'Teachers: archive or soft-delete a game from the settings panel more menu — archive hides it from active lists; delete uses hold-to-confirm with clear destructive styling',
+      'Teachers: the canvas toolbar no longer carries publish/unpublish actions — release work stays in the settings panel so editing and shipping are mentally separate',
+      'Teachers: the version popover on project cards is read-only context; project cards show the published version number when a live snapshot exists',
+      'Teachers: on published project cards, the course menu still supports link and unlink — pick from your published courses in a scrollable selectable table',
+      'Students: when a teacher publishes a game linked to your classroom course, you receive the immutable version snapshot — the same nodes, copy, and theme the teacher froze at publish time',
+      'Students: classrooms no longer hit broken game-delivery queries — delivery access rules were fixed so listing and playing delivered games stays reliable',
+      'Internal: `publish_game` RPC snapshots metadata into `game_versions`, creates deliveries, and supports optional course links; backfill migration aligns existing published games; `games.deleted_at` enables soft delete',
+    ],
+    badges: ['feature', 'new', 'improvement', 'change'],
+  },
+  {
     id: '2026-06-05-course-classroom-publish-and-snapshot-views',
     date: '5 June 2026',
     title:
