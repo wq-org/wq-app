@@ -7,15 +7,25 @@ import { AppShell } from '@/components/layout'
 import { LoadingPage } from '@/components/shared'
 import { Button } from '@/components/ui/button'
 import { FieldTextarea } from '@/components/ui/field-textarea'
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { Text } from '@/components/ui/text'
+import { cn } from '@/lib/utils'
 import { Editor } from '@/features/lexical-editor'
 import type { LessonDraftState } from '@/features/lesson'
 import { getThemeBackgroundStyle, getThemeClasses, type ThemeId } from '@/lib/themes'
 
 import { softDeleteNote } from '../api/notesApi'
 import { NoteSettingsDrawer } from '../components/NoteSettingsDrawer'
+import {
+  NOTE_AGENT_PANEL_ID,
+  NOTE_AGENT_PANEL_MAX_SIZE,
+  NOTE_AGENT_PANEL_MIN_SIZE,
+  NOTE_EDITOR_MAIN_PANEL_ID,
+  useNoteAgentPanel,
+} from '../hooks/useNoteAgentPanel'
 import { useNoteEditor } from '../hooks/useNoteEditor'
 import { buildNoteListRoute } from '../utils/noteRoutes'
+import { NoteAgentPage } from './NoteAgentPage'
 
 const HEADER_AUTOSAVE_MS = 500
 const DESCRIPTION_TEXTAREA_ID = 'note-description'
@@ -29,6 +39,8 @@ export function NoteEditorPage({ role }: NoteEditorPageProps) {
   const navigate = useNavigate()
   const { noteId } = useParams<{ noteId: string }>()
   const { note, loading, error, saveContent, saveHeader } = useNoteEditor(noteId)
+  const { agentPanelRef, isAgentOpen, isAgentAnimating, isAgentClosing, handleAgentPanelResize } =
+    useNoteAgentPanel()
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -145,93 +157,129 @@ export function NoteEditorPage({ role }: NoteEditorPageProps) {
       role={role}
       commandBarContext="note-editor"
     >
-      <div className="-mx-[calc(50vw-50%)] -mt-20 w-screen">
-        <div
-          className="h-[22vh] w-full"
-          style={coverStyle}
-        />
-        <div className="mx-auto w-full max-w-2xl px-4">
-          <div className="-mt-8 mb-6">
-            <div
-              className={`flex h-14 w-14 items-center justify-center rounded-2xl shadow-md ${themeClasses.solidBg}`}
-            >
-              <File
-                className="h-7 w-7 text-white"
-                strokeWidth={2}
+      <div className="-mx-[calc(50vw-50%)] -mt-20 flex min-h-[calc(100dvh-5rem)] w-screen">
+        <ResizablePanelGroup
+          orientation="horizontal"
+          className="h-full w-full"
+        >
+          <ResizablePanel
+            id={NOTE_EDITOR_MAIN_PANEL_ID}
+            minSize={40}
+            defaultSize={100}
+            className="min-w-0"
+          >
+            <div className="h-full min-h-0 overflow-y-auto">
+              <div
+                className="h-[22vh] w-full"
+                style={coverStyle}
               />
-            </div>
-          </div>
+              <div className="mx-auto w-full max-w-2xl px-4">
+                <div className="-mt-8 mb-6">
+                  <div
+                    className={`flex h-14 w-14 items-center justify-center rounded-2xl shadow-md ${themeClasses.solidBg}`}
+                  >
+                    <File
+                      className="h-7 w-7 text-white"
+                      strokeWidth={2}
+                    />
+                  </div>
+                </div>
 
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder={t('pages.editor.fallbackTitle')}
-            className="w-full border-0 bg-transparent py-1 text-4xl font-bold leading-tight tracking-tight outline-none placeholder:text-zinc-400"
-          />
-
-          <div className="mt-2 flex max-w-full items-center gap-2">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="h-auto justify-start gap-2 px-0 py-1 text-muted-foreground"
-              onClick={focusDescription}
-            >
-              <TextQuote
-                className="size-4 shrink-0"
-                strokeWidth={2}
-                aria-hidden
-              />
-            </Button>
-            <FieldTextarea
-              id={DESCRIPTION_TEXTAREA_ID}
-              className="min-w-0 flex-1 pb-0 [&_label]:sr-only [&>div.relative]:my-1 **:data-[slot=textarea]:min-h-0 **:data-[slot=textarea]:max-h-11 **:data-[slot=textarea]:overflow-y-auto **:data-[slot=textarea]:py-1"
-              value={description}
-              onValueChange={setDescription}
-              label={t('pages.editor.descriptionLabel')}
-              placeholder={t('pages.editor.fallbackDescription')}
-              rows={1}
-              hideSeparator
-            />
-          </div>
-
-          <div className="mt-2">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="h-auto justify-start gap-2 px-0 py-1 text-muted-foreground"
-              onClick={() => setSettingsOpen(true)}
-            >
-              <Settings2
-                className="size-4 shrink-0"
-                aria-hidden
-              />
-              {t('pages.editor.settingsLabel')}
-            </Button>
-          </div>
-
-          <NoteSettingsDrawer
-            note={{ ...note, title, description }}
-            open={settingsOpen}
-            onOpenChange={setSettingsOpen}
-            onThemeChange={handleThemeChange}
-            onDelete={handleDelete}
-          />
-
-          <div className="mt-4 pb-24">
-            {noteId && note ? (
-              <div key={noteId}>
-                <Editor
-                  lessonId={noteId}
-                  initialContent={(note.content as unknown as LessonDraftState) ?? null}
-                  isLoading={loading}
-                  onPersistSerializedContent={persistContent}
+                <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder={t('pages.editor.fallbackTitle')}
+                  className="w-full border-0 bg-transparent py-1 text-4xl font-bold leading-tight tracking-tight outline-none placeholder:text-zinc-400"
                 />
+
+                <div className="mt-2 flex max-w-full items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-auto justify-start gap-2 px-0 py-1 text-muted-foreground"
+                    onClick={focusDescription}
+                  >
+                    <TextQuote
+                      className="size-4 shrink-0"
+                      strokeWidth={2}
+                      aria-hidden
+                    />
+                  </Button>
+                  <FieldTextarea
+                    id={DESCRIPTION_TEXTAREA_ID}
+                    className="min-w-0 flex-1 pb-0 [&_label]:sr-only [&>div.relative]:my-1 **:data-[slot=textarea]:min-h-0 **:data-[slot=textarea]:max-h-11 **:data-[slot=textarea]:overflow-y-auto **:data-[slot=textarea]:py-1"
+                    value={description}
+                    onValueChange={setDescription}
+                    label={t('pages.editor.descriptionLabel')}
+                    placeholder={t('pages.editor.fallbackDescription')}
+                    rows={1}
+                    hideSeparator
+                  />
+                </div>
+
+                <div className="mt-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-auto justify-start gap-2 px-0 py-1 text-muted-foreground"
+                    onClick={() => setSettingsOpen(true)}
+                  >
+                    <Settings2
+                      className="size-4 shrink-0"
+                      aria-hidden
+                    />
+                    {t('pages.editor.settingsLabel')}
+                  </Button>
+                </div>
+
+                <NoteSettingsDrawer
+                  note={{ ...note, title, description }}
+                  open={settingsOpen}
+                  onOpenChange={setSettingsOpen}
+                  onThemeChange={handleThemeChange}
+                  onDelete={handleDelete}
+                />
+
+                <div className="mt-4 pb-24">
+                  {noteId && note ? (
+                    <div key={noteId}>
+                      <Editor
+                        lessonId={noteId}
+                        initialContent={(note.content as unknown as LessonDraftState) ?? null}
+                        isLoading={loading}
+                        onPersistSerializedContent={persistContent}
+                      />
+                    </div>
+                  ) : null}
+                </div>
               </div>
-            ) : null}
-          </div>
-        </div>
+            </div>
+          </ResizablePanel>
+
+          <ResizableHandle
+            withHandle
+            className={cn(
+              'transition-opacity duration-200 ease-out',
+              !isAgentOpen && !isAgentAnimating && 'pointer-events-none w-0 opacity-0',
+            )}
+          />
+
+          <ResizablePanel
+            id={NOTE_AGENT_PANEL_ID}
+            panelRef={agentPanelRef}
+            collapsible
+            collapsedSize={0}
+            defaultSize={0}
+            minSize={NOTE_AGENT_PANEL_MIN_SIZE}
+            maxSize={NOTE_AGENT_PANEL_MAX_SIZE}
+            onResize={handleAgentPanelResize}
+            className="min-w-0 overflow-hidden border-l border-border/60 bg-background"
+          >
+            <NoteAgentPage isClosing={isAgentClosing} />
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </div>
     </AppShell>
   )

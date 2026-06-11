@@ -26,6 +26,10 @@
       "settingsLabel": "Einstellungen",
       "backToNotes": "Zurück zu Notizen",
       "loadError": "Diese Notiz konnte nicht geladen werden."
+    },
+    "agent": {
+      "title": "Agent",
+      "placeholder": "Agent-Werkzeuge für diese Notiz erscheinen hier."
     }
   },
   "card": {

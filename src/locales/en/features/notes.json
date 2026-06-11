@@ -26,6 +26,10 @@
       "settingsLabel": "Settings",
       "backToNotes": "Back to notes",
       "loadError": "Could not load this note."
+    },
+    "agent": {
+      "title": "Agent",
+      "placeholder": "Agent tools for this note will appear here."
     }
   },
   "card": {

@@ -363,7 +363,7 @@ export function CommandPalette({
 
   const handleItemClick = (item: CommandBarItem) => {
     // Dispatch custom event for canvas tools (game-studio editor listens for pan/select)
-    if (item.actionId === 'pan' || item.actionId === 'select') {
+    if (item.actionId === 'pan' || item.actionId === 'select' || item.actionId === 'agent') {
       window.dispatchEvent(
         new CustomEvent('command-action', {
           detail: { actionId: item.actionId },
