@@ -42,6 +42,9 @@
   "settings": {
     "drawerTitle": "Note settings",
     "close": "Close",
+    "themeLabel": "Color",
+    "themeHint": "Choose a color for this note.",
+    "themeError": "Could not update note color.",
     "deleteAction": "Delete note",
     "deleteSuccess": "Note deleted",
     "deleteError": "Could not delete note"

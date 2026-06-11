@@ -101,7 +101,7 @@ function TeacherNotesList() {
               variant="darkblue"
               size="default"
               className="shrink-0 gap-2"
-              onClick={() => requestOpenCommandAddDialog({ initialType: 'note' })}
+              onClick={() => requestOpenCommandAddDialog()}
             >
               <Plus
                 className="size-4 shrink-0"

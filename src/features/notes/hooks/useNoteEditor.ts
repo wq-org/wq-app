@@ -30,7 +30,11 @@ export function useNoteEditor(noteId: string | undefined) {
   )
 
   const saveHeader = useCallback(
-    async (values: { title?: string; description?: string }): Promise<void> => {
+    async (values: {
+      title?: string
+      description?: string
+      themeId?: Note['themeId']
+    }): Promise<void> => {
       if (!noteId) return
       await updateNoteHeader(noteId, values)
       setNote((prev) => (prev ? { ...prev, ...values } : prev))

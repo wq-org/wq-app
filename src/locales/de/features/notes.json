@@ -42,6 +42,9 @@
   "settings": {
     "drawerTitle": "Notiz-Einstellungen",
     "close": "Schließen",
+    "themeLabel": "Farbe",
+    "themeHint": "Wähle eine Farbe für diese Notiz.",
+    "themeError": "Farbe konnte nicht gespeichert werden.",
     "deleteAction": "Notiz löschen",
     "deleteSuccess": "Notiz gelöscht",
     "deleteError": "Notiz konnte nicht gelöscht werden"

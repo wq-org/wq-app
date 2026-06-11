@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import { isThemeId } from '@/lib/themes'
+import { isThemeId, type ThemeId } from '@/lib/themes'
 import {
   NOTE_CONTENT_SCHEMA_VERSION,
   type Note,
@@ -156,12 +156,14 @@ export async function updateNoteContent(
 
 export async function updateNoteHeader(
   noteId: string,
-  values: { title?: string; description?: string },
+  values: { title?: string; description?: string; themeId?: ThemeId | null },
 ): Promise<void> {
-  const { error } = await supabase
-    .from('notes')
-    .update(values)
-    .eq('id', noteId)
+  const payload: { title?: string; description?: string; theme_id?: ThemeId | null } = {}
+  if (values.title !== undefined) payload.title = values.title
+  if (values.description !== undefined) payload.description = values.description
+  if (values.themeId !== undefined) payload.theme_id = values.themeId
+
+  const { error } = await supabase.from('notes').update(payload).eq('id', noteId)
 
   if (error) throw new Error(error.message)
 }

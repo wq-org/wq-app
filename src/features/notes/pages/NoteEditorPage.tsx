@@ -10,7 +10,7 @@ import { FieldTextarea } from '@/components/ui/field-textarea'
 import { Text } from '@/components/ui/text'
 import { Editor } from '@/features/lexical-editor'
 import type { LessonDraftState } from '@/features/lesson'
-import { getThemeBackgroundStyle, getThemeClasses } from '@/lib/themes'
+import { getThemeBackgroundStyle, getThemeClasses, type ThemeId } from '@/lib/themes'
 
 import { softDeleteNote } from '../api/notesApi'
 import { NoteSettingsDrawer } from '../components/NoteSettingsDrawer'
@@ -101,6 +101,13 @@ export function NoteEditorPage({ role }: NoteEditorPageProps) {
       navigate(buildNoteListRoute(role))
     },
     [navigate, role],
+  )
+
+  const handleThemeChange = useCallback(
+    async (themeId: ThemeId) => {
+      await saveHeader({ themeId })
+    },
+    [saveHeader],
   )
 
   const coverStyle = getThemeBackgroundStyle(note?.themeId ?? undefined)
@@ -205,6 +212,7 @@ export function NoteEditorPage({ role }: NoteEditorPageProps) {
             note={{ ...note, title, description }}
             open={settingsOpen}
             onOpenChange={setSettingsOpen}
+            onThemeChange={handleThemeChange}
             onDelete={handleDelete}
           />
 

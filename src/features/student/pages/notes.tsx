@@ -83,8 +83,8 @@ function StudentNotesList() {
           </div>
         </section>
 
-        <div className="mb-6 flex items-center gap-3">
-          <div className="min-w-0 flex-1">
+        <div className="mb-6 flex flex-col gap-3">
+          <div className="min-w-0 flex-1 w-lg">
             <FieldInput
               label={t('pages.list.searchLabel')}
               labelVisibility="sr-only"
@@ -95,19 +95,21 @@ function StudentNotesList() {
               showSearchIcon
             />
           </div>
-          <Button
-            type="button"
-            variant="darkblue"
-            size="default"
-            className="shrink-0 gap-2"
-            onClick={() => requestOpenCommandAddDialog({ initialType: 'note' })}
-          >
-            <Plus
-              className="size-4 shrink-0"
-              aria-hidden
-            />
-            {t('pages.list.newNote')}
-          </Button>
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              variant="darkblue"
+              size="default"
+              className="shrink-0 gap-2"
+              onClick={() => requestOpenCommandAddDialog()}
+            >
+              <Plus
+                className="size-4 shrink-0"
+                aria-hidden
+              />
+              {t('pages.list.newNote')}
+            </Button>
+          </div>
         </div>
 
         <NoteCardList
