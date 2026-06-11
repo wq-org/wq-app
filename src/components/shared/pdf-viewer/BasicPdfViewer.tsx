@@ -13,6 +13,7 @@ import 'pdfjs-dist/web/pdf_viewer.css'
 import { Spinner } from '@/components/ui/spinner'
 import { cn } from '@/lib/utils'
 import { configurePdfJsWorker } from './configure-pdf-js-worker'
+import { PDF_VIEWER_LAYOUT, type PdfViewerLayout } from './pdf-viewer-layout'
 import { PdfViewerToolbar } from './PdfViewerToolbar'
 
 configurePdfJsWorker()
@@ -49,13 +50,16 @@ function PdfViewerLoader() {
 export type BasicPdfViewerProps = {
   source: string
   className?: string
+  /** `panel` uses a fixed sidebar height; `default` is for modals and expanded cards. */
+  layout?: PdfViewerLayout
 }
 
-export function BasicPdfViewer({ source, className }: BasicPdfViewerProps) {
+export function BasicPdfViewer({ source, className, layout = 'default' }: BasicPdfViewerProps) {
   return (
     <div
       className={cn(
-        'relative z-0 flex h-[min(70vh,720px)] w-full flex-col overflow-hidden rounded-xl border border-border bg-muted/20',
+        'relative z-0 flex w-full flex-col overflow-hidden rounded-xl border border-border bg-muted/20',
+        PDF_VIEWER_LAYOUT[layout],
         className,
       )}
     >
@@ -67,7 +71,7 @@ export function BasicPdfViewer({ source, className }: BasicPdfViewerProps) {
       >
         <PdfViewerFitWidthOnLoad />
 
-        <Pages className="relative z-0 min-h-0 flex-1 p-4">
+        <Pages className="relative z-0 min-h-0 flex-1 overflow-y-auto p-4">
           <Page>
             <CanvasLayer />
             <TextLayer />

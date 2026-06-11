@@ -29,7 +29,12 @@
     },
     "agent": {
       "title": "Agent",
-      "placeholder": "Agent-Werkzeuge für diese Notiz erscheinen hier."
+      "placeholder": "Agent-Werkzeuge für diese Notiz erscheinen hier.",
+      "searchLabel": "PDFs durchsuchen",
+      "searchPlaceholder": "Nach Dateiname suchen …",
+      "pdfsEmpty": "Noch keine PDF-Dateien in deiner Cloud.",
+      "pdfsSearchEmpty": "Keine PDFs passen zu deiner Suche.",
+      "closePreview": "Vorschau schließen"
     }
   },
   "card": {

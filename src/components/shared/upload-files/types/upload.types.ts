@@ -30,6 +30,9 @@ export const ALL_ALLOWED_TYPES: string[] = [
 
 export const MAX_VIDEO_DURATION = 60 // seconds
 
+/** Hard cap for PDF uploads. Enforced before upload starts so users never wait on a doomed transfer. */
+export const MAX_PDF_SIZE_BYTES = 10 * 1024 * 1024
+
 // File upload types
 export type FileUploadErrorCode = 'duplicate' | 'validation' | 'storage' | 'unknown'
 

@@ -5,6 +5,11 @@ import { File, Settings2, TextQuote } from 'lucide-react'
 import type { SerializedEditorState } from 'lexical'
 import { AppShell } from '@/components/layout'
 import { LoadingPage } from '@/components/shared'
+import {
+  SCROLL_DRIVEN_INDEX_SCROLL_CLASS,
+  ScrollDrivenIndex,
+  type ScrollDrivenIndexItem,
+} from '@/components/shared/scroll-driven-index'
 import { Button } from '@/components/ui/button'
 import { FieldTextarea } from '@/components/ui/field-textarea'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
@@ -29,6 +34,8 @@ import { NoteAgentPage } from './NoteAgentPage'
 
 const HEADER_AUTOSAVE_MS = 500
 const DESCRIPTION_TEXTAREA_ID = 'note-description'
+const NOTE_EDITOR_SCROLL_ID = 'note-editor-scroll'
+const NOTE_EDITOR_SCROLL_SELECTOR = `#${NOTE_EDITOR_SCROLL_ID}`
 
 type NoteEditorPageProps = {
   role: 'teacher' | 'student'
@@ -45,6 +52,7 @@ export function NoteEditorPage({ role }: NoteEditorPageProps) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [headingItems, setHeadingItems] = useState<ScrollDrivenIndexItem[]>([])
   const isHydratedRef = useRef(false)
   const headerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isHeaderSavingRef = useRef(false)
@@ -102,6 +110,14 @@ export function NoteEditorPage({ role }: NoteEditorPageProps) {
     },
     [saveContent],
   )
+
+  const handleHeadingsChange = useCallback((items: ScrollDrivenIndexItem[]) => {
+    setHeadingItems(items)
+  }, [])
+
+  useEffect(() => {
+    setHeadingItems([])
+  }, [noteId])
 
   const focusDescription = useCallback(() => {
     document.getElementById(DESCRIPTION_TEXTAREA_ID)?.focus()
@@ -168,91 +184,117 @@ export function NoteEditorPage({ role }: NoteEditorPageProps) {
             defaultSize={100}
             className="min-w-0"
           >
-            <div className="h-full min-h-0 overflow-y-auto">
+            <div
+              id={NOTE_EDITOR_SCROLL_ID}
+              className={cn('h-full min-h-0 overflow-y-auto', SCROLL_DRIVEN_INDEX_SCROLL_CLASS)}
+            >
               <div
                 className="h-[22vh] w-full"
                 style={coverStyle}
               />
-              <div className="mx-auto w-full max-w-2xl px-4">
-                <div className="-mt-8 mb-6">
-                  <div
-                    className={`flex h-14 w-14 items-center justify-center rounded-2xl shadow-md ${themeClasses.solidBg}`}
-                  >
-                    <File
-                      className="h-7 w-7 text-white"
-                      strokeWidth={2}
+              <div className="mx-auto w-full max-w-[calc(32rem+6.5rem+2rem)] px-4">
+                <div className="relative flex gap-8">
+                  {headingItems.length > 0 ? (
+                    <aside
+                      aria-label="Table of contents"
+                      className="hidden w-26 shrink-0 md:block"
+                    >
+                      <div className="sticky top-6">
+                        <ScrollDrivenIndex
+                          items={headingItems}
+                          label="Content"
+                          tone="muted"
+                          alignment="left"
+                          hideScrollDrivenIndexProgress
+                          scrollContainerSelector={NOTE_EDITOR_SCROLL_SELECTOR}
+                        />
+                      </div>
+                    </aside>
+                  ) : null}
+
+                  <div className="min-w-0 flex-1">
+                    <div className="-mt-8 mb-6">
+                      <div
+                        className={`flex h-14 w-14 items-center justify-center rounded-2xl shadow-md ${themeClasses.solidBg}`}
+                      >
+                        <File
+                          className="h-7 w-7 text-white"
+                          strokeWidth={2}
+                        />
+                      </div>
+                    </div>
+
+                    <input
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder={t('pages.editor.fallbackTitle')}
+                      className="w-full border-0 bg-transparent py-1 text-4xl font-bold leading-tight tracking-tight outline-none placeholder:text-zinc-400"
                     />
-                  </div>
-                </div>
 
-                <input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder={t('pages.editor.fallbackTitle')}
-                  className="w-full border-0 bg-transparent py-1 text-4xl font-bold leading-tight tracking-tight outline-none placeholder:text-zinc-400"
-                />
-
-                <div className="mt-2 flex max-w-full items-center gap-2">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="h-auto justify-start gap-2 px-0 py-1 text-muted-foreground"
-                    onClick={focusDescription}
-                  >
-                    <TextQuote
-                      className="size-4 shrink-0"
-                      strokeWidth={2}
-                      aria-hidden
-                    />
-                  </Button>
-                  <FieldTextarea
-                    id={DESCRIPTION_TEXTAREA_ID}
-                    className="min-w-0 flex-1 pb-0 [&_label]:sr-only [&>div.relative]:my-1 **:data-[slot=textarea]:min-h-0 **:data-[slot=textarea]:max-h-11 **:data-[slot=textarea]:overflow-y-auto **:data-[slot=textarea]:py-1"
-                    value={description}
-                    onValueChange={setDescription}
-                    label={t('pages.editor.descriptionLabel')}
-                    placeholder={t('pages.editor.fallbackDescription')}
-                    rows={1}
-                    hideSeparator
-                  />
-                </div>
-
-                <div className="mt-2">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="h-auto justify-start gap-2 px-0 py-1 text-muted-foreground"
-                    onClick={() => setSettingsOpen(true)}
-                  >
-                    <Settings2
-                      className="size-4 shrink-0"
-                      aria-hidden
-                    />
-                    {t('pages.editor.settingsLabel')}
-                  </Button>
-                </div>
-
-                <NoteSettingsDrawer
-                  note={{ ...note, title, description }}
-                  open={settingsOpen}
-                  onOpenChange={setSettingsOpen}
-                  onThemeChange={handleThemeChange}
-                  onDelete={handleDelete}
-                />
-
-                <div className="mt-4 pb-24">
-                  {noteId && note ? (
-                    <div key={noteId}>
-                      <Editor
-                        lessonId={noteId}
-                        initialContent={(note.content as unknown as LessonDraftState) ?? null}
-                        isLoading={loading}
-                        onPersistSerializedContent={persistContent}
+                    <div className="mt-2 flex max-w-full items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-auto justify-start gap-2 px-0 py-1 text-muted-foreground"
+                        onClick={focusDescription}
+                      >
+                        <TextQuote
+                          className="size-4 shrink-0"
+                          strokeWidth={2}
+                          aria-hidden
+                        />
+                      </Button>
+                      <FieldTextarea
+                        id={DESCRIPTION_TEXTAREA_ID}
+                        className="min-w-0 flex-1 pb-0 [&_label]:sr-only [&>div.relative]:my-1 **:data-[slot=textarea]:min-h-0 **:data-[slot=textarea]:max-h-11 **:data-[slot=textarea]:overflow-y-auto **:data-[slot=textarea]:py-1"
+                        value={description}
+                        onValueChange={setDescription}
+                        label={t('pages.editor.descriptionLabel')}
+                        placeholder={t('pages.editor.fallbackDescription')}
+                        rows={1}
+                        hideSeparator
                       />
                     </div>
-                  ) : null}
+
+                    <div className="mt-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-auto justify-start gap-2 px-0 py-1 text-muted-foreground"
+                        onClick={() => setSettingsOpen(true)}
+                      >
+                        <Settings2
+                          className="size-4 shrink-0"
+                          aria-hidden
+                        />
+                        {t('pages.editor.settingsLabel')}
+                      </Button>
+                    </div>
+
+                    <NoteSettingsDrawer
+                      note={{ ...note, title, description }}
+                      open={settingsOpen}
+                      onOpenChange={setSettingsOpen}
+                      onThemeChange={handleThemeChange}
+                      onDelete={handleDelete}
+                    />
+
+                    <div className="mt-4 pb-24">
+                      {noteId && note ? (
+                        <div key={noteId}>
+                          <Editor
+                            lessonId={noteId}
+                            initialContent={(note.content as unknown as LessonDraftState) ?? null}
+                            isLoading={loading}
+                            onPersistSerializedContent={persistContent}
+                            onHeadingsChange={handleHeadingsChange}
+                          />
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

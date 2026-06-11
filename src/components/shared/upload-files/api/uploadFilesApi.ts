@@ -8,6 +8,36 @@ import type {
   FetchFilesResult,
   FetchFilesOptions,
 } from '../types/upload.types'
+import { MAX_PDF_SIZE_BYTES } from '../types/upload.types'
+
+/**
+ * Supabase storage keys reject non-ASCII (umlauts, accents, CJK, …). Bring the name into the
+ * safe set [A-Za-z0-9!-_.*'() ] by transliterating German umlauts, stripping diacritics, then
+ * substituting anything still outside the safe set with '-'.
+ */
+function sanitizeStorageBaseName(name: string): string {
+  const transliterated = name
+    .replace(/ä/g, 'ae')
+    .replace(/ö/g, 'oe')
+    .replace(/ü/g, 'ue')
+    .replace(/Ä/g, 'Ae')
+    .replace(/Ö/g, 'Oe')
+    .replace(/Ü/g, 'Ue')
+    .replace(/ß/g, 'ss')
+
+  const stripped = transliterated.normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+
+  return stripped
+    .replace(/[\\/]/g, '-')
+    .replace(/[^A-Za-z0-9!\-_.*'() ]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^[-\s]+|[-\s]+$/g, '')
+    .trim()
+}
+
+function sanitizeExtension(ext: string): string {
+  return ext.replace(/[^A-Za-z0-9]/g, '').toLowerCase()
+}
 
 /** Only teachers → teacher for storage path; all other roles stay as passed. */
 function pathRole(role: string): string {
@@ -68,11 +98,13 @@ export function buildCloudFileStoragePath({
   role,
 }: Pick<FileUploadOptions, 'institutionId' | 'teacherId' | 'file' | 'title' | 'role'>): string {
   const baseFileName = title || file.name.split('.')[0]
-  const fileExtension = file.name.split('.').pop() || ''
-  const safeBaseName = baseFileName.replace(/[\\/]/g, '-').trim()
-  const safeFileNameWithoutExtension = safeBaseName || file.name.split('.')[0] || 'file'
-  const sanitizedFileName = fileExtension
-    ? `${safeFileNameWithoutExtension}.${fileExtension}`
+  const rawExtension = file.name.includes('.') ? (file.name.split('.').pop() ?? '') : ''
+  const safeBaseName = sanitizeStorageBaseName(baseFileName)
+  const fallbackBase = sanitizeStorageBaseName(file.name.split('.')[0] ?? '') || 'file'
+  const safeFileNameWithoutExtension = safeBaseName || fallbackBase
+  const safeExtension = sanitizeExtension(rawExtension)
+  const sanitizedFileName = safeExtension
+    ? `${safeFileNameWithoutExtension}.${safeExtension}`
     : safeFileNameWithoutExtension
 
   return `${institutionId}/${pathRole(role)}/${teacherId}/${sanitizedFileName}`
@@ -122,6 +154,17 @@ export async function uploadFile({
       return {
         success: false,
         error: 'Role is required',
+        code: 'validation',
+      }
+    }
+
+    if (file.type === 'application/pdf' && file.size > MAX_PDF_SIZE_BYTES) {
+      const actualMb = (file.size / 1024 / 1024).toFixed(1)
+      const maxMb = MAX_PDF_SIZE_BYTES / 1024 / 1024
+      return {
+        success: false,
+        error: `PDF is ${actualMb} MB — exceeds the ${maxMb} MB limit.`,
+        fileName: file.name,
         code: 'validation',
       }
     }

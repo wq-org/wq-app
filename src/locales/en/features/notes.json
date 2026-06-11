@@ -29,7 +29,12 @@
     },
     "agent": {
       "title": "Agent",
-      "placeholder": "Agent tools for this note will appear here."
+      "placeholder": "Agent tools for this note will appear here.",
+      "searchLabel": "Search PDFs",
+      "searchPlaceholder": "Search by filename…",
+      "pdfsEmpty": "No PDF files in your cloud yet.",
+      "pdfsSearchEmpty": "No PDFs match your search.",
+      "closePreview": "Close preview"
     }
   },
   "card": {

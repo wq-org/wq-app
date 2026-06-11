@@ -20,8 +20,14 @@ export {
 } from './card-instant-preview'
 export { CARD_INSTANT_PREVIEW_ANIMATION_DURATION_MS } from './card-instant-preview'
 export type { CardInstantPreviewMediaVariant } from './card-instant-preview'
-export { BasicPdfViewer, configurePdfJsWorker } from './pdf-viewer'
-export type { BasicPdfViewerProps } from './pdf-viewer'
+export { BasicPdfViewer, configurePdfJsWorker, PdfCard, PdfCardList, PdfPanelPreview } from './pdf-viewer'
+export type {
+  BasicPdfViewerProps,
+  PdfCardFile,
+  PdfCardListProps,
+  PdfCardProps,
+  PdfPanelPreviewProps,
+} from './pdf-viewer'
 export { AccentPicker } from './AccentPicker'
 export { ColorPicker } from './ColorPicker'
 export { DateRangePicker, CalendarWithPresets, CalendarWithTime } from './calendar'
@@ -84,7 +90,7 @@ export {
 export { LoadingPage } from './LoadingPage'
 export type { LoadingPageProps } from './LoadingPage'
 export { LanguageSwitcher } from './LanguageSwitcher'
-export { ImageCarousel, PdfPreview, VideoPreview } from './media'
+export { ImageCarousel, VideoPreview } from './media'
 export type { ImageCarouselImage, ImageCarouselItem, ImageCarouselProps } from './media'
 export { SidebarAccountMenu, SidebarPrimaryNav, SidebarWorkspaceSwitcher } from './sidebar'
 export { ExpandableBillingUsageCard } from './ExpandableBillingUsageCard'
