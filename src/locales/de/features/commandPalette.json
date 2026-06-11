@@ -56,6 +56,8 @@
     "themeHint": "Wähle den Standardhintergrund für die Kurskarte, bevor du den Kurs erstellst.",
     "gameThemeLabel": "Spiel-Vorschau",
     "gameThemeHint": "Wähle den Standardhintergrund für die Spielkarte, bevor du das Spiel erstellst.",
+    "noteThemeLabel": "Farbe",
+    "noteThemeHint": "Wähle eine Farbe für diese Notiz, bevor du sie erstellst.",
     "actions": {
       "cancel": "Abbrechen",
       "creating": "Wird erstellt...",
@@ -92,7 +94,7 @@
       }
     },
     "toasts": {
-      "noteNotWired": "Notizen sind verfügbar, sobald die Notizen-API angebunden ist.",
+      "noteEditorUnavailable": "Deine Notiz wurde erstellt, der Editor ist jedoch nur für Lehrkräfte und Lernende verfügbar.",
       "taskNotWired": "Aufgaben sind verfügbar, sobald die Aufgaben-API angebunden ist."
     }
   },

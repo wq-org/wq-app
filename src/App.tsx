@@ -731,6 +731,16 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="notes/:noteId"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <TeacherNotesPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
                   path="tasks"
                   element={
                     <RequireAuth>
@@ -1153,6 +1163,16 @@ const App = () => {
                 />
                 <Route
                   path="notes"
+                  element={
+                    <RequireAuth>
+                      <RequireOnboarding>
+                        <StudentNotesPage />
+                      </RequireOnboarding>
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="notes/:noteId"
                   element={
                     <RequireAuth>
                       <RequireOnboarding>

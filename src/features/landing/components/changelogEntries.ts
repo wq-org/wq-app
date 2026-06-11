@@ -20,6 +20,27 @@ export type SiteChangelogEntry = {
 
 export const changelogEntries: SiteChangelogEntry[] = [
   {
+    id: '2026-06-11-personal-notes-list-editor-and-curved-cards',
+    date: '11 June 2026',
+    title:
+      'Create personal notes, browse them as curved preview cards, and write in a rich document editor',
+    summary:
+      'Notes are no longer a placeholder. Teachers and students each get a personal notes library: create a note from the command palette or the Notes page, pick a color accent, and land in a full Lexical editor with title, description, and autosaved body content. The list shows every note as a tactile curved card with a scrollable preview—title, description, a snippet of your writing, the first image if you added one, and a theme-colored scrollbar—so you can scan your library without opening every note. Search filters by title or content; open a card to edit or use Settings in the editor to delete. Cards invert on hover (black in light mode, white in dark mode) and follow your app theme automatically.',
+    bullets: [
+      'Teachers and students: open Notes from the app navigation to see your personal library—not a shared classroom feed, just your own notes in your institution',
+      'Teachers and students: tap New note on the Notes page or choose Note in the command palette (+ Add) to create one—give it a title, optional description, and pick a color before you save',
+      'Teachers and students: after creating a note you go straight into the editor on a dedicated route; the body opens with the same starter document shape lessons use so you are not staring at a blank page',
+      'Teachers and students: edit title, description, and rich content in one place—the header fields autosave; body content saves through the same Lexical editor used for lessons',
+      'Teachers and students: browse notes as curved preview cards—each card scrolls through a live preview of the note, shows when it was last updated, and uses your chosen color on the custom scrollbar thumb',
+      'Teachers and students: cards respect your app theme—light mode shows a white panel with dark text; dark mode flips automatically when you use system or dark appearance; hover inverts the card surface so the list feels interactive',
+      'Teachers and students: search the list by title or content with the search field above the grid—clear the query to see everything again',
+      'Teachers and students: tap a card to open the editor; use the Settings row (icon and label) to open delete-only note settings—no gear menu on list cards',
+      'Everyone: command palette note creation no longer shows a “coming soon” toast—it creates the note for real and navigates you into the editor when your role supports it',
+      'Internal: note list reads a lightweight preview (text snippet + first image URL) instead of full Lexical JSON; create resolves your institution server-side; new notes seed default starter content',
+    ],
+    badges: ['feature', 'new'],
+  },
+  {
     id: '2026-06-10-classroom-delivered-games-play-and-analytics',
     date: '10 June 2026',
     title:

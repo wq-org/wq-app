@@ -20,7 +20,10 @@ export function CommandAddForm({ t, state }: CommandAddFormProps) {
   if (!state.selectedType) return null
 
   const typeLabel = t(TYPE_LABEL_KEYS[state.selectedType])
-  const shouldShowThemePicker = state.selectedType === 'course' || state.selectedType === 'game'
+  const shouldShowThemePicker =
+    state.selectedType === 'course' ||
+    state.selectedType === 'game' ||
+    state.selectedType === 'note'
   const descriptionOptional = state.selectedType === 'note' || state.selectedType === 'task'
   const canSubmit =
     Boolean(state.title.trim()) &&
@@ -68,7 +71,9 @@ export function CommandAddForm({ t, state }: CommandAddFormProps) {
                 <Label className="font-normal text-foreground">
                   {state.selectedType === 'course'
                     ? t('addDialog.themeLabel')
-                    : t('addDialog.gameThemeLabel')}
+                    : state.selectedType === 'game'
+                      ? t('addDialog.gameThemeLabel')
+                      : t('addDialog.noteThemeLabel')}
                 </Label>
                 <Text
                   as="p"
@@ -77,7 +82,9 @@ export function CommandAddForm({ t, state }: CommandAddFormProps) {
                 >
                   {state.selectedType === 'course'
                     ? t('addDialog.themeHint')
-                    : t('addDialog.gameThemeHint')}
+                    : state.selectedType === 'game'
+                      ? t('addDialog.gameThemeHint')
+                      : t('addDialog.noteThemeHint')}
                 </Text>
                 <ColorPicker
                   selectedId={state.themeId}

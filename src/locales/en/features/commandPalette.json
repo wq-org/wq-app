@@ -56,6 +56,8 @@
     "themeHint": "Choose the default background for the course card before you create it.",
     "gameThemeLabel": "Game Preview",
     "gameThemeHint": "Choose the default background for the game card before you create it.",
+    "noteThemeLabel": "Color",
+    "noteThemeHint": "Choose a color for this note before you create it.",
     "actions": {
       "cancel": "Cancel",
       "creating": "Creating...",
@@ -92,7 +94,7 @@
       }
     },
     "toasts": {
-      "noteNotWired": "Notes will be available when the notes API is connected.",
+      "noteEditorUnavailable": "Your note was created, but the editor is only available for teachers and students.",
       "taskNotWired": "Tasks will be available when the tasks API is connected."
     }
   },

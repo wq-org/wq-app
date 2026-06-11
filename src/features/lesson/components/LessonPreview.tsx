@@ -72,22 +72,19 @@ export function LessonPreview() {
       />
       <div className="mx-auto w-full max-w-[calc(32rem+16rem+2rem)]">
         <div className="relative flex">
-          {headingItems.length > 0 ? (
-            <aside
-              aria-label="Table of contents"
-              className="hidden w-26 shrink-0 md:block"
-            >
-              <div className="sticky top-24">
-                <ScrollDrivenIndex
-                  items={headingItems}
-                  label="Content"
-                  tone="muted"
-                  alignment="left"
-                  hideScrollDrivenIndexProgress
-                />
-              </div>
-            </aside>
-          ) : null}
+          <aside
+            aria-label="Table of contents"
+            className="hidden w-26 shrink-0 md:block"
+          >
+            <div className="sticky top-24">
+              <ScrollDrivenIndex
+                items={headingItems}
+                label="Content"
+                tone="muted"
+                alignment="left"
+              />
+            </div>
+          </aside>
 
           <div className="min-w-0 flex-1">
             <div className="-mt-10 mb-6">

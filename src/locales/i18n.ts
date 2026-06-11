@@ -26,6 +26,7 @@ import featuresGameStudioDE from './de/features/gameStudio.json'
 import featuresInstitutionDE from './de/features/institution.json'
 import featuresInstitutionAdminDE from './de/features/institution-admin.json'
 import featuresLessonDE from './de/features/lesson.json'
+import featuresNotesDE from './de/features/notes.json'
 import featuresNotificationDE from './de/features/notification.json'
 import featuresOnboardingDE from './de/features/onboarding.json'
 import featuresStudentDE from './de/features/student.json'
@@ -57,6 +58,7 @@ import featuresGameStudioEN from './en/features/gameStudio.json'
 import featuresInstitutionEN from './en/features/institution.json'
 import featuresInstitutionAdminEN from './en/features/institution-admin.json'
 import featuresLessonEN from './en/features/lesson.json'
+import featuresNotesEN from './en/features/notes.json'
 import featuresNotificationEN from './en/features/notification.json'
 import featuresOnboardingEN from './en/features/onboarding.json'
 import featuresStudentEN from './en/features/student.json'
@@ -112,6 +114,7 @@ i18n.use(initReactI18next).init({
       'features.institution': featuresInstitutionEN,
       'features.institution-admin': featuresInstitutionAdminEN,
       'features.lesson': featuresLessonEN,
+      'features.notes': featuresNotesEN,
       'features.notification': featuresNotificationEN,
       'features.onboarding': featuresOnboardingEN,
       'features.student': featuresStudentEN,
@@ -143,6 +146,7 @@ i18n.use(initReactI18next).init({
       'features.institution': featuresInstitutionDE,
       'features.institution-admin': featuresInstitutionAdminDE,
       'features.lesson': featuresLessonDE,
+      'features.notes': featuresNotesDE,
       'features.notification': featuresNotificationDE,
       'features.onboarding': featuresOnboardingDE,
       'features.student': featuresStudentDE,
@@ -177,6 +181,7 @@ i18n.use(initReactI18next).init({
     'features.institution',
     'features.institution-admin',
     'features.lesson',
+    'features.notes',
     'features.notification',
     'features.onboarding',
     'features.student',
