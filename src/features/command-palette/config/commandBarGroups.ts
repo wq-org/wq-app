@@ -15,7 +15,7 @@ import type {
   CommandRoleContext,
 } from '../types/command-bar.types'
 import { isCommandBarView } from './commandRoles'
-import { VIEW_COMMAND_ITEMS } from './commandAddOptions'
+import { LESSONS_VIEW_COMMAND_ITEMS, VIEW_COMMAND_ITEMS } from './commandAddOptions'
 
 function rolePrefix(role: CommandRoleContext): string {
   return getRoleRoutePrefix(role) ?? '/teacher'
@@ -188,6 +188,8 @@ const commandItemsByContext: Record<CommandBarContext, readonly CommandBarItem[]
   ],
   'game-studio': [...VIEW_COMMAND_ITEMS['game-studio']],
   lessons: [...VIEW_COMMAND_ITEMS.lessons],
+  /** Built dynamically in getCommandBarGroups from role items + agent. */
+  'note-editor': [],
 }
 
 const commandGroupsByContext: Record<CommandRoleContext, readonly CommandBarGroup[]> = {
@@ -226,9 +228,18 @@ export function getCommandGroupsByRole(role: CommandRoleContext): readonly Comma
 }
 
 export function getCommandBarGroups(
-  _role: CommandRoleContext,
+  role: CommandRoleContext,
   context: CommandBarContext,
 ): CommandBarGroup[] {
+  if (context === 'note-editor') {
+    return [
+      {
+        id: 'note-editor',
+        items: [...commandItemsByContext[role], ...LESSONS_VIEW_COMMAND_ITEMS],
+      },
+    ]
+  }
+
   if (isCommandBarView(context)) {
     return [
       {

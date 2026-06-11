@@ -141,7 +141,10 @@ export function NoteEditorPage({ role }: NoteEditorPageProps) {
   }
 
   return (
-    <AppShell role={role}>
+    <AppShell
+      role={role}
+      commandBarContext="note-editor"
+    >
       <div className="-mx-[calc(50vw-50%)] -mt-20 w-screen">
         <div
           className="h-[22vh] w-full"

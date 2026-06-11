@@ -1,4 +1,8 @@
 {
+  "search": {
+    "label": "Notizen suchen",
+    "placeholder": "Nach Titel oder Inhalt suchen …"
+  },
   "pages": {
     "list": {
       "title": "Notizen",
@@ -6,7 +10,7 @@
         "lineOne": "deine",
         "lineTwo": "notizen."
       },
-      "description": "Deine persönlichen Notizen.",
+      "description": "Notizen, die du sofort wiederfindest.",
       "newNote": "Neue Notiz",
       "searchLabel": "Notizen suchen",
       "searchPlaceholder": "Nach Titel oder Inhalt suchen …",

@@ -6,7 +6,7 @@ import type {
   CommandRoleContext,
 } from '../types/command-bar.types'
 
-export const COMMAND_BAR_VIEW_IDS = ['game-studio', 'lessons'] as const satisfies readonly CommandBarView[]
+export const COMMAND_BAR_VIEW_IDS = ['game-studio', 'lessons', 'note-editor'] as const satisfies readonly CommandBarView[]
 
 const LEGACY_ROLE_MAP: Record<string, UserRole> = {
   superadmin: USER_ROLES.SUPER_ADMIN,

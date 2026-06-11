@@ -1,4 +1,8 @@
 {
+  "search": {
+    "label": "Search notes",
+    "placeholder": "Search by title or content…"
+  },
   "pages": {
     "list": {
       "title": "Notes",
@@ -6,7 +10,7 @@
         "lineOne": "your",
         "lineTwo": "notes."
       },
-      "description": "Your personal notes.",
+      "description": "Notes you can find again instantly.",
       "newNote": "New note",
       "searchLabel": "Search notes",
       "searchPlaceholder": "Search by title or content…",

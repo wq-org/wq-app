@@ -2,7 +2,7 @@
 import type { ComponentType } from 'react'
 import type { UserRole } from '@/features/auth'
 
-export type CommandBarView = 'game-studio' | 'lessons'
+export type CommandBarView = 'game-studio' | 'lessons' | 'note-editor'
 
 export type CommandRoleContext = UserRole
 
