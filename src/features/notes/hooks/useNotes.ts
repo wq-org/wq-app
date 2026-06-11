@@ -2,13 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { useUser } from '@/contexts/user'
 
-import {
-  createNote,
-  duplicateNote,
-  listPersonalNotes,
-  softDeleteNote,
-  toggleNotePin,
-} from '../api/notesApi'
+import { createNote, listPersonalNotes, softDeleteNote } from '../api/notesApi'
 import type { Note, NoteFormValues } from '../types/note.types'
 
 function sortNotes(notes: Note[]): Note[] {
@@ -48,21 +42,5 @@ export function useNotes() {
     setNotes((prev) => prev.filter((n) => n.id !== noteId))
   }, [])
 
-  const togglePin = useCallback(async (noteId: string, isPinned: boolean): Promise<void> => {
-    await toggleNotePin(noteId, isPinned)
-    setNotes((prev) => sortNotes(prev.map((n) => (n.id === noteId ? { ...n, isPinned } : n))))
-  }, [])
-
-  const duplicate = useCallback(
-    async (noteId: string): Promise<Note> => {
-      const institutionId = getUserInstitutionId()
-      if (!institutionId) throw new Error('No institution')
-      const copy = await duplicateNote(noteId, institutionId)
-      setNotes((prev) => sortNotes([copy, ...prev]))
-      return copy
-    },
-    [getUserInstitutionId],
-  )
-
-  return { notes, loading, error, addNote, removeNote, togglePin, duplicate }
+  return { notes, loading, error, addNote, removeNote }
 }

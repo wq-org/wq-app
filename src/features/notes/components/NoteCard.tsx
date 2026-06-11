@@ -12,24 +12,18 @@ import {
   CurvedTitle,
 } from '@/components/shared/curved-scrollbar'
 import { getColorCss, isThemeId, type ThemeId } from '@/lib/themes'
-import { cn } from '@/lib/utils'
-
 import type { Note } from '../types/note.types'
 import { formatNoteTime } from '../utils/noteTime'
-import { NoteSettingsDrawer } from './NoteSettingsDrawer'
 
 type NoteCardProps = {
   note: Note
   index: number
   onClick: (noteId: string) => void
-  onPin: (noteId: string, isPinned: boolean) => Promise<void>
-  onDuplicate: (noteId: string) => Promise<void>
-  onDelete: (noteId: string) => Promise<void>
 }
 
 const FALLBACK_THEME: ThemeId = 'blue'
 
-export function NoteCard({ note, index, onClick, onPin, onDuplicate, onDelete }: NoteCardProps) {
+export function NoteCard({ note, index, onClick }: NoteCardProps) {
   const { i18n, t } = useTranslation('features.notes')
 
   const resolvedThemeId: ThemeId =
@@ -63,26 +57,15 @@ export function NoteCard({ note, index, onClick, onPin, onDuplicate, onDelete }:
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       aria-label={title}
+      className="group relative cursor-pointer"
       style={{ animationDelay: `${staggerDelay}ms`, animationFillMode: 'backwards' }}
     >
-      <div
-        className="absolute right-3 top-3 z-20"
-        onClick={(event) => event.stopPropagation()}
-        onKeyDown={(event) => event.stopPropagation()}
-      >
-        <NoteSettingsDrawer
-          note={note}
-          onPin={onPin}
-          onDuplicate={onDuplicate}
-          onDelete={onDelete}
-        />
-      </div>
-
       <CurvedScrollbar
         theme="system"
         color={scrollbarColor}
         width={350}
         height={400}
+        className="curved-scrollbar--interactive"
       >
         <CurvedScrollbarViewport>
           <CurvedScrollbarHeader>

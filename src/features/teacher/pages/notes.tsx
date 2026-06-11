@@ -24,7 +24,7 @@ export function TeacherNotesPage() {
 
 function TeacherNotesList() {
   const { t } = useTranslation('features.notes')
-  const { notes, loading, error, removeNote, togglePin, duplicate } = useNotes()
+  const { notes, loading, error } = useNotes()
   const [searchQuery, setSearchQuery] = useState('')
 
   const filteredNotes = useMemo(
@@ -115,9 +115,6 @@ function TeacherNotesList() {
         <NoteCardList
           notes={filteredNotes}
           role="teacher"
-          onPin={togglePin}
-          onDuplicate={duplicate}
-          onDelete={removeNote}
         />
       </div>
     </AppShell>

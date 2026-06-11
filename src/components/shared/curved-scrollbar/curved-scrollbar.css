@@ -52,6 +52,39 @@
     color-scheme: dark only;
   }
 
+  /*
+   * Interactive cards (e.g. NoteCard): invert the surface on hover/focus so
+   * light mode flips to black and dark mode flips to plain white.
+   */
+  [data-slot='curved-scrollbar'].curved-scrollbar--interactive .curved-scrollbar__viewport {
+    transition:
+      background 0.2s ease,
+      outline-color 0.2s ease;
+  }
+
+  [data-slot='curved-scrollbar'].curved-scrollbar--interactive
+    :is(.curved-scrollbar__title, .curved-scrollbar__text) {
+    transition: color 0.2s ease;
+  }
+
+  .group:hover
+    [data-slot='curved-scrollbar'].curved-scrollbar--interactive[data-theme='system'],
+  .group:focus-visible
+    [data-slot='curved-scrollbar'].curved-scrollbar--interactive[data-theme='system'] {
+    --curved-scrollbar-viewport-bg: #050505;
+    --curved-scrollbar-fg: #fff;
+    --curved-scrollbar-outline: rgb(255 255 255 / 0.18);
+  }
+
+  :where(.dark) .group:hover
+    [data-slot='curved-scrollbar'].curved-scrollbar--interactive[data-theme='system'],
+  :where(.dark) .group:focus-visible
+    [data-slot='curved-scrollbar'].curved-scrollbar--interactive[data-theme='system'] {
+    --curved-scrollbar-viewport-bg: #fff;
+    --curved-scrollbar-fg: #050505;
+    --curved-scrollbar-outline: rgb(0 0 0 / 0.18);
+  }
+
   [data-slot='curved-scrollbar'].curved-scrollbar--sm {
     --curved-scrollbar-width: 360px;
     --curved-scrollbar-height: 500px;

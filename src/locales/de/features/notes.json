@@ -42,11 +42,6 @@
   "settings": {
     "drawerTitle": "Notiz-Einstellungen",
     "close": "Schließen",
-    "pinAction": "Notiz anheften",
-    "unpinAction": "Notiz lösen",
-    "duplicateAction": "Duplizieren",
-    "duplicateSuccess": "Notiz dupliziert",
-    "duplicateError": "Notiz konnte nicht dupliziert werden",
     "deleteAction": "Notiz löschen",
     "deleteSuccess": "Notiz gelöscht",
     "deleteError": "Notiz konnte nicht gelöscht werden"

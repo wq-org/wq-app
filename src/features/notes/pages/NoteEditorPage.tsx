@@ -8,15 +8,14 @@ import { LoadingPage } from '@/components/shared'
 import { Button } from '@/components/ui/button'
 import { FieldTextarea } from '@/components/ui/field-textarea'
 import { Text } from '@/components/ui/text'
-import { useUser } from '@/contexts/user'
 import { Editor } from '@/features/lexical-editor'
 import type { LessonDraftState } from '@/features/lesson'
 import { getThemeBackgroundStyle, getThemeClasses } from '@/lib/themes'
 
-import { duplicateNote, softDeleteNote, toggleNotePin } from '../api/notesApi'
+import { softDeleteNote } from '../api/notesApi'
 import { NoteSettingsDrawer } from '../components/NoteSettingsDrawer'
 import { useNoteEditor } from '../hooks/useNoteEditor'
-import { buildNoteEditorRoute, buildNoteListRoute } from '../utils/noteRoutes'
+import { buildNoteListRoute } from '../utils/noteRoutes'
 
 const HEADER_AUTOSAVE_MS = 500
 const DESCRIPTION_TEXTAREA_ID = 'note-description'
@@ -29,7 +28,6 @@ export function NoteEditorPage({ role }: NoteEditorPageProps) {
   const { t } = useTranslation('features.notes')
   const navigate = useNavigate()
   const { noteId } = useParams<{ noteId: string }>()
-  const { getUserInstitutionId } = useUser()
   const { note, loading, error, saveContent, saveHeader } = useNoteEditor(noteId)
 
   const [title, setTitle] = useState('')
@@ -96,23 +94,6 @@ export function NoteEditorPage({ role }: NoteEditorPageProps) {
   const focusDescription = useCallback(() => {
     document.getElementById(DESCRIPTION_TEXTAREA_ID)?.focus()
   }, [])
-
-  const handlePin = useCallback(
-    async (id: string, isPinned: boolean) => {
-      await toggleNotePin(id, isPinned)
-    },
-    [],
-  )
-
-  const handleDuplicate = useCallback(
-    async (id: string) => {
-      const institutionId = getUserInstitutionId()
-      if (!institutionId) throw new Error('No institution')
-      const copy = await duplicateNote(id, institutionId)
-      navigate(buildNoteEditorRoute(role, copy.id))
-    },
-    [getUserInstitutionId, navigate, role],
-  )
 
   const handleDelete = useCallback(
     async (id: string) => {
@@ -204,7 +185,7 @@ export function NoteEditorPage({ role }: NoteEditorPageProps) {
             />
           </div>
 
-          <div className="mt-2 flex max-w-full items-center gap-2">
+          <div className="mt-2">
             <Button
               type="button"
               variant="ghost"
@@ -216,24 +197,14 @@ export function NoteEditorPage({ role }: NoteEditorPageProps) {
                 className="size-4 shrink-0"
                 aria-hidden
               />
-            </Button>
-            <Text
-              as="span"
-              variant="small"
-              muted
-              className="py-1"
-            >
               {t('pages.editor.settingsLabel')}
-            </Text>
+            </Button>
           </div>
 
           <NoteSettingsDrawer
             note={{ ...note, title, description }}
             open={settingsOpen}
             onOpenChange={setSettingsOpen}
-            showTrigger={false}
-            onPin={handlePin}
-            onDuplicate={handleDuplicate}
             onDelete={handleDelete}
           />
 
@@ -242,7 +213,7 @@ export function NoteEditorPage({ role }: NoteEditorPageProps) {
               <div key={noteId}>
                 <Editor
                   lessonId={noteId}
-                  initialContent={(note.content as LessonDraftState) ?? null}
+                  initialContent={(note.content as unknown as LessonDraftState) ?? null}
                   isLoading={loading}
                   onPersistSerializedContent={persistContent}
                 />

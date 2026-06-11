@@ -12,12 +12,9 @@ import { NoteCard } from './NoteCard'
 type NoteCardListProps = {
   notes: Note[]
   role: 'teacher' | 'student'
-  onPin: (noteId: string, isPinned: boolean) => Promise<void>
-  onDuplicate: (noteId: string) => Promise<Note>
-  onDelete: (noteId: string) => Promise<void>
 }
 
-export function NoteCardList({ notes, role, onPin, onDuplicate, onDelete }: NoteCardListProps) {
+export function NoteCardList({ notes, role }: NoteCardListProps) {
   const { t } = useTranslation('features.notes')
   const navigate = useNavigate()
 
@@ -26,14 +23,6 @@ export function NoteCardList({ notes, role, onPin, onDuplicate, onDelete }: Note
       navigate(buildNoteEditorRoute(role, noteId))
     },
     [navigate, role],
-  )
-
-  const handleDuplicate = useCallback(
-    async (noteId: string): Promise<void> => {
-      const copy = await onDuplicate(noteId)
-      navigate(buildNoteEditorRoute(role, copy.id))
-    },
-    [navigate, onDuplicate, role],
   )
 
   if (notes.length === 0) {
@@ -58,9 +47,6 @@ export function NoteCardList({ notes, role, onPin, onDuplicate, onDelete }: Note
           note={note}
           index={index}
           onClick={handleClick}
-          onPin={onPin}
-          onDuplicate={handleDuplicate}
-          onDelete={onDelete}
         />
       ))}
     </div>

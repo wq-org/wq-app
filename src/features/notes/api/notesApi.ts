@@ -166,42 +166,6 @@ export async function updateNoteHeader(
   if (error) throw new Error(error.message)
 }
 
-export async function toggleNotePin(noteId: string, isPinned: boolean): Promise<void> {
-  const { error } = await supabase
-    .from('notes')
-    .update({ is_pinned: isPinned })
-    .eq('id', noteId)
-
-  if (error) throw new Error(error.message)
-}
-
-export async function duplicateNote(noteId: string, institutionId: string): Promise<Note> {
-  const original = await getNoteById(noteId)
-  if (!original) throw new Error('Note not found')
-
-  const { data: authData } = await supabase.auth.getUser()
-  const userId = authData.user?.id
-  if (!userId) throw new Error('Not authenticated')
-
-  const { data, error } = await supabase
-    .from('notes')
-    .insert({
-      institution_id: institutionId,
-      owner_user_id: userId,
-      scope: 'personal',
-      title: original.title ? `${original.title} (copy)` : null,
-      description: original.description || null,
-      theme_id: original.themeId ?? null,
-      content: original.content ?? {},
-      content_schema_version: original.contentSchemaVersion,
-    })
-    .select(NOTE_EDITOR_FIELDS)
-    .single()
-
-  if (error) throw new Error(error.message)
-  return toNote(data as NoteRow)
-}
-
 export async function softDeleteNote(noteId: string): Promise<void> {
   const { error } = await supabase
     .from('notes')

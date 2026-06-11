@@ -42,11 +42,6 @@
   "settings": {
     "drawerTitle": "Note settings",
     "close": "Close",
-    "pinAction": "Pin note",
-    "unpinAction": "Unpin note",
-    "duplicateAction": "Duplicate",
-    "duplicateSuccess": "Note duplicated",
-    "duplicateError": "Could not duplicate note",
     "deleteAction": "Delete note",
     "deleteSuccess": "Note deleted",
     "deleteError": "Could not delete note"
