@@ -1,5 +1,7 @@
-import { gsap, type Tween } from 'gsap'
+import { gsap } from 'gsap'
 import type { PanelImperativeHandle } from 'react-resizable-panels'
+
+type PanelWidthTween = ReturnType<typeof gsap.to>
 
 const PANEL_ANIMATION_DURATION_S = 0.38
 
@@ -23,7 +25,7 @@ export function animateAgentPanelOpen(
   panel: PanelImperativeHandle,
   targetSize: string,
   { onComplete }: AnimateAgentPanelOptions = {},
-): Tween | null {
+): PanelWidthTween | null {
   const targetVw = parseVw(targetSize)
 
   if (prefersReducedMotion()) {
@@ -50,7 +52,7 @@ export function animateAgentPanelOpen(
 export function animateAgentPanelClose(
   panel: PanelImperativeHandle,
   { onComplete }: AnimateAgentPanelOptions = {},
-): Tween | null {
+): PanelWidthTween | null {
   if (prefersReducedMotion()) {
     panel.collapse()
     onComplete?.()

@@ -169,4 +169,5 @@ export const VIEW_COMMAND_ITEMS: Record<CommandBarView, readonly CommandBarItem[
     },
     ...LESSONS_VIEW_COMMAND_ITEMS,
   ],
+  'note-editor': [...LESSONS_VIEW_COMMAND_ITEMS],
 }

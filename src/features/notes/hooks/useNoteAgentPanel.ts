@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { Tween } from 'gsap'
+import { gsap } from 'gsap'
 import { usePanelRef, type PanelSize } from 'react-resizable-panels'
 
 import {
@@ -18,7 +18,7 @@ export const NOTE_AGENT_PANEL_DEFAULT_OPEN_SIZE = '35vw'
 
 export function useNoteAgentPanel() {
   const agentPanelRef = usePanelRef()
-  const panelAnimationRef = useRef<Tween | null>(null)
+  const panelAnimationRef = useRef<ReturnType<typeof gsap.to> | null>(null)
   const isPanelAnimatingRef = useRef(false)
   const [isAgentOpen, setIsAgentOpen] = useState(false)
   const [isAgentAnimating, setIsAgentAnimating] = useState(false)
