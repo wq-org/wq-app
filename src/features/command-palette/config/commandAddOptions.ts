@@ -61,7 +61,7 @@ export const ADD_OPTIONS = [
     labelKey: 'addDialog.options.task.label',
     descriptionKey: 'addDialog.options.task.description',
     icon: ListTodo,
-    availableForRoles: ['super_admin', 'institution_admin', 'teacher', 'student'] as const,
+    availableForRoles: ['super_admin', 'institution_admin', 'teacher'] as const,
   },
   {
     type: 'attendance' as const,

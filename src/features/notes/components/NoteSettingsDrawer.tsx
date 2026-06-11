@@ -117,7 +117,7 @@ export function NoteSettingsDrawer({
         <DrawerFooter className="shrink-0 border-t">
           <HoldToDeleteButton
             className="w-full text-muted-foreground"
-            variant="ghost"
+            variant="secondary"
             loading={isDeleting}
             icon={
               <Trash2
