@@ -168,18 +168,18 @@ export function GamePublishDialog({
           <Button
             type="button"
             variant="darkblue"
-            className="gap-2"
+            className="gap-2 whitespace-nowrap"
             disabled={isPublishing}
             onClick={() => void handlePublish()}
           >
             {isPublishing ? (
               <Spinner
                 variant="white"
-                size="sm"
+                size="xs"
               />
             ) : (
               <ArrowUp
-                className="size-4"
+                className="size-4 shrink-0"
                 aria-hidden
               />
             )}

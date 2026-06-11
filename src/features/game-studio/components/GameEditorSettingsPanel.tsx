@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Edge, Node } from '@xyflow/react'
-import { Archive, Check, MoreHorizontal, Trash2, Upload, X } from 'lucide-react'
+import { Archive, ArrowUp, Check, MoreHorizontal, Trash2, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -322,28 +322,31 @@ export function GameEditorSettingsPanel({
             {isSaving ? (
               <Spinner
                 variant="white"
-                size="sm"
+                size="xs"
               />
             ) : (
-              <Check className="size-4" />
+              <Check
+                className="size-4 shrink-0"
+                aria-hidden
+              />
             )}
             {isSaving ? t('settingsPanel.saving') : t('settingsPanel.saveDraft')}
           </Button>
 
           <Button
             variant="darkblue"
-            className="gap-2"
+            className="gap-2 whitespace-nowrap"
             disabled={!canPublish || isPublishing || releaseLoading}
             onClick={() => setPublishDialogOpen(true)}
           >
             {isPublishing ? (
               <Spinner
                 variant="white"
-                size="sm"
+                size="xs"
               />
             ) : (
-              <Upload
-                className="size-4"
+              <ArrowUp
+                className="size-4 shrink-0"
                 aria-hidden
               />
             )}
