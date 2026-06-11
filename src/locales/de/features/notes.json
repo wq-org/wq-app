@@ -1,0 +1,54 @@
+{
+  "pages": {
+    "list": {
+      "title": "Notizen",
+      "heading": {
+        "lineOne": "deine",
+        "lineTwo": "notizen."
+      },
+      "description": "Deine persönlichen Notizen.",
+      "newNote": "Neue Notiz",
+      "searchLabel": "Notizen suchen",
+      "searchPlaceholder": "Nach Titel oder Inhalt suchen …",
+      "empty": {
+        "title": "Noch keine Notizen",
+        "description": "Erstelle deine erste Notiz."
+      }
+    },
+    "editor": {
+      "fallbackTitle": "Unbenannte Notiz",
+      "fallbackDescription": "Beschreibung hinzufügen …",
+      "descriptionLabel": "Beschreibung",
+      "settingsLabel": "Einstellungen",
+      "backToNotes": "Zurück zu Notizen",
+      "loadError": "Diese Notiz konnte nicht geladen werden."
+    }
+  },
+  "card": {
+    "untitled": "Unbenannte Notiz",
+    "noDescription": "Keine Beschreibung",
+    "pinnedLabel": "Angeheftet"
+  },
+  "create": {
+    "title": "Neue Notiz",
+    "titleLabel": "Titel",
+    "titlePlaceholder": "Notiztitel …",
+    "descriptionLabel": "Beschreibung",
+    "descriptionPlaceholder": "Worum geht es in dieser Notiz?",
+    "themeLabel": "Farbe",
+    "cancel": "Abbrechen",
+    "create": "Notiz erstellen"
+  },
+  "settings": {
+    "drawerTitle": "Notiz-Einstellungen",
+    "close": "Schließen",
+    "pinAction": "Notiz anheften",
+    "unpinAction": "Notiz lösen",
+    "duplicateAction": "Duplizieren",
+    "duplicateSuccess": "Notiz dupliziert",
+    "duplicateError": "Notiz konnte nicht dupliziert werden",
+    "deleteAction": "Notiz löschen",
+    "deleteSuccess": "Notiz gelöscht",
+    "deleteError": "Notiz konnte nicht gelöscht werden"
+  }
+}

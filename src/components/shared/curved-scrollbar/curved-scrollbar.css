@@ -1,0 +1,255 @@
+@layer curved-scrollbar {
+  [data-slot='curved-scrollbar'] {
+    --curved-scrollbar-width: 420px;
+    --curved-scrollbar-height: 560px;
+    --curved-scrollbar-radius: 32;
+    --curved-scrollbar-padding: 60px;
+    --curved-scrollbar-stroke-width: 5;
+    --curved-scrollbar-color: #f85922;
+    --curved-scrollbar-thumb-size: 70;
+    --curved-scrollbar-thumb-alpha: 0.9;
+    --curved-scrollbar-track-alpha: 0;
+    /*
+     * App-theme-aware surface colors. Defaults are LIGHT — the :where(.dark)
+     * rule flips them when the app's Tailwind `dark` class is active. The
+     * theme="light" / theme="dark" props pin the palette to one side.
+     */
+    --curved-scrollbar-viewport-bg: #fff;
+    --curved-scrollbar-fg: #050505;
+    --curved-scrollbar-outline: rgb(0 0 0 / 0.18);
+    color-scheme: light dark;
+    position: relative;
+    width: var(--curved-scrollbar-width);
+    height: var(--curved-scrollbar-height);
+    padding: 1rem;
+    overflow: hidden;
+    font-family: 'Inter Variable', Inter, ui-sans-serif, system-ui, sans-serif;
+    timeline-scope: --curved-scrollbar-scroller;
+  }
+
+  /*
+   * Follow the app's Tailwind `dark` class for theme="system" (the component
+   * default). theme="light" stays light even inside a `.dark` subtree.
+   */
+  :where(.dark) [data-slot='curved-scrollbar']:not([data-theme='light']) {
+    --curved-scrollbar-viewport-bg: #050505;
+    --curved-scrollbar-fg: #fff;
+    --curved-scrollbar-outline: rgb(255 255 255 / 0.18);
+    color-scheme: dark only;
+  }
+
+  [data-slot='curved-scrollbar'][data-theme='light'] {
+    --curved-scrollbar-viewport-bg: #fff;
+    --curved-scrollbar-fg: #050505;
+    --curved-scrollbar-outline: rgb(0 0 0 / 0.18);
+    color-scheme: light only;
+  }
+
+  [data-slot='curved-scrollbar'][data-theme='dark'] {
+    --curved-scrollbar-viewport-bg: #050505;
+    --curved-scrollbar-fg: #fff;
+    --curved-scrollbar-outline: rgb(255 255 255 / 0.18);
+    color-scheme: dark only;
+  }
+
+  [data-slot='curved-scrollbar'].curved-scrollbar--sm {
+    --curved-scrollbar-width: 360px;
+    --curved-scrollbar-height: 500px;
+  }
+
+  [data-slot='curved-scrollbar'].curved-scrollbar--lg {
+    --curved-scrollbar-width: 500px;
+    --curved-scrollbar-height: 680px;
+  }
+
+  [data-slot='curved-scrollbar'] * {
+    box-sizing: border-box;
+  }
+
+  .curved-scrollbar__bar {
+    position: absolute;
+    inset-block: 1rem;
+    right: 1rem;
+    z-index: 2;
+    width: calc(var(--curved-scrollbar-radius) * 2px);
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .curved-scrollbar__thumb,
+  .curved-scrollbar__track {
+    opacity: 0;
+    stroke-width: calc(var(--curved-scrollbar-stroke-width) * 1px);
+    transition: opacity 0.2s ease;
+  }
+
+  [data-slot='curved-scrollbar'][data-rounded-scroll='true']
+    :is(.curved-scrollbar__thumb, .curved-scrollbar__track) {
+    opacity: 1;
+  }
+
+  .curved-scrollbar__thumb {
+    stroke: color-mix(
+      in hsl,
+      var(--curved-scrollbar-color),
+      transparent calc((1 - var(--curved-scrollbar-thumb-alpha)) * 100%)
+    );
+    stroke-dasharray: var(--curved-scrollbar-thumb-size)
+      var(--curved-scrollbar-track-length, 1);
+    animation-fill-mode: both;
+    animation-timing-function: linear;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .curved-scrollbar__thumb {
+      animation-name: var(--curved-scrollbar-animation-name);
+      animation-timeline: --curved-scrollbar-scroller;
+    }
+  }
+
+  .curved-scrollbar__track {
+    stroke: color-mix(
+      in hsl,
+      var(--curved-scrollbar-fg),
+      transparent calc((1 - var(--curved-scrollbar-track-alpha)) * 100%)
+    );
+  }
+
+  .curved-scrollbar__viewport {
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-auto-flow: row;
+    overflow: auto;
+    margin: 0;
+    padding: var(--curved-scrollbar-padding) 0;
+    background: var(--curved-scrollbar-viewport-bg);
+    border-radius: calc(var(--curved-scrollbar-radius) * 1px);
+    outline: 1px solid var(--curved-scrollbar-outline);
+    outline-offset: 1px;
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+    scroll-timeline: --curved-scrollbar-scroller;
+  }
+
+  [data-slot='curved-scrollbar'][data-rounded-scroll='true']
+    .curved-scrollbar__viewport {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  [data-slot='curved-scrollbar'][data-rounded-scroll='true']
+    .curved-scrollbar__viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .curved-scrollbar__header,
+  .curved-scrollbar__content,
+  .curved-scrollbar__footer {
+    padding-inline: 1.25rem;
+  }
+
+  .curved-scrollbar__header {
+    scroll-snap-align: start;
+    margin-block: 2rem;
+    text-transform: uppercase;
+  }
+
+  .curved-scrollbar__title {
+    max-width: 12ch;
+    margin: 0 0 3rem;
+    color: var(--curved-scrollbar-fg);
+    font-size: 1.25rem;
+    font-weight: 420;
+    line-height: 1.05;
+    letter-spacing: 0;
+  }
+
+  .curved-scrollbar__text {
+    margin: 0;
+    color: color-mix(
+      in lch,
+      var(--curved-scrollbar-fg) 64%,
+      var(--curved-scrollbar-viewport-bg)
+    );
+    font-size: 0.875rem;
+    line-height: 1.75;
+  }
+
+  .curved-scrollbar__text--intro {
+    max-width: 28ch;
+    margin-top: 0.6rem;
+  }
+
+  .curved-scrollbar__text--footer {
+    color: color-mix(
+      in lch,
+      var(--curved-scrollbar-fg) 55%,
+      var(--curved-scrollbar-viewport-bg)
+    );
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
+  .curved-scrollbar__hero {
+    overflow: hidden;
+    border-radius: 6px;
+  }
+
+  .curved-scrollbar__image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 6px;
+    filter: contrast(1.2) saturate(0.2);
+  }
+
+  .curved-scrollbar__header > :not(:last-child),
+  .curved-scrollbar__content > :not(:last-child) {
+    margin-bottom: 2rem;
+  }
+
+  .curved-scrollbar__content .curved-scrollbar__text:last-of-type {
+    opacity: 0.64;
+  }
+
+  .curved-scrollbar__footer {
+    scroll-snap-align: end;
+    padding-block: 1rem;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .curved-scrollbar__header,
+    .curved-scrollbar__footer {
+      scroll-snap-align: unset;
+    }
+
+    .curved-scrollbar__header {
+      --curved-scrollbar-snap-align: start;
+      animation: curved-scrollbar-snap both linear reverse;
+      animation-range: var(--curved-scrollbar-padding) 0;
+      animation-timeline: --curved-scrollbar-scroller;
+    }
+
+    .curved-scrollbar__footer {
+      --curved-scrollbar-snap-align: end;
+      animation: curved-scrollbar-snap both linear;
+      animation-range: calc(100% - var(--curved-scrollbar-padding)) 100%;
+      animation-timeline: --curved-scrollbar-scroller;
+    }
+  }
+
+  @keyframes curved-scrollbar-snap {
+    to {
+      scroll-snap-align: var(--curved-scrollbar-snap-align, start);
+    }
+  }
+
+  @media (max-width: 640px) {
+    [data-slot='curved-scrollbar'] {
+      width: var(--curved-scrollbar-width);
+      height: var(--curved-scrollbar-height);
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "pages": {
+    "list": {
+      "title": "Notes",
+      "heading": {
+        "lineOne": "your",
+        "lineTwo": "notes."
+      },
+      "description": "Your personal notes.",
+      "newNote": "New note",
+      "searchLabel": "Search notes",
+      "searchPlaceholder": "Search by title or content…",
+      "empty": {
+        "title": "No notes yet",
+        "description": "Create your first note to get started."
+      }
+    },
+    "editor": {
+      "fallbackTitle": "Untitled note",
+      "fallbackDescription": "Add a description...",
+      "descriptionLabel": "Description",
+      "settingsLabel": "Settings",
+      "backToNotes": "Back to notes",
+      "loadError": "Could not load this note."
+    }
+  },
+  "card": {
+    "untitled": "Untitled note",
+    "noDescription": "No description",
+    "pinnedLabel": "Pinned"
+  },
+  "create": {
+    "title": "New note",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Note title...",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "What is this note about?",
+    "themeLabel": "Color",
+    "cancel": "Cancel",
+    "create": "Create note"
+  },
+  "settings": {
+    "drawerTitle": "Note settings",
+    "close": "Close",
+    "pinAction": "Pin note",
+    "unpinAction": "Unpin note",
+    "duplicateAction": "Duplicate",
+    "duplicateSuccess": "Note duplicated",
+    "duplicateError": "Could not duplicate note",
+    "deleteAction": "Delete note",
+    "deleteSuccess": "Note deleted",
+    "deleteError": "Could not delete note"
+  }
+}

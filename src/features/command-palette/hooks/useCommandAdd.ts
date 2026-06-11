@@ -5,6 +5,8 @@ import { toast } from 'sonner'
 import { createCourse } from '@/features/course'
 import { createInstitution, getRoleRoutePrefix } from '@/features/auth'
 import { createGameForStudio } from '@/features/game-studio'
+import { createNote } from '@/features/notes'
+import { resolveNoteEditorRoute } from '@/features/notes/utils/noteRoutes'
 import { useUser } from '@/contexts/user'
 import { useGameStudioContext } from '@/contexts/game-studio'
 import type { AddType } from '../types/command-bar.types'
@@ -39,7 +41,7 @@ export function useCommandAdd({
 }: UseCommandAddOptions): CommandAddState {
   const { t } = useTranslation('features.commandPalette')
   const navigate = useNavigate()
-  const { profile, getRole } = useUser()
+  const { profile, getRole, getUserInstitutionId } = useUser()
   const { addNode } = useGameStudioContext()
 
   const [selectedType, setSelectedType] = useState<AddType | null>(initialType ?? null)
@@ -113,9 +115,27 @@ export function useCommandAdd({
       }
 
       if (selectedType === 'note') {
-        toast.info(t('addDialog.toasts.noteNotWired'))
+        const institutionId = getUserInstitutionId()
+        if (!institutionId) throw new Error('No institution')
+
+        const note = await createNote(
+          {
+            title: title.trim(),
+            description: description.trim(),
+            themeId,
+          },
+          institutionId,
+        )
         reset()
         onRequestClose?.()
+
+        const editorRoute = resolveNoteEditorRoute(getRole(), note.id)
+        if (editorRoute) {
+          navigate(editorRoute)
+          return
+        }
+
+        toast.info(t('addDialog.toasts.noteEditorUnavailable'))
         return
       }
 
