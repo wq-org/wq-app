@@ -39,7 +39,8 @@
       "insertSelectionSuccess": "Text in Notiz eingefügt",
       "insertLink": "Link einfügen",
       "insertLinkSuccess": "Link in Notiz eingefügt",
-      "openLink": "Im neuen Tab öffnen"
+      "openLink": "Im neuen Tab öffnen",
+      "modeActivated": "Agent-Modus aktiviert"
     }
   },
   "card": {

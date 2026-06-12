@@ -5,19 +5,22 @@ import { useTranslation } from 'react-i18next'
 
 import { toast } from '@/components/ui/sonner-toast'
 
-import { animateAgentPanelClose, animateAgentPanelOpen } from '../utils/noteAgentPanelAnimation'
+import {
+  animateLessonAgentPanelClose,
+  animateLessonAgentPanelOpen,
+} from '../utils/lessonAgentPanelAnimation'
 
 const COMMAND_ACTION_EVENT = 'command-action'
 
-export const NOTE_AGENT_PANEL_ID = 'note-agent'
-export const NOTE_EDITOR_MAIN_PANEL_ID = 'note-editor-main'
+export const LESSON_AGENT_PANEL_ID = 'lesson-agent'
+export const LESSON_EDITOR_MAIN_PANEL_ID = 'lesson-editor-main'
 
-export const NOTE_AGENT_PANEL_MAX_SIZE = '50vw'
-export const NOTE_AGENT_PANEL_MIN_SIZE = '20vw'
-export const NOTE_AGENT_PANEL_DEFAULT_OPEN_SIZE = '35vw'
+export const LESSON_AGENT_PANEL_MAX_SIZE = '50vw'
+export const LESSON_AGENT_PANEL_MIN_SIZE = '20vw'
+export const LESSON_AGENT_PANEL_DEFAULT_OPEN_SIZE = '35vw'
 
-export function useNoteAgentPanel() {
-  const { t } = useTranslation('features.notes')
+export function useLessonAgentPanel() {
+  const { t } = useTranslation('features.lesson')
   const agentPanelRef = usePanelRef()
   const panelAnimationRef = useRef<ReturnType<typeof gsap.to> | null>(null)
   const isPanelAnimatingRef = useRef(false)
@@ -42,15 +45,19 @@ export function useNoteAgentPanel() {
     setIsAgentAnimating(true)
     setIsAgentClosing(false)
     setIsAgentOpen(true)
-    toast.success(t('pages.agent.modeActivated'))
+    toast.success(t('page.agent.modeActivated'))
 
-    panelAnimationRef.current = animateAgentPanelOpen(panel, NOTE_AGENT_PANEL_DEFAULT_OPEN_SIZE, {
-      onComplete: () => {
-        panelAnimationRef.current = null
-        isPanelAnimatingRef.current = false
-        setIsAgentAnimating(false)
+    panelAnimationRef.current = animateLessonAgentPanelOpen(
+      panel,
+      LESSON_AGENT_PANEL_DEFAULT_OPEN_SIZE,
+      {
+        onComplete: () => {
+          panelAnimationRef.current = null
+          isPanelAnimatingRef.current = false
+          setIsAgentAnimating(false)
+        },
       },
-    })
+    )
   }, [agentPanelRef, stopPanelAnimation, t])
 
   const closeAgentPanel = useCallback(() => {
@@ -62,7 +69,7 @@ export function useNoteAgentPanel() {
     setIsAgentAnimating(true)
     setIsAgentClosing(true)
 
-    panelAnimationRef.current = animateAgentPanelClose(panel, {
+    panelAnimationRef.current = animateLessonAgentPanelClose(panel, {
       onComplete: () => {
         panelAnimationRef.current = null
         isPanelAnimatingRef.current = false
@@ -82,7 +89,7 @@ export function useNoteAgentPanel() {
     } else {
       closeAgentPanel()
     }
-  }, [agentPanelRef, openAgentPanel, closeAgentPanel])
+  }, [agentPanelRef, closeAgentPanel, openAgentPanel])
 
   const handleAgentPanelResize = useCallback((size: PanelSize) => {
     if (isPanelAnimatingRef.current) return
@@ -96,6 +103,7 @@ export function useNoteAgentPanel() {
         toggleAgentPanel()
       }
     }
+
     window.addEventListener(COMMAND_ACTION_EVENT, handler)
     return () => window.removeEventListener(COMMAND_ACTION_EVENT, handler)
   }, [toggleAgentPanel])

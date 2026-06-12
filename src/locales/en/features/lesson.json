@@ -45,6 +45,20 @@
       "help": "Help",
       "tableOfContents": "Show Menu"
     },
+    "agent": {
+      "title": "Agent",
+      "searchLabel": "Search PDFs",
+      "searchPlaceholder": "Search by filename...",
+      "pdfsEmpty": "No PDF files in your cloud yet.",
+      "pdfsSearchEmpty": "No PDFs match your search.",
+      "closePreview": "Close preview",
+      "insertSelection": "Insert into lesson",
+      "insertSelectionSuccess": "Inserted text into lesson",
+      "insertLink": "Insert link",
+      "insertLinkSuccess": "Inserted link into lesson",
+      "openLink": "Open in new tab",
+      "modeActivated": "Agent mode activated"
+    },
     "meta": {
       "lastUpdatedLabel": "Last updated",
       "noFilesLinked": "no files linked",

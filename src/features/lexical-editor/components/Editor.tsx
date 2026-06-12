@@ -52,12 +52,14 @@ import {
   type EditorExternalInsertApi,
 } from '../plugins/ExternalContentInsertPlugin'
 import { AddYouTubeLinksDialogPlugin } from '../plugins/AddYouTubeLinksDialogPlugin'
+import { AppendParagraphOnBottomClickPlugin } from '../plugins/AppendParagraphOnBottomClickPlugin'
 import { BlockRangeSelectionPlugin } from '../plugins/BlockRangeSelectionPlugin'
 import { InlineCodeShortcutPlugin } from '../plugins/InlineCodeShortcutPlugin'
 import { MarkdownShortcutPlugin } from '../plugins/MarkdownShortcutPlugin'
 import { LexicalDraggableBlockPlugin } from '../plugins/LexicalDraggableBlockPlugin'
 import { PasteGuardPlugin, type PasteOverflowInfo } from '../plugins/PasteGuardPlugin'
 import { SelectionHandles } from './SelectionHandles'
+import { SelectedNodeDeletePlugin } from '../plugins/SelectedNodeDeletePlugin'
 import { SlashMenuPlugin } from '../plugins/SlashMenuPlugin'
 import TableCellResizerPlugin from '../plugins/TableCellResizer'
 import { TableInteractionPlugin } from '../plugins/TableInteractionPlugin'
@@ -368,6 +370,7 @@ export function Editor({
     >
       <LessonEditablePlugin readOnly={readOnly} />
       {!readOnly && floatingToolbarFeatures.code ? <InlineCodeShortcutPlugin /> : null}
+      {!readOnly ? <SelectedNodeDeletePlugin /> : null}
       <CheckListPlugin />
       {!readOnly ? <MarkdownShortcutPlugin /> : null}
       <LessonHydrationPlugin
@@ -414,6 +417,7 @@ export function Editor({
             aria-label={ariaLabel}
             {...contentEditablePlaceholderProps}
           />
+          {!readOnly ? <AppendParagraphOnBottomClickPlugin /> : null}
           {!isEmbedded ? <SelectionHandles container={anchorElem} /> : null}
           {!isEmbedded ? (
             <BlockRangeSelectionPlugin

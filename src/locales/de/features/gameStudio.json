@@ -6,6 +6,21 @@
     "nodeA": "Knoten A",
     "nodeB": "Knoten B"
   },
+  "agent": {
+    "title": "Agent",
+    "searchLabel": "PDFs durchsuchen",
+    "searchPlaceholder": "Nach Dateiname suchen…",
+    "pdfsEmpty": "Noch keine PDF-Dateien in deiner Cloud.",
+    "pdfsSearchEmpty": "Keine PDFs passen zur Suche.",
+    "closePreview": "Vorschau schließen"
+  },
+  "canvas": {
+    "toasts": {
+      "panModeActivated": "Schwenkmodus aktiviert",
+      "selectModeActivated": "Auswahlmodus aktiviert",
+      "agentModeActivated": "Agent-Modus aktiviert"
+    }
+  },
   "emptyGamesView": {
     "title": "Erstelle dein erstes Spiel",
     "description": "Baue einen Ablauf mit Start, Spielknoten und Ende und ver\u00f6ffentliche ihn f\u00fcr Lernende."

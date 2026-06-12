@@ -10,6 +10,44 @@ import {
 } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
 
+export type TwoColumnDialogColumnsProps = {
+  leftChildren: ReactNode
+  rightChildren: ReactNode
+  className?: string
+  leftClassName?: string
+  rightClassName?: string
+}
+
+/** Shared 70/30 grid used by {@link TwoColumnDialog} and embedded dual layouts. */
+export function TwoColumnDialogColumns({
+  leftChildren,
+  rightChildren,
+  className,
+  leftClassName,
+  rightClassName,
+}: TwoColumnDialogColumnsProps) {
+  return (
+    <div className={cn('grid max-h-[80vh] grid-cols-1 overflow-hidden md:grid-cols-10', className)}>
+      <div
+        className={cn(
+          'min-h-0 border-b p-6 md:col-span-7 md:max-h-[80vh] md:overflow-y-auto md:border-r md:border-b-0',
+          leftClassName,
+        )}
+      >
+        {leftChildren}
+      </div>
+      <div
+        className={cn(
+          'min-h-0 bg-muted/20 p-6 md:col-span-3 md:max-h-[80vh] md:overflow-y-auto',
+          rightClassName,
+        )}
+      >
+        {rightChildren}
+      </div>
+    </div>
+  )
+}
+
 type TwoColumnDialogProps = {
   title?: string
   description?: string
@@ -63,14 +101,12 @@ export function TwoColumnDialog({
             {description ? <DialogDescription>{description}</DialogDescription> : null}
           </DialogHeader>
         )}
-        <div className="grid max-h-[80vh] grid-cols-1 overflow-y-auto md:grid-cols-10">
-          <div
-            className={cn('border-b p-6 md:col-span-7 md:border-r md:border-b-0', leftClassName)}
-          >
-            {leftChildren}
-          </div>
-          <div className={cn('bg-muted/20 p-6 md:col-span-3', rightClassName)}>{rightChildren}</div>
-        </div>
+        <TwoColumnDialogColumns
+          leftChildren={leftChildren}
+          rightChildren={rightChildren}
+          leftClassName={leftClassName}
+          rightClassName={rightClassName}
+        />
       </DialogContent>
     </Dialog>
   )

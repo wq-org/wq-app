@@ -34,6 +34,7 @@ import {
   type OpenCommandAddEventDetail,
 } from '../constants/commandPaletteEvents'
 import { isCommandPaletteHiddenPath } from '../utils/isCommandPaletteHiddenPath'
+import { GAME_AGENT_MODE_CHANGED_EVENT } from '@/features/game-studio/context/gameAgentModeEvents'
 
 const activeStyles = {
   text: 'text-blue-500',
@@ -185,6 +186,20 @@ export function CommandPalette({
     }
     showPalette()
   }, [isGamePreview, showPalette])
+
+  useEffect(() => {
+    if (commandBarContext !== 'game-studio') return
+
+    const onAgentModeChanged = (event: Event) => {
+      const enabled = (event as CustomEvent<{ enabled?: boolean }>).detail?.enabled === true
+      if (enabled) {
+        setSelectedId('agent')
+      }
+    }
+
+    window.addEventListener(GAME_AGENT_MODE_CHANGED_EVENT, onAgentModeChanged)
+    return () => window.removeEventListener(GAME_AGENT_MODE_CHANGED_EVENT, onAgentModeChanged)
+  }, [commandBarContext])
 
   useEffect(() => {
     const onOpenAdd = (event: Event) => {

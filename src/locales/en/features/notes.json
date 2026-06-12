@@ -39,7 +39,8 @@
       "insertSelectionSuccess": "Inserted text into note",
       "insertLink": "Insert link",
       "insertLinkSuccess": "Inserted link into note",
-      "openLink": "Open in new tab"
+      "openLink": "Open in new tab",
+      "modeActivated": "Agent mode activated"
     }
   },
   "card": {
