@@ -81,6 +81,9 @@ const theme = {
   },
   list: {
     checklist: 'editor-list-checklist',
+    nested: {
+      listitem: 'editor-nested-listitem',
+    },
     listitem: 'editor-listItem',
     listitemChecked: 'editor-listItemChecked',
     listitemUnchecked: 'editor-listItemUnchecked',
@@ -88,6 +91,8 @@ const theme = {
     // Cycles by depth (lexical applies depth % length): 1. → a. → i. → 1. …
     olDepth: ['editor-list-ol1', 'editor-list-ol2', 'editor-list-ol3'],
     ul: 'editor-list-ul',
+    // Keep bullets solid at every indent level (no hollow circle / square cycling).
+    ulDepth: ['editor-list-ul1', 'editor-list-ul2', 'editor-list-ul3'],
   },
   embedBlock: {
     base: 'my-4 max-w-full overflow-hidden rounded-xl',

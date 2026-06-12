@@ -683,6 +683,7 @@ body {
     margin-inline-start: 0;
     padding: 0;
     padding-inline-start: 0;
+    list-style-position: outside;
   }
 
   .editor-list-ol,
@@ -694,10 +695,6 @@ body {
     list-style: none;
     margin-inline-start: 0;
     padding-inline-start: 0;
-  }
-
-  .editor-list-ol {
-    list-style-type: decimal;
   }
 
   /* Ordered list markers cycle by nesting depth: 1. → a. → i. → 1. … */
@@ -713,7 +710,11 @@ body {
     list-style-type: lower-roman;
   }
 
-  .editor-list-ul:not(.editor-list-checklist) {
+  /* Bullet lists stay solid disc at every indent — no hollow circle / square cycling. */
+  .editor-list-ul:not(.editor-list-checklist),
+  .editor-list-ul1,
+  .editor-list-ul2,
+  .editor-list-ul3 {
     list-style-type: disc;
   }
 
@@ -721,8 +722,38 @@ body {
     margin: 0.25rem 0;
   }
 
-  .editor-nested-listitem {
-    list-style-type: circle;
+  /* Wrapper li that only contains a nested list — no phantom marker beside the nested list. */
+  .editor-listItem.editor-nested-listitem,
+  .editor-listItem:has(> .editor-list-ul),
+  .editor-listItem:has(> .editor-list-ol) {
+    display: block;
+    list-style: none;
+    list-style-type: none;
+  }
+
+  .editor-listItem.editor-nested-listitem::marker,
+  .editor-listItem:has(> .editor-list-ul)::marker,
+  .editor-listItem:has(> .editor-list-ol)::marker {
+    content: none;
+  }
+
+  .editor-listItem.editor-nested-listitem::before,
+  .editor-listItem.editor-nested-listitem::after,
+  .editor-listItem:has(> .editor-list-ul)::before,
+  .editor-listItem:has(> .editor-list-ul)::after,
+  .editor-listItem:has(> .editor-list-ol)::before,
+  .editor-listItem:has(> .editor-list-ol)::after {
+    content: none;
+    display: none;
+  }
+
+  .editor-listItem.editor-nested-listitem > .editor-list-ul,
+  .editor-listItem.editor-nested-listitem > .editor-list-ol,
+  .editor-listItem:has(> .editor-list-ul) > .editor-list-ul,
+  .editor-listItem:has(> .editor-list-ol) > .editor-list-ol {
+    display: block;
+    margin-top: 0.25rem;
+    margin-bottom: 0;
   }
 
   .editor-listItemChecked,

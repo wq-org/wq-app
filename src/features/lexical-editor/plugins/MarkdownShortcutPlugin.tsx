@@ -1,6 +1,7 @@
 import {
   CHECK_LIST,
   HEADING,
+  ORDERED_LIST,
   UNORDERED_LIST,
   registerMarkdownShortcuts,
   type Transformer,
@@ -17,7 +18,12 @@ const HEADING_SHORTCUT: Transformer = {
 }
 
 /** Block-level markdown patterns converted when the user types a trailing space. */
-const MARKDOWN_SHORTCUT_TRANSFORMERS: Transformer[] = [HEADING_SHORTCUT, UNORDERED_LIST, CHECK_LIST]
+const MARKDOWN_SHORTCUT_TRANSFORMERS: Transformer[] = [
+  HEADING_SHORTCUT,
+  UNORDERED_LIST,
+  ORDERED_LIST,
+  CHECK_LIST,
+]
 
 type MarkdownShortcutPluginProps = {
   enabled?: boolean
@@ -26,7 +32,7 @@ type MarkdownShortcutPluginProps = {
 
 /**
  * Auto-converts markdown block prefixes while typing:
- * `# ` → h1, `## ` → h2, `### ` → h3, `- ` → bullet, `[] ` → checklist.
+ * `# ` → h1, `## ` → h2, `### ` → h3, `- ` → bullet, `1. ` → numbered, `[] ` → checklist.
  */
 export function MarkdownShortcutPlugin({
   enabled = true,
