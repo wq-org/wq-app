@@ -50,6 +50,7 @@
     "@headless-tree/core": "^1.6.3",
     "@headless-tree/react": "^1.6.3",
     "@hookform/resolvers": "^5.2.2",
+    "@lexical/clipboard": "0.44.0",
     "@lexical/code": "^0.44.0",
     "@lexical/code-prism": "^0.44.0",
     "@lexical/extension": "0.44.0",

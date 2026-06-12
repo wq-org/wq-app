@@ -27,6 +27,7 @@ import {
   CodeHighlightKitExtension,
   mergeCodeHighlightTheme,
 } from '../plugins/code-highlight-plugin'
+import { MarkdownPasteExtension, markdownPasteNodes } from '../plugins/MarkdownPastePlugin'
 import '../plugins/code-highlight-plugin/codeHighlightTheme.css'
 import { CodeBlockActionMenuPlugin } from '../plugins/CodeBlockActionMenuPlugin'
 import {
@@ -118,6 +119,7 @@ const lessonEditorExtension = defineExtension({
     TabIndentationExtension,
     FloatingFormatExtension,
     NodeEditorAutoLinkExtension,
+    MarkdownPasteExtension,
     CodeHighlightKitExtension,
     configExtension(LinkExtension, { validateUrl, attributes: undefined }),
   ],
@@ -134,6 +136,7 @@ const lessonEditorExtension = defineExtension({
     TableRowNode,
     MarkNode,
     CommentMarkNode,
+    ...markdownPasteNodes,
   ],
 })
 
