@@ -50,6 +50,7 @@ import {
   type EditorExternalInsertApi,
 } from '../plugins/ExternalContentInsertPlugin'
 import { AddYouTubeLinksDialogPlugin } from '../plugins/AddYouTubeLinksDialogPlugin'
+import { InlineCodeShortcutPlugin } from '../plugins/InlineCodeShortcutPlugin'
 import { LexicalDraggableBlockPlugin } from '../plugins/LexicalDraggableBlockPlugin'
 import { PasteGuardPlugin, type PasteOverflowInfo } from '../plugins/PasteGuardPlugin'
 import { SelectionHandles } from './SelectionHandles'
@@ -98,7 +99,7 @@ const theme = {
   tableSelection: 'editor-tableSelection',
   text: {
     bold: 'font-bold',
-    code: 'rounded-[3px] bg-[rgba(135,131,120,0.15)] px-[0.3em] py-[0.1em] font-mono text-[0.875em] dark:bg-white/10',
+    code: 'rounded-md bg-[rgba(135,131,120,0.15)] px-[0.3em] py-[0.1em] font-mono text-[0.875em] text-[#c7254e] dark:bg-white/10 dark:text-[#e06c75]',
     italic: 'italic',
     strikethrough: 'line-through',
     underline: 'underline',
@@ -359,6 +360,7 @@ export function Editor({
       contentEditable={null}
     >
       <LessonEditablePlugin readOnly={readOnly} />
+      {!readOnly && floatingToolbarFeatures.code ? <InlineCodeShortcutPlugin /> : null}
       <CheckListPlugin />
       <LessonHydrationPlugin
         initialContent={initialContent}
