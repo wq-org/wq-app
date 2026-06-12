@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { File, Settings2, TextQuote } from 'lucide-react'
 import type { SerializedEditorState } from 'lexical'
+import { toast } from 'sonner'
 import { AppShell } from '@/components/layout'
 import { LoadingPage } from '@/components/shared'
 import {
@@ -15,7 +16,7 @@ import { FieldTextarea } from '@/components/ui/field-textarea'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
-import { Editor } from '@/features/lexical-editor'
+import { Editor, type EditorExternalInsertApi } from '@/features/lexical-editor'
 import type { LessonDraftState } from '@/features/lesson'
 import { getThemeBackgroundStyle, getThemeClasses, type ThemeId } from '@/lib/themes'
 
@@ -41,6 +42,19 @@ type NoteEditorPageProps = {
   role: 'teacher' | 'student'
 }
 
+function scrollNoteEditorToEnd() {
+  const scrollContainer = document.getElementById(NOTE_EDITOR_SCROLL_ID)
+  if (!scrollContainer) return
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  window.requestAnimationFrame(() => {
+    scrollContainer.scrollTo({
+      top: scrollContainer.scrollHeight,
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+    })
+  })
+}
+
 export function NoteEditorPage({ role }: NoteEditorPageProps) {
   const { t } = useTranslation('features.notes')
   const navigate = useNavigate()
@@ -57,6 +71,36 @@ export function NoteEditorPage({ role }: NoteEditorPageProps) {
   const headerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isHeaderSavingRef = useRef(false)
   const queuedHeaderRef = useRef<{ title: string; description: string } | null>(null)
+  const externalInsertApiRef = useRef<EditorExternalInsertApi | null>(null)
+
+  const handleExternalInsertReady = useCallback((api: EditorExternalInsertApi | null) => {
+    externalInsertApiRef.current = api
+  }, [])
+
+  const handleSuccessfulPdfInsert = useCallback((message: string) => {
+    toast.success(message)
+    scrollNoteEditorToEnd()
+  }, [])
+
+  const handleInsertTextFromPdf = useCallback(
+    (text: string) => {
+      const didInsert = externalInsertApiRef.current?.appendText(text) ?? false
+      if (!didInsert) return
+
+      handleSuccessfulPdfInsert(t('pages.agent.insertSelectionSuccess'))
+    },
+    [handleSuccessfulPdfInsert, t],
+  )
+
+  const handleInsertLinkFromPdf = useCallback(
+    (url: string) => {
+      const didInsert = externalInsertApiRef.current?.appendLink(url) ?? false
+      if (!didInsert) return
+
+      handleSuccessfulPdfInsert(t('pages.agent.insertLinkSuccess'))
+    },
+    [handleSuccessfulPdfInsert, t],
+  )
 
   useEffect(() => {
     isHydratedRef.current = false
@@ -173,7 +217,7 @@ export function NoteEditorPage({ role }: NoteEditorPageProps) {
       role={role}
       commandBarContext="note-editor"
     >
-      <div className="-mx-[calc(50vw-50%)] -mt-20 flex min-h-[calc(100dvh-5rem)] w-screen">
+      <div className="-mx-[calc(50vw-50%)] -mt-20 flex h-[calc(100dvh-5rem)] w-screen overflow-hidden">
         <ResizablePanelGroup
           orientation="horizontal"
           className="h-full w-full"
@@ -290,6 +334,7 @@ export function NoteEditorPage({ role }: NoteEditorPageProps) {
                             isLoading={loading}
                             onPersistSerializedContent={persistContent}
                             onHeadingsChange={handleHeadingsChange}
+                            onExternalInsertReady={handleExternalInsertReady}
                           />
                         </div>
                       ) : null}
@@ -319,7 +364,11 @@ export function NoteEditorPage({ role }: NoteEditorPageProps) {
             onResize={handleAgentPanelResize}
             className="min-w-0 overflow-hidden border-l border-border/60 bg-background"
           >
-            <NoteAgentPage isClosing={isAgentClosing} />
+            <NoteAgentPage
+              isClosing={isAgentClosing}
+              onInsertText={handleInsertTextFromPdf}
+              onInsertLink={handleInsertLinkFromPdf}
+            />
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>

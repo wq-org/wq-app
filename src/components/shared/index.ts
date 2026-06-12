@@ -69,8 +69,10 @@ export {
   ThreadsIcon,
   TikTokIcon,
   TwitterIcon,
-  AgentComputerIcon,
-  type AgentComputerIconVariant,
+  ComputerIcon,
+  type ComputerIconAnimation,
+  type ComputerIconState,
+  type ComputerIconVariant,
 } from './icons'
 export { IconPreviewCardSquare, IconPreviewCardWide } from './IconPreviewCard'
 export {

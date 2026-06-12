@@ -1,4 +1,5 @@
 export { Editor, type EditorProps } from './components/Editor'
+export { type EditorExternalInsertApi } from './plugins/ExternalContentInsertPlugin'
 export { useLexicalNodeEditor } from './hooks/useLexicalNodeEditor'
 export {
   DEFAULT_FLOATING_TOOLBAR_FEATURES,

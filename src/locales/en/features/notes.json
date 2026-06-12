@@ -34,7 +34,12 @@
       "searchPlaceholder": "Search by filename…",
       "pdfsEmpty": "No PDF files in your cloud yet.",
       "pdfsSearchEmpty": "No PDFs match your search.",
-      "closePreview": "Close preview"
+      "closePreview": "Close preview",
+      "insertSelection": "Insert into note",
+      "insertSelectionSuccess": "Inserted text into note",
+      "insertLink": "Insert link",
+      "insertLinkSuccess": "Inserted link into note",
+      "openLink": "Open in new tab"
     }
   },
   "card": {

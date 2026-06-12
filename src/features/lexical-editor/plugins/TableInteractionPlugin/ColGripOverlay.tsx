@@ -37,6 +37,11 @@ export function ColGripOverlay({
     position: 'before' | 'after'
   } | null>(null)
   const dragStartRef = useRef<{ index: number; startX: number; armed: boolean } | null>(null)
+  // Mirrors dragInfo so handleUp can run the move OUTSIDE the state updater.
+  // StrictMode double-invokes updaters in dev; index-based moveColumn is not
+  // idempotent, so a move performed inside the updater is applied twice and
+  // the second application exactly undoes the first (the "swap does nothing" bug).
+  const latestDragInfoRef = useRef<typeof dragInfo>(null)
 
   useEffect(() => {
     const handleMove = (e: PointerEvent) => {
@@ -52,37 +57,34 @@ export function ColGripOverlay({
       const dropIndex = computeDropIndex(midpoints, e.clientX, state.index)
       const lastMidpoint = midpoints[midpoints.length - 1]
       const isAfterLast = lastMidpoint !== undefined && e.clientX > lastMidpoint
-      setDragInfo({
+      const nextDragInfo = {
         fromIndex: state.index,
         targetIndex: isAfterLast ? firstRowCellEls.length - 1 : dropIndex,
-        position: isAfterLast ? 'after' : 'before',
-      })
+        position: isAfterLast ? ('after' as const) : ('before' as const),
+      }
+      latestDragInfoRef.current = nextDragInfo
+      setDragInfo(nextDragInfo)
     }
     const handleUp = () => {
       const state = dragStartRef.current
       dragStartRef.current = null
       if (!state) return
       const wasArmed = state.armed
-      setDragInfo((current) => {
-        if (current && wasArmed) {
-          if (current.targetIndex !== current.fromIndex) {
-            moveColumn(
-              editor,
-              tableKey,
-              current.fromIndex,
-              current.targetIndex,
-              current.position,
-            )
-          }
-        } else if (!wasArmed) {
-          const cellEl = firstRowCellEls[state.index]
-          if (cellEl) {
-            const rect = cellEl.getBoundingClientRect()
-            onOpenMenu(state.index, rect)
-          }
+      const current = latestDragInfoRef.current
+      latestDragInfoRef.current = null
+
+      if (current && wasArmed) {
+        if (current.targetIndex !== current.fromIndex) {
+          moveColumn(editor, tableKey, current.fromIndex, current.targetIndex, current.position)
         }
-        return null
-      })
+      } else if (!wasArmed) {
+        const cellEl = firstRowCellEls[state.index]
+        if (cellEl) {
+          const rect = cellEl.getBoundingClientRect()
+          onOpenMenu(state.index, rect)
+        }
+      }
+      setDragInfo(null)
     }
     document.addEventListener('pointermove', handleMove)
     document.addEventListener('pointerup', handleUp)

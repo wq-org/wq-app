@@ -57,13 +57,13 @@ export function NoteCard({ note, index, onClick }: NoteCardProps) {
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       aria-label={title}
-      className="group relative cursor-pointer"
+      className="group relative w-full min-w-0 cursor-pointer"
       style={{ animationDelay: `${staggerDelay}ms`, animationFillMode: 'backwards' }}
     >
       <CurvedScrollbar
         theme="system"
         color={scrollbarColor}
-        width={350}
+        width="100%"
         height={400}
         className="curved-scrollbar--interactive"
       >

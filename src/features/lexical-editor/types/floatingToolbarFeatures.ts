@@ -7,6 +7,7 @@ export type FloatingToolbarFeatureKey =
   | 'link'
   | 'comment'
   | 'highlight'
+  | 'table'
 
 export type FloatingToolbarFeatures = Record<FloatingToolbarFeatureKey, boolean>
 
@@ -19,6 +20,7 @@ export const DEFAULT_FLOATING_TOOLBAR_FEATURES: FloatingToolbarFeatures = {
   link: true,
   comment: true,
   highlight: true,
+  table: true,
 }
 
 /** Game node / embedded surfaces: no lesson comment marks. */

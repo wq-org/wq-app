@@ -24,6 +24,11 @@ import {
 import type { ScrollDrivenIndexItem } from '@/components/shared/scroll-driven-index'
 
 import {
+  CodeHighlightKitExtension,
+  mergeCodeHighlightTheme,
+} from '../plugins/code-highlight-plugin'
+import '../plugins/code-highlight-plugin/codeHighlightTheme.css'
+import {
   FloatingFormatExtension,
   FloatingTextFormatToolbarPlugin,
 } from '../plugins/FloatingTextFormatToolbarPlugin'
@@ -39,6 +44,10 @@ import { FloatingImagePickerPlugin } from '../plugins/FloatingImagePickerPlugin'
 import { NodeEditorAutoLinkExtension } from '../plugins/AutoLinkExtension'
 import { FloatingLinkEditorPlugin } from '../plugins/FloatingLinkEditorPlugin'
 import { LessonLinkDialogPlugin } from '../plugins/LessonLinkDialogPlugin'
+import {
+  ExternalContentInsertPlugin,
+  type EditorExternalInsertApi,
+} from '../plugins/ExternalContentInsertPlugin'
 import { AddYouTubeLinksDialogPlugin } from '../plugins/AddYouTubeLinksDialogPlugin'
 import { LexicalDraggableBlockPlugin } from '../plugins/LexicalDraggableBlockPlugin'
 import { PasteGuardPlugin, type PasteOverflowInfo } from '../plugins/PasteGuardPlugin'
@@ -105,11 +114,12 @@ const lessonEditorExtension = defineExtension({
     TabIndentationExtension,
     FloatingFormatExtension,
     NodeEditorAutoLinkExtension,
+    CodeHighlightKitExtension,
     configExtension(LinkExtension, { validateUrl, attributes: undefined }),
   ],
   name: 'wq-health-lesson-editor',
   namespace: 'wq-health-lesson-editor',
-  theme,
+  theme: mergeCodeHighlightTheme(theme),
   nodes: [
     ImageNode,
     ImagePlaceholderNode,
@@ -152,8 +162,14 @@ export type EditorProps = {
    * Defaults to `ariaLabel`, then the lesson fallback copy.
    */
   placeholderAriaLabel?: string
-  /** Per-button toggles for the floating format toolbar (merged with embedded defaults). */
+  /** Inline-toolbar toggles plus slash-menu table availability (merged with embedded defaults). */
   floatingToolbarFeatures?: Partial<FloatingToolbarFeatures>
+  /**
+   * Receives an imperative append API (text/link at document end) once the editor
+   * mounts, and `null` on unmount. Lets sibling panels (e.g. the note agent PDF
+   * viewer) insert content without owning a Lexical context.
+   */
+  onExternalInsertReady?: (api: EditorExternalInsertApi | null) => void
 }
 
 export type EditorPlaceholder = JSX.Element | ((isEditable: boolean) => JSX.Element | null)
@@ -289,6 +305,7 @@ export function Editor({
   placeholder,
   placeholderAriaLabel,
   floatingToolbarFeatures: floatingToolbarFeaturesPartial,
+  onExternalInsertReady,
 }: EditorProps) {
   const [anchorElem, setAnchorElem] = useState<HTMLDivElement | null>(null)
   const [imageHydrationGeneration, setImageHydrationGeneration] = useState(0)
@@ -357,6 +374,9 @@ export function Editor({
         <HeadingExtractorPlugin onHeadingsChange={onHeadingsChange} />
       ) : null}
       <TableCellResizerPlugin />
+      {!readOnly && onExternalInsertReady ? (
+        <ExternalContentInsertPlugin onReady={onExternalInsertReady} />
+      ) : null}
       {!readOnly && onPasteOverflow ? <PasteGuardPlugin onOverflow={handlePasteOverflow} /> : null}
       {!readOnly && !isLoading ? (
         <LessonAutosaveBridge
@@ -385,6 +405,7 @@ export function Editor({
           {!isEmbedded ? <LexicalDraggableBlockPlugin /> : null}
           <SlashMenuPlugin
             registry={blockTypeRegistry}
+            features={floatingToolbarFeatures}
             portalMenuToDocumentBody={isEmbedded}
           />
           <LessonLinkDialogPlugin onReady={registerRequestLinkDialog} />

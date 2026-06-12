@@ -34,7 +34,12 @@
       "searchPlaceholder": "Nach Dateiname suchen …",
       "pdfsEmpty": "Noch keine PDF-Dateien in deiner Cloud.",
       "pdfsSearchEmpty": "Keine PDFs passen zu deiner Suche.",
-      "closePreview": "Vorschau schließen"
+      "closePreview": "Vorschau schließen",
+      "insertSelection": "In Notiz einfügen",
+      "insertSelectionSuccess": "Text in Notiz eingefügt",
+      "insertLink": "Link einfügen",
+      "insertLinkSuccess": "Link in Notiz eingefügt",
+      "openLink": "Im neuen Tab öffnen"
     }
   },
   "card": {

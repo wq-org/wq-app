@@ -48,7 +48,7 @@ function TeacherNotesList() {
       role="teacher"
       className="animate-in fade-in-0 slide-in-from-bottom-4"
     >
-      <div className="container mx-auto w-full max-w-4xl py-6">
+      <div className="container mx-auto w-full max-w-7xl py-6">
         <section className="relative isolate mb-8 overflow-hidden rounded-3xl">
           <GridPattern className="absolute inset-0 -z-10 h-full w-full opacity-75 [mask-image:radial-gradient(ellipse_at_top,white,transparent_70%)]" />
 

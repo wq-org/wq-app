@@ -39,6 +39,9 @@ export function RowGripOverlay({
     position: 'before' | 'after'
   } | null>(null)
   const dragStartRef = useRef<{ index: number; startY: number; armed: boolean } | null>(null)
+  // Mirrors dragInfo so handleUp runs side effects OUTSIDE the state updater
+  // (StrictMode double-invokes updaters in dev; see ColGripOverlay for details).
+  const latestDragInfoRef = useRef<typeof dragInfo>(null)
 
   useEffect(() => {
     const handleMove = (e: PointerEvent) => {
@@ -54,51 +57,54 @@ export function RowGripOverlay({
       const dropIndex = computeDropIndex(midpoints, e.clientY, state.index)
       const lastMidpoint = midpoints[midpoints.length - 1]
       const isAfterLast = lastMidpoint !== undefined && e.clientY > lastMidpoint
-      setDragInfo({
+      const nextDragInfo = {
         fromIndex: state.index,
         targetIndex: isAfterLast ? rowEls.length - 1 : dropIndex,
-        position: isAfterLast ? 'after' : 'before',
-      })
+        position: isAfterLast ? ('after' as const) : ('before' as const),
+      }
+      latestDragInfoRef.current = nextDragInfo
+      setDragInfo(nextDragInfo)
     }
     const handleUp = () => {
       const state = dragStartRef.current
       dragStartRef.current = null
       if (!state) return
       const wasArmed = state.armed
-      setDragInfo((current) => {
-        if (current && wasArmed) {
-          if (current.targetIndex !== current.fromIndex) {
-            const fromRowEl = rowEls[current.fromIndex]
-            const targetRowEl = rowEls[current.targetIndex]
-            if (fromRowEl && targetRowEl) {
-              const fromKey = editor.read(() => {
-                const node = $getNearestNodeFromDOMNode(fromRowEl)
-                return $isTableRowNode(node) ? node.getKey() : null
-              })
-              const targetKey = editor.read(() => {
-                const node = $getNearestNodeFromDOMNode(targetRowEl)
-                return $isTableRowNode(node) ? node.getKey() : null
-              })
-              if (fromKey && targetKey) {
-                moveRow(editor, tableKey, fromKey, targetKey, current.position)
-              }
-            }
-          }
-        } else if (!wasArmed) {
-          const rowEl = rowEls[state.index]
-          if (rowEl) {
-            const rect = rowEl.getBoundingClientRect()
-            const rowKey = editor.read(() => {
-              const node = $getNearestNodeFromDOMNode(rowEl)
+      const current = latestDragInfoRef.current
+      latestDragInfoRef.current = null
+
+      if (current && wasArmed) {
+        if (current.targetIndex !== current.fromIndex) {
+          const fromRowEl = rowEls[current.fromIndex]
+          const targetRowEl = rowEls[current.targetIndex]
+          if (fromRowEl && targetRowEl) {
+            const fromKey = editor.read(() => {
+              const node = $getNearestNodeFromDOMNode(fromRowEl)
               return $isTableRowNode(node) ? node.getKey() : null
             })
-            if (rowKey) {
-              onOpenMenu(state.index, rowKey, rect)
+            const targetKey = editor.read(() => {
+              const node = $getNearestNodeFromDOMNode(targetRowEl)
+              return $isTableRowNode(node) ? node.getKey() : null
+            })
+            if (fromKey && targetKey) {
+              moveRow(editor, tableKey, fromKey, targetKey, current.position)
             }
           }
         }
-        return null
-      })
+      } else if (!wasArmed) {
+        const rowEl = rowEls[state.index]
+        if (rowEl) {
+          const rect = rowEl.getBoundingClientRect()
+          const rowKey = editor.read(() => {
+            const node = $getNearestNodeFromDOMNode(rowEl)
+            return $isTableRowNode(node) ? node.getKey() : null
+          })
+          if (rowKey) {
+            onOpenMenu(state.index, rowKey, rect)
+          }
+        }
+      }
+      setDragInfo(null)
     }
     document.addEventListener('pointermove', handleMove)
     document.addEventListener('pointerup', handleUp)

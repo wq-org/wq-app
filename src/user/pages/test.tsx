@@ -56,9 +56,9 @@ import {
   StatsUsageDashboard,
   StatsValueBreakdown,
   SwitchListCardIcons,
-  AgentComputerIcon,
+  ComputerIcon,
   TwoColumnDialog,
-  type AgentComputerIconVariant,
+  type ComputerIconVariant,
   type Ai03MenuActionId,
   CardInstantPreview,
   type CardInstantPreviewCardProps,
@@ -1300,7 +1300,7 @@ export default function Test() {
         />
       </Section>
 
-      <Section title="AgentComputerIcon — variants">
+      <Section title="ComputerIcon — variants">
         <div className="flex flex-wrap items-center gap-6">
           {(
             [
@@ -1316,14 +1316,14 @@ export default function Test() {
               'orange',
               'pink',
               'darkblue',
-            ] as AgentComputerIconVariant[]
+            ] as ComputerIconVariant[]
           ).map((variant) => (
             <div
               key={variant}
               className="flex flex-col items-center gap-2"
             >
               <div className="flex items-center justify-center w-[72px] h-[72px] rounded-full bg-secondary">
-                <AgentComputerIcon
+                <ComputerIcon
                   size={28}
                   strokeWidth={1.6}
                   variant={variant}

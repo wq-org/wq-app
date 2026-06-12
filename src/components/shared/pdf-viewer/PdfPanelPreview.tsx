@@ -3,7 +3,11 @@ import { X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-import { BasicPdfViewer } from './BasicPdfViewer'
+import {
+  BasicPdfViewer,
+  type PdfLinkInsert,
+  type PdfSelectionInsert,
+} from './BasicPdfViewer'
 
 export type PdfPanelPreviewProps = {
   fileName: string
@@ -11,6 +15,10 @@ export type PdfPanelPreviewProps = {
   closeLabel: string
   onClose: () => void
   className?: string
+  /** Forwarded to the viewer: floating insert toolbar for text selections. */
+  selectionInsert?: PdfSelectionInsert
+  /** Forwarded to the viewer: insert/open popover for external link clicks. */
+  linkInsert?: PdfLinkInsert
 }
 
 export function PdfPanelPreview({
@@ -19,6 +27,8 @@ export function PdfPanelPreview({
   closeLabel,
   onClose,
   className,
+  selectionInsert,
+  linkInsert,
 }: PdfPanelPreviewProps) {
   return (
     <div className={cn('flex flex-col gap-3', className)}>
@@ -45,6 +55,8 @@ export function PdfPanelPreview({
         layout="panel"
         source={pdfUrl}
         className="shrink-0 rounded-lg"
+        selectionInsert={selectionInsert}
+        linkInsert={linkInsert}
       />
     </div>
   )

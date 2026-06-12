@@ -15,7 +15,7 @@ import {
   NotebookPen,
   StickyNote,
 } from 'lucide-react'
-import { AgentComputerIcon } from '@/components/shared'
+import { ComputerIcon } from '@/components/shared'
 import type { AddType, CommandBarItem, CommandBarView } from '../types/command-bar.types'
 import type { UserRole } from '@/features/auth'
 
@@ -86,7 +86,7 @@ export const LESSONS_VIEW_COMMAND_ITEMS: readonly CommandBarItem[] = [
   {
     id: 'agent',
     labelKey: 'actions.agent',
-    icon: AgentComputerIcon,
+    icon: ComputerIcon,
     actionId: 'agent',
   },
 ]
@@ -114,7 +114,7 @@ export const VIEW_COMMAND_ITEMS: Record<CommandBarView, readonly CommandBarItem[
     {
       id: 'agent',
       labelKey: 'actions.agent',
-      icon: AgentComputerIcon,
+      icon: ComputerIcon,
       actionId: 'agent',
     },
     {
