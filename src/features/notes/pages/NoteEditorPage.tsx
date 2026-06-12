@@ -16,7 +16,11 @@ import { FieldTextarea } from '@/components/ui/field-textarea'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
-import { Editor, type EditorExternalInsertApi } from '@/features/lexical-editor'
+import {
+  Editor,
+  NOTE_EDITOR_SHELL_MAX_WIDTH,
+  type EditorExternalInsertApi,
+} from '@/features/lexical-editor'
 import type { LessonDraftState } from '@/features/lesson'
 import { getThemeBackgroundStyle, getThemeClasses, type ThemeId } from '@/lib/themes'
 
@@ -236,7 +240,10 @@ export function NoteEditorPage({ role }: NoteEditorPageProps) {
                 className="h-[22vh] w-full"
                 style={coverStyle}
               />
-              <div className="mx-auto w-full max-w-[calc(32rem+6.5rem+2rem)] px-4">
+              <div
+                className="mx-auto w-full px-4"
+                style={{ maxWidth: NOTE_EDITOR_SHELL_MAX_WIDTH }}
+              >
                 <div className="relative flex gap-8">
                   {headingItems.length > 0 ? (
                     <aside
@@ -335,6 +342,7 @@ export function NoteEditorPage({ role }: NoteEditorPageProps) {
                             onPersistSerializedContent={persistContent}
                             onHeadingsChange={handleHeadingsChange}
                             onExternalInsertReady={handleExternalInsertReady}
+                            surfaceClassName="pl-1.5 [&_.editor-contentEditable]:!px-0 [&_.editor-contentEditable]:!pl-0"
                           />
                         </div>
                       ) : null}

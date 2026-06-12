@@ -1,16 +1,17 @@
-import { useEffect, useMemo, useRef, useState, type JSX } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'react'
 import { createPortal } from 'react-dom'
 import { $isCodeNode, CodeNode } from '@lexical/code'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { $getNearestNodeFromDOMNode, isHTMLElement } from 'lexical'
-import { Check, Copy } from 'lucide-react'
+import { Copy } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { toast } from '@/components/ui/sonner-toast'
 
 const CODE_BLOCK_SELECTOR = 'code.LCH__code'
 const MENU_OFFSET_PX = 6
 const MOUSE_MOVE_DEBOUNCE_MS = 50
-const COPY_FEEDBACK_MS = 1200
+const MENU_HIDE_DELAY_MS = 400
 
 type MenuPosition = {
   top: number
@@ -51,6 +52,14 @@ function getHoveredCodeBlock(event: MouseEvent): {
   return { codeDomNode, isOutside: !codeDomNode && !isInsideMenu }
 }
 
+function resolveCodeNodeFromDom(codeDomNode: HTMLElement) {
+  let node = $getNearestNodeFromDOMNode(codeDomNode)
+  while (node != null && !$isCodeNode(node)) {
+    node = node.getParent()
+  }
+  return $isCodeNode(node) ? node : null
+}
+
 type CodeBlockActionMenuPluginProps = {
   anchorElem: HTMLElement
 }
@@ -61,29 +70,56 @@ export function CodeBlockActionMenuPlugin({
 }: CodeBlockActionMenuPluginProps): JSX.Element {
   const [editor] = useLexicalComposerContext()
   const [isShown, setIsShown] = useState(false)
-  const [isCopied, setIsCopied] = useState(false)
+  const [isMenuHovered, setIsMenuHovered] = useState(false)
   const [position, setPosition] = useState<MenuPosition>({ top: 0, right: 0 })
   const [shouldTrackMouse, setShouldTrackMouse] = useState(false)
   const codeDomNodeRef = useRef<HTMLElement | null>(null)
-  const copyResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const clearHideTimer = useCallback(() => {
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current)
+      hideTimerRef.current = null
+    }
+  }, [])
+
+  const scheduleHide = useCallback(() => {
+    clearHideTimer()
+    hideTimerRef.current = setTimeout(() => {
+      setIsShown(false)
+    }, MENU_HIDE_DELAY_MS)
+  }, [clearHideTimer])
+
+  const showForCodeBlock = useCallback(
+    (codeDomNode: HTMLElement) => {
+      clearHideTimer()
+      codeDomNodeRef.current = codeDomNode
+
+      const anchorRect = anchorElem.getBoundingClientRect()
+      const codeRect = codeDomNode.getBoundingClientRect()
+      setPosition({
+        top: codeRect.top - anchorRect.top + MENU_OFFSET_PX,
+        right: anchorRect.right - codeRect.right + MENU_OFFSET_PX,
+      })
+      setIsShown(true)
+    },
+    [anchorElem, clearHideTimer],
+  )
+
+  const isMenuHoveredRef = useRef(false)
+  isMenuHoveredRef.current = isMenuHovered
 
   const handleMouseMove = useDebouncedCallback((event: MouseEvent) => {
     const { codeDomNode, isOutside } = getHoveredCodeBlock(event)
-    if (isOutside) {
-      setIsShown(false)
+
+    if (codeDomNode) {
+      showForCodeBlock(codeDomNode)
       return
     }
-    if (!codeDomNode) return
 
-    codeDomNodeRef.current = codeDomNode
-
-    const anchorRect = anchorElem.getBoundingClientRect()
-    const codeRect = codeDomNode.getBoundingClientRect()
-    setPosition({
-      top: codeRect.top - anchorRect.top + MENU_OFFSET_PX,
-      right: anchorRect.right - codeRect.right + MENU_OFFSET_PX,
-    })
-    setIsShown(true)
+    if (isOutside && !isMenuHoveredRef.current) {
+      scheduleHide()
+    }
   }, MOUSE_MOVE_DEBOUNCE_MS)
 
   useEffect(() => {
@@ -102,39 +138,49 @@ export function CodeBlockActionMenuPlugin({
     document.addEventListener('mousemove', handleMouseMove)
     return () => {
       setIsShown(false)
+      clearHideTimer()
       handleMouseMove.cancel()
       document.removeEventListener('mousemove', handleMouseMove)
     }
-  }, [shouldTrackMouse, handleMouseMove])
+  }, [shouldTrackMouse, handleMouseMove, clearHideTimer])
 
-  useEffect(() => {
-    return () => {
-      if (copyResetTimerRef.current) clearTimeout(copyResetTimerRef.current)
-    }
-  }, [])
+  useEffect(() => clearHideTimer, [clearHideTimer])
 
-  const handleCopy = async () => {
+  const handleCopy = useCallback(async () => {
     const codeDomNode = codeDomNodeRef.current
-    if (!codeDomNode || typeof navigator === 'undefined' || !navigator.clipboard) return
+    if (!codeDomNode) {
+      toast.error('Could not copy code.')
+      return
+    }
 
-    let content = ''
-    editor.getEditorState().read(() => {
-      const codeNode = $getNearestNodeFromDOMNode(codeDomNode)
-      if ($isCodeNode(codeNode)) {
-        content = codeNode.getTextContent()
-      }
+    let content = editor.read(() => {
+      const codeNode = resolveCodeNodeFromDom(codeDomNode)
+      return codeNode?.getTextContent() ?? ''
     })
-    if (!content) return
+
+    if (!content.trim()) {
+      content = codeDomNode.innerText.trim()
+    }
+
+    if (!content) {
+      toast.error('Nothing to copy.')
+      return
+    }
+
+    if (typeof navigator === 'undefined' || !navigator.clipboard?.writeText) {
+      toast.error('Clipboard is not available.')
+      return
+    }
 
     try {
-      await navigator.clipboard.writeText(content)
-      setIsCopied(true)
-      if (copyResetTimerRef.current) clearTimeout(copyResetTimerRef.current)
-      copyResetTimerRef.current = setTimeout(() => setIsCopied(false), COPY_FEEDBACK_MS)
+      await toast.promise(navigator.clipboard.writeText(content), {
+        success: 'Code copied.',
+        error: 'Could not copy code.',
+      })
     } catch (error) {
       console.error('CodeBlockActionMenu: copy failed', error)
     }
-  }
+  }, [editor])
 
   const menu = (
     <div
@@ -142,19 +188,28 @@ export function CodeBlockActionMenuPlugin({
       className={
         isShown
           ? 'absolute z-40 flex items-center gap-1 rounded-lg bg-popover/80 p-1 shadow-sm ring-1 ring-foreground/10 backdrop-blur-xl'
-          : 'hidden'
+          : 'pointer-events-none absolute z-40 hidden'
       }
       style={{ top: position.top, right: position.right }}
+      onMouseEnter={() => {
+        setIsMenuHovered(true)
+        clearHideTimer()
+      }}
+      onMouseLeave={() => {
+        setIsMenuHovered(false)
+        scheduleHide()
+      }}
     >
       <Button
         type="button"
         variant="ghost"
         size="icon"
         className="size-7"
+        onMouseDown={(event) => event.preventDefault()}
         onClick={handleCopy}
         aria-label="Copy code"
       >
-        {isCopied ? <Check className="size-3.5 text-green-600" /> : <Copy className="size-3.5" />}
+        <Copy className="size-3.5" />
       </Button>
     </div>
   )
