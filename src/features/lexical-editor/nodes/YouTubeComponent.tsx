@@ -19,16 +19,16 @@ export function YouTubeComponent({ className, format, nodeKey, videoID }: YouTub
       format={format}
       nodeKey={nodeKey}
     >
-      <iframe
-        className="editor-youtubeEmbed aspect-video w-full max-w-full rounded-xl border-0"
-        width="560"
-        height="315"
-        src={`https://www.youtube-nocookie.com/embed/${videoID}`}
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        title="YouTube video"
-      />
+      <div className="editor-youtubeEmbed mx-auto aspect-video w-full max-w-3xl">
+        <iframe
+          className="size-full rounded-xl border-0"
+          src={`https://www.youtube-nocookie.com/embed/${videoID}`}
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          title="YouTube video"
+        />
+      </div>
     </BlockWithAlignableContents>
   )
 }

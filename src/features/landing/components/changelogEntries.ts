@@ -20,6 +20,28 @@ export type SiteChangelogEntry = {
 
 export const changelogEntries: SiteChangelogEntry[] = [
   {
+    id: '2026-06-12-notes-editor-markdown-paste-code-and-ux',
+    date: '12 June 2026',
+    title:
+      'Notes editor: paste AI markdown as formatted content, stronger code tools, and tighter embed layout',
+    summary:
+      'The personal notes editor now understands markdown when you paste from ChatGPT, Claude, or similar tools—headings, lists, bold, links, and fenced code blocks land as real Lexical blocks instead of raw `#` and `**` characters. Code got several passes: syntax-highlighted blocks have a reliable copy button with toast feedback, inline code uses a red badge style with a ⌘E / Ctrl+E shortcut, and Prism highlighting was simplified for maintainability. Layout polish includes a narrower note column, less left padding on the writing surface, and YouTube embeds that keep a proper 16:9 frame instead of stretching wide and flat.',
+    bullets: [
+      'Teachers and students: paste AI-generated markdown into a note—`#` headings, bullet and numbered lists, checklists, blockquotes, fenced code, **bold**, *italic*, `inline code`, links, and strikethrough convert automatically when the clipboard looks like markdown',
+      'Teachers and students: plain text and rich HTML from websites still paste normally—the formatter only intercepts when plain text clearly looks like markdown and HTML is not taking over',
+      'Teachers and students: select text and press ⌘E on Mac or Ctrl+E on Windows to toggle inline code without opening the floating toolbar',
+      'Teachers and students: inline code appears as a rounded red badge (light and dark themes) so snippets stand out from body text',
+      'Teachers and students: hover a syntax-highlighted code block to reveal a copy button; success and failure show styled Sonner toasts instead of silent failures',
+      'Teachers and students: the code-block copy menu stays open while you move the pointer to the button, so quick copy is less fiddly',
+      'Teachers and students: YouTube embeds in notes keep a 16:9 aspect ratio and a sensible max width—they no longer stretch full-width with a squashed height',
+      'Teachers and students: the note editor content shell uses shared layout tokens and slightly tighter left padding so long documents feel less indented',
+      'Teachers and students: oversized pastes are still blocked by the paste guard before markdown conversion runs, so huge clipboard payloads cannot bypass size limits',
+      'Internal: MarkdownPasteExtension registers at high priority; PasteGuardPlugin runs at critical priority; code-block copy uses `editor.read()` for Lexical 0.44 compatibility',
+      'Internal: inline-code and markdown paste plugins follow the feature plugin layout; changelog documents the editor batch for landing',
+    ],
+    badges: ['feature', 'improvement', 'fix'],
+  },
+  {
     id: '2026-06-11-personal-notes-list-editor-and-curved-cards',
     date: '11 June 2026',
     title:
