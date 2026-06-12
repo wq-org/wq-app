@@ -20,12 +20,29 @@
   box-sizing: border-box;
   border-radius: 12px;
   border: 1px solid rgba(31, 35, 40, 0.08);
+  transition: border-color 200ms;
+}
+
+.LCH__code:hover:not(.LCH__code--selected) {
+  border-color: hsl(var(--secondary));
+}
+
+.LCH__code--selected {
+  border-color: var(--color-blue-500);
 }
 
 .dark .LCH__code {
   background-color: #1d1d1f;
   color: #e3e3e3;
   border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark .LCH__code:hover:not(.LCH__code--selected) {
+  border-color: hsl(var(--secondary));
+}
+
+.dark .LCH__code--selected {
+  border-color: var(--color-blue-500);
 }
 
 /* ── Light token palette ──────────────────────────────────────────────── */

@@ -30,6 +30,7 @@ import {
 import { MarkdownPasteExtension, markdownPasteNodes } from '../plugins/MarkdownPastePlugin'
 import '../plugins/code-highlight-plugin/codeHighlightTheme.css'
 import { CodeBlockActionMenuPlugin } from '../plugins/CodeBlockActionMenuPlugin'
+import { CodeBlockSelectionPlugin } from '../plugins/CodeBlockSelectionPlugin'
 import {
   FloatingFormatExtension,
   FloatingTextFormatToolbarPlugin,
@@ -51,7 +52,9 @@ import {
   type EditorExternalInsertApi,
 } from '../plugins/ExternalContentInsertPlugin'
 import { AddYouTubeLinksDialogPlugin } from '../plugins/AddYouTubeLinksDialogPlugin'
+import { BlockRangeSelectionPlugin } from '../plugins/BlockRangeSelectionPlugin'
 import { InlineCodeShortcutPlugin } from '../plugins/InlineCodeShortcutPlugin'
+import { MarkdownShortcutPlugin } from '../plugins/MarkdownShortcutPlugin'
 import { LexicalDraggableBlockPlugin } from '../plugins/LexicalDraggableBlockPlugin'
 import { PasteGuardPlugin, type PasteOverflowInfo } from '../plugins/PasteGuardPlugin'
 import { SelectionHandles } from './SelectionHandles'
@@ -365,6 +368,7 @@ export function Editor({
       <LessonEditablePlugin readOnly={readOnly} />
       {!readOnly && floatingToolbarFeatures.code ? <InlineCodeShortcutPlugin /> : null}
       <CheckListPlugin />
+      {!readOnly ? <MarkdownShortcutPlugin /> : null}
       <LessonHydrationPlugin
         initialContent={initialContent}
         isLoading={isLoading}
@@ -410,6 +414,12 @@ export function Editor({
             {...contentEditablePlaceholderProps}
           />
           {!isEmbedded ? <SelectionHandles container={anchorElem} /> : null}
+          {!isEmbedded ? (
+            <BlockRangeSelectionPlugin
+              anchorElem={anchorElem}
+              enabled={!readOnly}
+            />
+          ) : null}
           {!isEmbedded ? <LexicalDraggableBlockPlugin /> : null}
           <SlashMenuPlugin
             registry={blockTypeRegistry}
@@ -441,6 +451,7 @@ export function Editor({
                 portalToDocumentBody={isEmbedded}
               />
               <CodeBlockActionMenuPlugin anchorElem={anchorElem} />
+              {!readOnly ? <CodeBlockSelectionPlugin /> : null}
               <TableInteractionPlugin anchorElem={anchorElem} />
             </>
           ) : null}

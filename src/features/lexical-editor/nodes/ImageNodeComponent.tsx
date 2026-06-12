@@ -1,15 +1,7 @@
-import {
-  $getNodeByKey,
-  CLICK_COMMAND,
-  COMMAND_PRIORITY_LOW,
-  type LexicalEditor,
-  type LexicalNode,
-  type NodeKey,
-} from 'lexical'
+import { $getNodeByKey, type LexicalEditor, type LexicalNode, type NodeKey } from 'lexical'
 import { Suspense, useCallback, useEffect, useRef } from 'react'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { useLexicalNodeSelection } from '@lexical/react/useLexicalNodeSelection'
-import { mergeRegister } from '@lexical/utils'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -23,7 +15,7 @@ import { useLessonImageUpload } from '../hooks/useLessonImageUpload'
 import type { LessonImageUploadResult } from '../api/lessonImageApi'
 import { fileFromDataUrl, isLocalImageSrc } from '../utils/localImageFile'
 import { preloadImageSrc, suspenseImage } from '../utils/imageLoadCache'
-import type { ImageNode } from './ImageNode'
+import type { ImageNode, ImageNodeClassNames } from './ImageNode'
 
 function isImageNode(node: LexicalNode | null | undefined): node is ImageNode {
   return node != null && node.getType() === 'image'
@@ -31,6 +23,7 @@ function isImageNode(node: LexicalNode | null | undefined): node is ImageNode {
 
 export type ImageNodeComponentProps = {
   altText: string
+  classNames: ImageNodeClassNames
   height: 'inherit' | number
   maxWidth: number
   nodeKey: NodeKey
@@ -40,18 +33,22 @@ export type ImageNodeComponentProps = {
 
 function LazyImage({
   altText,
-  focused,
+  classNames,
   height,
   imageRef,
+  isSelected,
   maxWidth,
+  onImageMouseDown,
   src,
   width,
 }: {
   altText: string
-  focused: boolean
+  classNames: ImageNodeClassNames
   height: 'inherit' | number
   imageRef: React.RefObject<HTMLImageElement | null>
+  isSelected: boolean
   maxWidth: number
+  onImageMouseDown: (event: React.MouseEvent<HTMLImageElement>) => void
   src: string
   width: 'inherit' | number
 }) {
@@ -73,8 +70,9 @@ function LazyImage({
     <img
       ref={imageRef}
       alt={altText}
-      className={cn('ImageNode__image', focused && 'ImageNode__focused')}
+      className={cn(classNames.image, isSelected && classNames.imageSelected)}
       draggable={false}
+      onMouseDown={onImageMouseDown}
       src={src}
       style={{
         height: height === 'inherit' ? 'auto' : height,
@@ -108,7 +106,15 @@ async function applyCloudUpload(
   return true
 }
 
-function ImageContent({ altText, height, maxWidth, nodeKey, src, width }: ImageNodeComponentProps) {
+function ImageContent({
+  altText,
+  classNames,
+  height,
+  maxWidth,
+  nodeKey,
+  src,
+  width,
+}: ImageNodeComponentProps) {
   const [editor] = useLexicalComposerContext()
   const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(nodeKey)
   const imageRef = useRef<HTMLImageElement | null>(null)
@@ -119,18 +125,25 @@ function ImageContent({ altText, height, maxWidth, nodeKey, src, width }: ImageN
 
   const isEditable = editor.isEditable()
 
-  const onClick = useCallback(
-    (payload: MouseEvent) => {
-      if (payload.target === imageRef.current) {
-        if (payload.shiftKey) {
-          setSelected(!isSelected)
-        } else {
-          clearSelection()
-          setSelected(true)
-        }
-        return true
+  const onImageMouseDown = useCallback(
+    (event: React.MouseEvent<HTMLImageElement>) => {
+      if (event.button !== 0 || event.detail >= 2) {
+        return
       }
-      return false
+
+      if (event.shiftKey) {
+        event.preventDefault()
+        setSelected(!isSelected)
+        return
+      }
+
+      if (isSelected) {
+        return
+      }
+
+      event.preventDefault()
+      clearSelection()
+      setSelected(true)
     },
     [clearSelection, isSelected, setSelected],
   )
@@ -193,12 +206,6 @@ function ImageContent({ altText, height, maxWidth, nodeKey, src, width }: ImageN
     }
   }, [altText, editor, isEditable, isUploading, nodeKey, src, t, uploadLessonImageFile])
 
-  useEffect(() => {
-    return mergeRegister(
-      editor.registerCommand<MouseEvent>(CLICK_COMMAND, onClick, COMMAND_PRIORITY_LOW),
-    )
-  }, [editor, onClick])
-
   return (
     <div
       className="group/image relative w-fit max-w-full"
@@ -206,10 +213,12 @@ function ImageContent({ altText, height, maxWidth, nodeKey, src, width }: ImageN
     >
       <LazyImage
         altText={altText}
-        focused={isSelected}
+        classNames={classNames}
         height={height}
         imageRef={imageRef}
+        isSelected={isSelected}
         maxWidth={maxWidth}
+        onImageMouseDown={onImageMouseDown}
         src={src}
         width={width}
       />
