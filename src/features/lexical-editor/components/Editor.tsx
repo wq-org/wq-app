@@ -78,6 +78,7 @@ const theme = {
     h3: 'mt-[0.4rem] mb-[0.1rem] text-[1.1rem] font-semibold leading-[1.35]',
   },
   list: {
+    checklist: 'editor-list-checklist',
     listitem: 'editor-listItem',
     listitemChecked: 'editor-listItemChecked',
     listitemUnchecked: 'editor-listItemUnchecked',

@@ -12,6 +12,7 @@ export const editorTheme: EditorThemeClasses = {
     h6: 'editor-heading-h6',
   },
   list: {
+    checklist: 'editor-list-checklist',
     nested: {
       listitem: 'editor-nested-listitem',
     },

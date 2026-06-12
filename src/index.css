@@ -686,8 +686,14 @@ body {
   }
 
   .editor-list-ol,
-  .editor-list-ul:not(:has(.editor-listItemChecked, .editor-listItemUnchecked)) {
+  .editor-list-ul:not(.editor-list-checklist) {
     padding-inline-start: 1rem;
+  }
+
+  .editor-list-ul.editor-list-checklist {
+    list-style: none;
+    margin-inline-start: 0;
+    padding-inline-start: 0;
   }
 
   .editor-list-ol {
@@ -707,7 +713,7 @@ body {
     list-style-type: lower-roman;
   }
 
-  .editor-list-ul {
+  .editor-list-ul:not(.editor-list-checklist) {
     list-style-type: disc;
   }
 
