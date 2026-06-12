@@ -1,4 +1,4 @@
-import { useCallback, useState, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { ExternalLink, Link as LinkIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -43,18 +43,18 @@ export function PdfLinkInsertPopover({
 }: PdfLinkInsertPopoverProps) {
   const [anchoredLink, setAnchoredLink] = useState<AnchoredLink | null>(null)
 
-  const handleClickCapture = useCallback((event: React.MouseEvent) => {
+  const handleClickCapture = (event: React.MouseEvent) => {
     const anchor = findExternalLink(event.target)
     if (!anchor) return
 
     event.preventDefault()
     event.stopPropagation()
     setAnchoredLink({ url: anchor.href, x: event.clientX, y: event.clientY })
-  }, [])
+  }
 
-  const handleOpenChange = useCallback((open: boolean) => {
+  const handleOpenChange = (open: boolean) => {
     if (!open) setAnchoredLink(null)
-  }, [])
+  }
 
   const handleInsert = () => {
     if (!anchoredLink) return

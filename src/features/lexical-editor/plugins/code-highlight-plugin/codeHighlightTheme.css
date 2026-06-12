@@ -1,90 +1,121 @@
 /**
- * Styles for CodeNode + CodeHighlightNode (Prism tokens + line gutter).
- * Import once in your app: import 'lexical-code-highlight-kit/theme.css';
- * or: import './path/to/lexical-code-highlight-kit/src/codeHighlightTheme.css';
+ * Code block + Prism token styles, light and dark (`.dark` ancestor variant).
+ * Line numbers (the data-gutter pseudo element) are intentionally not rendered.
  */
 
 .LCH__code {
-  background-color: rgb(240, 242, 245);
+  background-color: #f6f8fa;
+  color: #1f2328;
   font-family: Menlo, Consolas, Monaco, monospace;
   display: block;
-  line-height: 1.53;
+  line-height: 1.6;
   font-size: 13px;
-  padding-top: 8px;
-  margin: 0;
-  margin-top: 8px;
-  margin-bottom: 8px;
+  margin: 8px 0;
+  padding: 14px 16px;
   overflow-x: auto;
   position: relative;
   tab-size: 2;
   white-space: pre;
   max-width: 100%;
   box-sizing: border-box;
-  border-radius: 4px;
+  border-radius: 12px;
+  border: 1px solid rgba(31, 35, 40, 0.08);
 }
 
-.LCH__code:before {
-  content: attr(data-gutter);
-  position: sticky;
-  background-color: #eee;
-  left: 0;
-  float: left;
-  top: 0;
-  z-index: 3;
-  min-height: 100%;
-  border-right: 1px solid #ccc;
-  padding: 8px;
-  color: #777;
-  white-space: pre-wrap;
-  text-align: right;
-  min-width: 25px;
-  margin-right: 10px;
-  margin-top: -8px;
+.dark .LCH__code {
+  background-color: #1d1d1f;
+  color: #e3e3e3;
+  border-color: rgba(255, 255, 255, 0.08);
 }
+
+/* ── Light token palette ──────────────────────────────────────────────── */
 
 .LCH__tokenComment {
-  color: slategray;
-}
-
-.LCH__tokenDeleted {
-  border-image: linear-gradient(to right, #ffcecb 50%, #ffebe9 50%) fill 0/0/0
-    100vw;
-}
-
-.LCH__tokenInserted {
-  border-image: linear-gradient(to right, #aceebb 50%, #dafbe1 50%) fill 0/0/0
-    100vw;
-}
-
-.LCH__tokenUnchanged {
-  border-image: linear-gradient(to right, #ddd 50%, #f0f2f5 50%) fill 0/0/0
-    100vw;
+  color: #6e7781;
 }
 
 .LCH__tokenPunctuation {
-  color: #999;
+  color: #57606a;
 }
 
 .LCH__tokenProperty {
-  color: #905;
+  color: #953800;
 }
 
 .LCH__tokenSelector {
-  color: #690;
+  color: #116329;
 }
 
 .LCH__tokenOperator {
-  color: #9a6e3a;
+  color: #0550ae;
 }
 
 .LCH__tokenAttr {
-  color: #07a;
+  color: #cf222e;
 }
 
 .LCH__tokenVariable {
-  color: #e90;
+  color: #8250df;
 }
 
 .LCH__tokenFunction {
-  color: #dd4a68;
+  color: #8250df;
+}
+
+.LCH__tokenDeleted {
+  border-image: linear-gradient(to right, #ffcecb 50%, #ffebe9 50%) fill 0/0/0 100vw;
+}
+
+.LCH__tokenInserted {
+  border-image: linear-gradient(to right, #aceebb 50%, #dafbe1 50%) fill 0/0/0 100vw;
+}
+
+.LCH__tokenUnchanged {
+  border-image: linear-gradient(to right, #ddd 50%, #f6f8fa 50%) fill 0/0/0 100vw;
+}
+
+/* ── Dark token palette (One Dark inspired) ───────────────────────────── */
+
+.dark .LCH__tokenComment {
+  color: #7f848e;
+}
+
+.dark .LCH__tokenPunctuation {
+  color: #abb2bf;
+}
+
+.dark .LCH__tokenProperty {
+  color: #d19a66;
+}
+
+.dark .LCH__tokenSelector {
+  color: #98c379;
+}
+
+.dark .LCH__tokenOperator {
+  color: #56b6c2;
+}
+
+.dark .LCH__tokenAttr {
+  color: #c678dd;
+}
+
+.dark .LCH__tokenVariable {
+  color: #e5c07b;
+}
+
+.dark .LCH__tokenFunction {
+  color: #61afef;
+}
+
+.dark .LCH__tokenDeleted {
+  border-image: linear-gradient(to right, #5c2120 50%, #3a1d1d 50%) fill 0/0/0 100vw;
+}
+
+.dark .LCH__tokenInserted {
+  border-image: linear-gradient(to right, #1f4428 50%, #19301f 50%) fill 0/0/0 100vw;
+}
+
+.dark .LCH__tokenUnchanged {
+  border-image: linear-gradient(to right, #333 50%, #1d1d1f 50%) fill 0/0/0 100vw;
 }

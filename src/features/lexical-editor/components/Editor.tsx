@@ -28,6 +28,7 @@ import {
   mergeCodeHighlightTheme,
 } from '../plugins/code-highlight-plugin'
 import '../plugins/code-highlight-plugin/codeHighlightTheme.css'
+import { CodeBlockActionMenuPlugin } from '../plugins/CodeBlockActionMenuPlugin'
 import {
   FloatingFormatExtension,
   FloatingTextFormatToolbarPlugin,
@@ -76,6 +77,8 @@ const theme = {
     listitemChecked: 'editor-listItemChecked',
     listitemUnchecked: 'editor-listItemUnchecked',
     ol: 'editor-list-ol',
+    // Cycles by depth (lexical applies depth % length): 1. → a. → i. → 1. …
+    olDepth: ['editor-list-ol1', 'editor-list-ol2', 'editor-list-ol3'],
     ul: 'editor-list-ul',
   },
   embedBlock: {
@@ -432,6 +435,7 @@ export function Editor({
                 anchorElem={anchorElem}
                 portalToDocumentBody={isEmbedded}
               />
+              <CodeBlockActionMenuPlugin anchorElem={anchorElem} />
               <TableInteractionPlugin anchorElem={anchorElem} />
             </>
           ) : null}

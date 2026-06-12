@@ -14,8 +14,15 @@ import {
 import { MenuOption } from '@lexical/react/LexicalTypeaheadMenuPlugin'
 import { $createHeadingNode, $createQuoteNode } from '@lexical/rich-text'
 import { $setBlocksType } from '@lexical/selection'
-import { INSERT_TABLE_COMMAND } from '@lexical/table'
-import { $createParagraphNode, $getSelection, $isRangeSelection, type LexicalEditor } from 'lexical'
+import { $createTableNodeWithDimensions } from '@lexical/table'
+import { $insertNodeToNearestRoot } from '@lexical/utils'
+import {
+  $createParagraphNode,
+  $getSelection,
+  $isRangeSelection,
+  $isTextNode,
+  type LexicalEditor,
+} from 'lexical'
 import {
   Code,
   Heading1,
@@ -37,8 +44,8 @@ import { OPEN_YOUTUBE_DIALOG_COMMAND } from '../commands/youtubeDialogCommands'
 import type { FloatingToolbarFeatures } from '../types/floatingToolbarFeatures'
 import { $createCodeNode } from './code-highlight-plugin'
 
-const DEFAULT_TABLE_ROWS = '3'
-const DEFAULT_TABLE_COLUMNS = '3'
+const DEFAULT_TABLE_ROWS = 3
+const DEFAULT_TABLE_COLUMNS = 3
 const DEFAULT_CODE_LANGUAGE = 'typescript'
 
 export const ICON_URLS = {
@@ -162,12 +169,19 @@ export function getBlockOptions(
       Icon: Table2,
       keywords: ['table', 'tables', 'grid', 'rows', 'columns'],
       isDisabled: !isTableEnabled,
-      onSelect: () =>
-        editor.dispatchCommand(INSERT_TABLE_COMMAND, {
-          columns: DEFAULT_TABLE_COLUMNS,
-          rows: DEFAULT_TABLE_ROWS,
-          includeHeaders: true,
-        }),
+      onSelect: () => {
+        const tableNode = $createTableNodeWithDimensions(
+          DEFAULT_TABLE_ROWS,
+          DEFAULT_TABLE_COLUMNS,
+          true,
+        )
+        $insertNodeToNearestRoot(tableNode)
+
+        const firstDescendant = tableNode.getFirstDescendant()
+        if ($isTextNode(firstDescendant)) {
+          firstDescendant.select()
+        }
+      },
     }),
     new BlockOption('Bulleted List', {
       iconKey: 'bullet',

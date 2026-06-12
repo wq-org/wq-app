@@ -16,6 +16,8 @@ export const editorTheme: EditorThemeClasses = {
       listitem: 'editor-nested-listitem',
     },
     ol: 'editor-list-ol',
+    // Cycles by depth (lexical applies depth % length): 1. → a. → i. → 1. …
+    olDepth: ['editor-list-ol1', 'editor-list-ol2', 'editor-list-ol3'],
     ul: 'editor-list-ul',
     listitem: 'editor-listItem',
     listitemChecked: 'editor-listItemChecked',
