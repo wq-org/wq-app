@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 
-import { GameStudioAgentModeContext } from './GameStudioAgentModeContext'
+import { GameStudioAgentModeContext } from '../context/GameStudioAgentModeContext'
 
 export function useGameStudioAgentMode() {
   const context = useContext(GameStudioAgentModeContext)
