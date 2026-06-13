@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { X } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import { gsap } from 'gsap'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -23,11 +24,15 @@ import type {
 import { getCommandBarGroups } from '../config/commandBarGroups'
 import { useUser } from '@/contexts/user'
 import { isCommandBarView, normalizeCommandRole, VALID_COMMAND_ROLES } from '../config/commandRoles'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { CommandSearch } from './CommandSearchDialog'
 import { CommandFeedbackForm } from './CommandFeedbackDialog'
 import { CommandUploadDialog } from './CommandUploadDialog'
 import { CommandAddDialog } from './CommandAddDialog'
+import { CommandPaletteMotionShell } from './CommandPaletteMotionShell'
+import {
+  COMMAND_PALETTE_OPEN_EASE,
+  commandPaletteDialogSurfaceMotion,
+} from './commandPaletteMotion.config'
 import { RestrictedCommandPalette } from './RestrictedCommandPalette'
 import {
   OPEN_COMMAND_ADD_EVENT,
@@ -368,9 +373,12 @@ export function CommandPalette({
 
   function handleCloseOverlayDialog() {
     setOpen(false)
+  }
+
+  const handleDialogExitComplete = useCallback(() => {
     setActiveDialog(undefined)
     setAddInitialType(undefined)
-  }
+  }, [])
 
   const handleItemClick = (item: CommandBarItem) => {
     // Dispatch custom event for canvas tools (game-studio editor listens for pan/select)
@@ -466,62 +474,67 @@ export function CommandPalette({
       {/* Searchable dialog palette */}
       <Dialog.Root
         open={open}
-        onOpenChange={(v) => {
-          setOpen(v)
-          if (!v) {
-            setActiveDialog(undefined)
-            setAddInitialType(undefined)
-          }
-        }}
+        onOpenChange={setOpen}
       >
-        <Dialog.Portal>
-          <Dialog.Content
-            className={cn(
-              'fixed bottom-30 left-1/2 z-50 flex w-[calc(100vw-2rem)] -translate-x-1/2 flex-col overflow-hidden rounded-4xl border border-border/70 bg-popover/95 text-popover-foreground shadow-2xl backdrop-blur-md supports-backdrop-filter:bg-popover/90',
-              activeDialog === 'upload' ? 'max-w-md' : 'max-w-lg',
-            )}
-          >
-            <Dialog.Title className="sr-only">Command Palette</Dialog.Title>
-            <Dialog.Description className="sr-only">
-              Quick access to search, upload, feedback, and other actions
-            </Dialog.Description>
-            {activeDialog === 'upload' ? (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                className="absolute right-2 top-2 z-20 h-7 w-7 shrink-0 rounded-full text-muted-foreground hover:text-foreground"
-                onClick={handleCloseOverlayDialog}
-                aria-label={t('upload.summary.closeAria')}
-              >
-                <X className="h-3.5 w-3.5" />
-              </Button>
-            ) : null}
-            {activeDialog === 'upload' ? (
-              <div className="max-h-[min(70vh,560px)] min-w-0 overflow-hidden px-4 py-2 pt-9">
-                <CommandUploadDialog
-                  isActive={open && activeDialog === 'upload'}
-                  onSuccess={onFilesUploaded}
-                />
-              </div>
-            ) : (
-              <ScrollArea className="max-h-[min(70vh,560px)] flex-1 rounded-4xl">
-                <div className="min-w-0 px-4 py-2">
-                  {activeDialog === 'search' && <CommandSearch />}
-                  {activeDialog === 'feedback' && <CommandFeedbackForm />}
-                  {activeDialog === 'add' && (
-                    <CommandAddDialog
-                      role={roleForGroups}
-                      onCourseCreated={onCourseCreated}
-                      onRequestClose={handleCloseOverlayDialog}
-                      initialType={addInitialType}
-                    />
+        <AnimatePresence onExitComplete={handleDialogExitComplete}>
+          {open && activeDialog ? (
+            <Dialog.Portal forceMount>
+              <Dialog.Content asChild>
+                <motion.div
+                  {...commandPaletteDialogSurfaceMotion}
+                  transition={COMMAND_PALETTE_OPEN_EASE}
+                  className={cn(
+                    'fixed bottom-30 left-1/2 z-50 flex w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-4xl border border-border/70 bg-popover/95 text-popover-foreground shadow-2xl backdrop-blur-md supports-backdrop-filter:bg-popover/90',
+                    activeDialog === 'upload' ? 'max-w-md' : 'max-w-lg',
                   )}
-                </div>
-              </ScrollArea>
-            )}
-          </Dialog.Content>
-        </Dialog.Portal>
+                  style={{ x: '-50%' }}
+                >
+                  <Dialog.Title className="sr-only">Command Palette</Dialog.Title>
+                  <Dialog.Description className="sr-only">
+                    Quick access to search, upload, feedback, and other actions
+                  </Dialog.Description>
+                  {activeDialog === 'upload' ? (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      className="absolute right-2 top-2 z-20 h-7 w-7 shrink-0 rounded-full text-muted-foreground hover:text-foreground"
+                      onClick={handleCloseOverlayDialog}
+                      aria-label={t('upload.summary.closeAria')}
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </Button>
+                  ) : null}
+                  <CommandPaletteMotionShell
+                    contentKey={activeDialog}
+                    className="max-h-[min(70vh,560px)] min-w-0"
+                    innerClassName={cn(
+                      'min-w-0',
+                      activeDialog === 'upload' ? 'px-4 py-2 pt-9' : 'px-4 py-2',
+                    )}
+                  >
+                    {activeDialog === 'upload' ? (
+                      <CommandUploadDialog
+                        isActive={open && activeDialog === 'upload'}
+                        onSuccess={onFilesUploaded}
+                      />
+                    ) : null}
+                    {activeDialog === 'search' ? <CommandSearch /> : null}
+                    {activeDialog === 'feedback' ? <CommandFeedbackForm /> : null}
+                    {activeDialog === 'add' ? (
+                      <CommandAddDialog
+                        role={roleForGroups}
+                        onCourseCreated={onCourseCreated}
+                        onRequestClose={handleCloseOverlayDialog}
+                        initialType={addInitialType}
+                      />
+                    ) : null}
+                  </CommandPaletteMotionShell>
+                </motion.div>
+              </Dialog.Content>
+            </Dialog.Portal>
+          ) : null}
+        </AnimatePresence>
       </Dialog.Root>
     </>
   )

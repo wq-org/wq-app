@@ -14,6 +14,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
+import { CommandPaletteContentEnter, CommandPaletteMotionShell } from './CommandPaletteMotionShell'
 
 const ROLE_LABEL_KEY_MAP: Record<SearchItem['type'], string> = {
   student: 'roles.student',
@@ -62,98 +63,105 @@ export function CommandSearch() {
     navigate('/teacher/chat')
   }
 
-  return (
-    <>
-      <div className="flex items-center border-b border-border px-4 py-3">
-        <Search className="mr-3 h-4 w-4 text-muted-foreground" />
-        <Input
-          type="text"
-          placeholder={t('search.placeholder', { ns: 'features.commandPalette' })}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="h-auto flex-1 border-0 bg-transparent px-0 py-0 text-sm shadow-none focus-visible:ring-0"
-          autoFocus
-        />
-        <Dialog.Close asChild>
-          <Button
-            size={'icon'}
-            variant={'ghost'}
-            className="rounded-full p-1 hover:bg-muted"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </Dialog.Close>
-      </div>
+  const resultsKey = loading ? 'loading' : filtered.length > 0 ? 'results' : 'empty'
 
-      {/* Results area stretches to fill available height */}
-      <div className="flex-1 ">
-        {loading ? (
-          <div className="p-8 flex items-center justify-center">
-            <Spinner
-              variant="gray"
-              size="sm"
-            />
-          </div>
-        ) : filtered.length > 0 ? (
-          <BlurredScrollArea className="max-h-80 min-h-0 p-2">
-            {filtered.map((item) => (
-              <Card
-                key={`${item.type}-${item.id}`}
-                layout="flush"
-                className="w-full !border-0 !shadow-none !ring-0 !ring-offset-0 border-b bg-transparent px-3 py-2 text-left outline-none"
-              >
-                <div className="flex items-center gap-3">
-                  <SearchAvatar
-                    avatarPath={item.avatar_url}
-                    title={item.title}
-                  />
-                  <div className="flex min-w-0 flex-1 flex-col gap-1">
-                    <Text
-                      as="span"
-                      variant="small"
-                      className="text-sm font-medium"
-                    >
-                      {item.title}
-                    </Text>
-                    <Text
-                      as="span"
-                      variant="small"
-                      className="text-xs text-muted-foreground"
-                    >
-                      {item.email || 'No email'}
-                    </Text>
-                    <Badge
-                      variant="secondary"
-                      className="w-fit px-1.5 py-0 text-[10px]"
-                    >
-                      {t(ROLE_LABEL_KEY_MAP[item.type])}
-                    </Badge>
+  return (
+    <CommandPaletteContentEnter>
+      <>
+        <div className="flex items-center border-b border-border px-4 py-3">
+          <Search className="mr-3 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder={t('search.placeholder', { ns: 'features.commandPalette' })}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="h-auto flex-1 border-0 bg-transparent px-0 py-0 text-sm shadow-none focus-visible:ring-0"
+            autoFocus
+          />
+          <Dialog.Close asChild>
+            <Button
+              size={'icon'}
+              variant={'ghost'}
+              className="rounded-full p-1 hover:bg-muted"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </Dialog.Close>
+        </div>
+
+        {/* Results area stretches to fill available height */}
+        <CommandPaletteMotionShell
+          contentKey={resultsKey}
+          className="flex-1"
+        >
+          {loading ? (
+            <div className="flex items-center justify-center p-8">
+              <Spinner
+                variant="gray"
+                size="sm"
+              />
+            </div>
+          ) : filtered.length > 0 ? (
+            <BlurredScrollArea className="max-h-80 min-h-0 p-2">
+              {filtered.map((item) => (
+                <Card
+                  key={`${item.type}-${item.id}`}
+                  layout="flush"
+                  className="w-full !border-0 !shadow-none !ring-0 !ring-offset-0 border-b bg-transparent px-3 py-2 text-left outline-none"
+                >
+                  <div className="flex items-center gap-3">
+                    <SearchAvatar
+                      avatarPath={item.avatar_url}
+                      title={item.title}
+                    />
+                    <div className="flex min-w-0 flex-1 flex-col gap-1">
+                      <Text
+                        as="span"
+                        variant="small"
+                        className="text-sm font-medium"
+                      >
+                        {item.title}
+                      </Text>
+                      <Text
+                        as="span"
+                        variant="small"
+                        className="text-xs text-muted-foreground"
+                      >
+                        {item.email || 'No email'}
+                      </Text>
+                      <Badge
+                        variant="secondary"
+                        className="w-fit px-1.5 py-0 text-[10px]"
+                      >
+                        {t(ROLE_LABEL_KEY_MAP[item.type])}
+                      </Badge>
+                    </div>
+                    <Dialog.Close asChild>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="icon"
+                        className="shrink-0"
+                        aria-label={t('search.openTeacherChat', { ns: 'features.commandPalette' })}
+                        onClick={handleOpenTeacherChat}
+                      >
+                        <MessageCircle className="h-4 w-4" />
+                      </Button>
+                    </Dialog.Close>
                   </div>
-                  <Dialog.Close asChild>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="icon"
-                      className="shrink-0"
-                      aria-label={t('search.openTeacherChat', { ns: 'features.commandPalette' })}
-                      onClick={handleOpenTeacherChat}
-                    >
-                      <MessageCircle className="h-4 w-4" />
-                    </Button>
-                  </Dialog.Close>
-                </div>
-              </Card>
-            ))}
-          </BlurredScrollArea>
-        ) : (
-          <div className="p-8 text-center text-sm text-muted-foreground">
-            {t('search.noResults', { ns: 'features.commandPalette' })}
-          </div>
-        )}
-      </div>
-      <Dialog.Description className="sr-only">
-        Search and execute commands quickly
-      </Dialog.Description>
-    </>
+                </Card>
+              ))}
+            </BlurredScrollArea>
+          ) : (
+            <div className="p-8 text-center text-sm text-muted-foreground">
+              {t('search.noResults', { ns: 'features.commandPalette' })}
+            </div>
+          )}
+        </CommandPaletteMotionShell>
+        <Dialog.Description className="sr-only">
+          Search and execute commands quickly
+        </Dialog.Description>
+      </>
+    </CommandPaletteContentEnter>
   )
 }

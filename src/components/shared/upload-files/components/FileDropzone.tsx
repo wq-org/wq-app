@@ -82,7 +82,7 @@ export function FileDropzone({ onFilesSelected, disabled = false, accept }: File
         multiple
         disabled={disabled}
       />
-      <div className="flex flex-col items-center gap-4 pointer-events-none">
+      <div className="pointer-events-none flex w-full min-w-0 max-w-full flex-col items-center gap-4 px-4 sm:px-6">
         <Button
           variant="outline"
           className="pointer-events-none flex items-center gap-2 border-border bg-card text-foreground animate-in fade-in-0 zoom-in-95"
@@ -91,20 +91,27 @@ export function FileDropzone({ onFilesSelected, disabled = false, accept }: File
           <Upload className="w-5 h-5" />
           {t('upload.dropzone.uploadButton')}
         </Button>
-        <div className="text-center space-y-1">
+        <div className="w-full min-w-0 max-w-full space-y-1 text-center">
           <Text
             as="p"
             variant="body"
-            className="text-sm text-muted-foreground"
+            className="text-pretty text-sm text-muted-foreground"
           >
             {t('upload.dropzone.title')}
           </Text>
           <Text
             as="p"
             variant="body"
-            className="text-xs text-muted-foreground"
+            className="text-pretty text-xs text-muted-foreground"
           >
-            {t('upload.dropzone.description')}
+            {t('upload.dropzone.formats')}
+          </Text>
+          <Text
+            as="p"
+            variant="body"
+            className="text-pretty text-xs text-muted-foreground"
+          >
+            {t('upload.dropzone.sizeLimit')}
           </Text>
         </div>
       </div>

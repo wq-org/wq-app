@@ -147,7 +147,8 @@
     "dropzone": {
       "uploadButton": "Upload Files",
       "title": "Choose files or drag & drop them here.",
-      "description": "JPEG, JPG, or PNG images, PDF, and MP4 videos (max 60s). Max 20 MB per file."
+      "formats": "JPEG, JPG, or PNG images, PDF, and MP4 videos (max 60s).",
+      "sizeLimit": "Max 20 MB per file."
     },
     "validation": {
       "fileTypeNotAllowed": "“{{fileType}}” is not allowed. Use JPEG, JPG, or PNG images, PDF, or MP4 video (max {{maxDuration}}s).",

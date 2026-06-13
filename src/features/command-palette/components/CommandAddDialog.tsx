@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { CommandAddTypeSelector } from './CommandAddTypeSelector'
 import { CommandAddForm } from './CommandAddForm'
 import { CommandAttendanceDialog } from './CommandAttendanceDialog'
+import { CommandPaletteContentEnter, CommandPaletteMotionShell } from './CommandPaletteMotionShell'
 import { useCommandAdd } from '../hooks/useCommandAdd'
 import type { AddType } from '../types/command-bar.types'
 import type { UserRole } from '@/features/auth'
@@ -13,6 +14,12 @@ type CommandAddDialogProps = {
   initialType?: AddType
 }
 
+function resolveAddStepKey(selectedType: AddType | null): string {
+  if (!selectedType) return 'type-select'
+  if (selectedType === 'attendance') return 'attendance'
+  return `form-${selectedType}`
+}
+
 export function CommandAddDialog({
   role,
   onCourseCreated,
@@ -21,31 +28,34 @@ export function CommandAddDialog({
 }: CommandAddDialogProps) {
   const { t } = useTranslation('features.commandPalette')
   const state = useCommandAdd({ onCourseCreated, onRequestClose, initialType })
-
-  if (!state.selectedType) {
-    return (
-      <CommandAddTypeSelector
-        role={role}
-        onSelect={state.setSelectedType}
-      />
-    )
-  }
-
-  if (state.selectedType === 'attendance') {
-    return (
-      <CommandAttendanceDialog
-        mode="start"
-        open
-        onRequestClose={onRequestClose ?? (() => undefined)}
-        onBack={state.reset}
-      />
-    )
-  }
+  const stepKey = resolveAddStepKey(state.selectedType)
 
   return (
-    <CommandAddForm
-      t={t}
-      state={state}
-    />
+    <CommandPaletteContentEnter>
+      <CommandPaletteMotionShell contentKey={stepKey}>
+        {!state.selectedType ? (
+          <CommandAddTypeSelector
+            role={role}
+            onSelect={state.setSelectedType}
+          />
+        ) : null}
+
+        {state.selectedType === 'attendance' ? (
+          <CommandAttendanceDialog
+            mode="start"
+            open
+            onRequestClose={onRequestClose ?? (() => undefined)}
+            onBack={state.reset}
+          />
+        ) : null}
+
+        {state.selectedType && state.selectedType !== 'attendance' ? (
+          <CommandAddForm
+            t={t}
+            state={state}
+          />
+        ) : null}
+      </CommandPaletteMotionShell>
+    </CommandPaletteContentEnter>
   )
 }

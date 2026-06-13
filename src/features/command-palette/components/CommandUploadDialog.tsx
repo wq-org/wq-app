@@ -18,6 +18,8 @@ import type { UploadSummaryItem } from '@/components/shared/upload-files'
 import { requestCloudGalleryRefetch, resolveCloudFileId } from '@/features/cloud'
 import { useUser } from '@/contexts/user'
 
+import { CommandPaletteContentEnter, CommandPaletteMotionShell } from './CommandPaletteMotionShell'
+
 type UploadPhase = 'dropzone' | 'stepper' | 'uploading' | 'summary'
 
 export type CommandUploadDialogProps = {
@@ -198,57 +200,61 @@ export function CommandUploadDialog({ onSuccess, isActive = true }: CommandUploa
   }, [resetFlow])
 
   return (
-    <div className="min-w-0 max-w-full overflow-hidden px-0">
-      <Card className="w-full min-w-0 max-w-full border-0 bg-transparent px-0 py-0 shadow-none">
-        <CardContent className="min-w-0 space-y-6 p-0">
-          {phase === 'dropzone' ? (
-            <FileDropzone
-              onFilesSelected={handleFilesSelected}
-              disabled={false}
-            />
-          ) : null}
+    <CommandPaletteContentEnter>
+      <CommandPaletteMotionShell contentKey={phase}>
+        <div className="min-w-0 max-w-full overflow-hidden px-0">
+          <Card className="w-full min-w-0 max-w-full border-0 bg-transparent px-0 py-0 shadow-none">
+            <CardContent className="min-w-0 space-y-6 p-0">
+              {phase === 'dropzone' ? (
+                <FileDropzone
+                  onFilesSelected={handleFilesSelected}
+                  disabled={false}
+                />
+              ) : null}
 
-          {phase === 'uploading' ? (
-            <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-border/70 bg-card/80 p-6 backdrop-blur-md supports-backdrop-filter:bg-card/60">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <div className="text-center">
-                <Text
-                  as="p"
-                  variant="body"
-                  className="text-sm font-medium text-foreground"
-                >
-                  {t('upload.progress.uploading')}
-                </Text>
-                <Text
-                  as="p"
-                  variant="body"
-                  muted
-                  className="mt-1 text-xs"
-                >
-                  {t('upload.progress.complete', { percent: uploadProgress.toFixed(0) })}
-                </Text>
-              </div>
-            </div>
-          ) : null}
+              {phase === 'uploading' ? (
+                <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-border/70 bg-card/80 p-6 backdrop-blur-md supports-backdrop-filter:bg-card/60">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  <div className="text-center">
+                    <Text
+                      as="p"
+                      variant="body"
+                      className="text-sm font-medium text-foreground"
+                    >
+                      {t('upload.progress.uploading')}
+                    </Text>
+                    <Text
+                      as="p"
+                      variant="body"
+                      muted
+                      className="mt-1 text-xs"
+                    >
+                      {t('upload.progress.complete', { percent: uploadProgress.toFixed(0) })}
+                    </Text>
+                  </div>
+                </div>
+              ) : null}
 
-          {phase === 'stepper' ? (
-            <FileStepperForm
-              files={uploadedFiles}
-              onFileUpdate={handleFileUpdate}
-              onComplete={handleComplete}
-              onBack={handleBack}
-            />
-          ) : null}
+              {phase === 'stepper' ? (
+                <FileStepperForm
+                  files={uploadedFiles}
+                  onFileUpdate={handleFileUpdate}
+                  onComplete={handleComplete}
+                  onBack={handleBack}
+                />
+              ) : null}
 
-          {phase === 'summary' ? (
-            <UploadSummary
-              items={summaryItems}
-              onDone={handleSummaryDone}
-              doneLabel={t('upload.summary.done')}
-            />
-          ) : null}
-        </CardContent>
-      </Card>
-    </div>
+              {phase === 'summary' ? (
+                <UploadSummary
+                  items={summaryItems}
+                  onDone={handleSummaryDone}
+                  doneLabel={t('upload.summary.done')}
+                />
+              ) : null}
+            </CardContent>
+          </Card>
+        </div>
+      </CommandPaletteMotionShell>
+    </CommandPaletteContentEnter>
   )
 }
