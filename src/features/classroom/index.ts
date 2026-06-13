@@ -11,7 +11,6 @@ export { ClassroomGamesPanel } from './components/ClassroomGamesPanel'
 export { ClassroomStudentsPanel } from './components/ClassroomStudentsPanel'
 export { GameRunAnalyticsDetailPanel } from './components/GameRunAnalyticsDetail'
 export { GameRunAnalyticsPanel } from './components/GameRunAnalyticsPanel'
-export { GameRunAnalyticsRunCard } from './components/GameRunAnalyticsRunCard'
 export {
   getClassroomDeliveredGame,
   listClassroomDeliveredGames,

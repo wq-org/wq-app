@@ -80,6 +80,8 @@ export {
   buildPlaySessionChatHistory,
   type GamePlayChatMessage,
 } from './utils/buildPlaySessionChatHistory'
+export { GameChatHistory } from './components/GameChatHistory'
+export type { GameChatHistoryMessage } from './components/game-chat.types'
 export { computePlayPreviewSessionMaxScore } from './utils/playPreviewSessionScore'
 export {
   GameChatPlayer,

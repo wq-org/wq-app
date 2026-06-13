@@ -2,8 +2,7 @@ import { File } from 'lucide-react'
 
 import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-import { useTheme } from '@/hooks/useTheme'
-import { getThemeClasses } from '@/lib/themes'
+import { useAccentClasses } from '@/hooks/useAccentClasses'
 
 export type PdfCardFile = {
   id: string
@@ -24,10 +23,7 @@ export type PdfCardListProps = {
 }
 
 export function PdfCard({ fileName, className, onSelect }: PdfCardProps) {
-  const { accent } = useTheme()
-  // Follow the global app accent; the neutral "default" accent maps to blue so the
-  // file card keeps its original blue look until the user picks another accent.
-  const accentClasses = getThemeClasses(accent === 'default' ? 'blue' : accent)
+  const accentClasses = useAccentClasses()
 
   return (
     <Card

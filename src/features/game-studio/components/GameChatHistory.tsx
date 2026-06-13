@@ -25,6 +25,8 @@ type GameChatHistoryProps = {
   renderImageChildren?: (message: GameChatHistoryMessage) => ReactNode
   /** When true, render messages only (parent owns scroll, e.g. If/Else continuous session). */
   flat?: boolean
+  /** Scrolls the message with this id into view when it changes (e.g. analytics node jump). */
+  scrollToMessageId?: string
 }
 
 export function GameChatHistory({
@@ -41,8 +43,10 @@ export function GameChatHistory({
   receivingBubbleRounded,
   renderImageChildren,
   flat = false,
+  scrollToMessageId,
 }: GameChatHistoryProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
   const shouldAutoScroll = !flat && autoScroll !== false
 
   useEffect(() => {
@@ -50,10 +54,17 @@ export function GameChatHistory({
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, shouldAutoScroll])
 
+  useEffect(() => {
+    if (!scrollToMessageId) return
+    const target = listRef.current?.querySelector(`[data-message-id="${scrollToMessageId}"]`)
+    target?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }, [scrollToMessageId])
+
   const isPlayLayout = layout === 'play'
 
   const messageList = (
     <div
+      ref={listRef}
       className={cn(
         'flex flex-col',
         isPlayLayout ? 'gap-3 pb-2 pt-1' : flat ? 'gap-3 py-1' : 'gap-4 pb-6 pt-5',
@@ -62,6 +73,7 @@ export function GameChatHistory({
       {messages.map((message) => (
         <div
           key={message.id}
+          data-message-id={message.id}
           className={cn(
             'flex',
             message.direction === 'receiving' ? 'justify-end' : 'justify-start',

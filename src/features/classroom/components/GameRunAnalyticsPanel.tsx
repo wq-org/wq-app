@@ -15,14 +15,17 @@ import { Badge } from '@/components/ui/badge'
 import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
+import { FieldInput } from '@/components/ui/field-input'
 import { Text } from '@/components/ui/text'
 import { useUser } from '@/contexts/user'
 
+import { GameChatHistory, type GameChatHistoryMessage } from '@/features/game-studio'
+
+import type { GameComponentScore } from '../types/classroom-game.types'
 import { useGameRunAnalytics, useGameRunAnalyticsDetail } from '../hooks/useGameRunAnalytics'
+import { useGameComponentImageUrls } from '../hooks/useGameComponentImageUrl'
 import { groupGameRunsByStudent } from '../utils/groupGameRunsByStudent'
 import { parseGameRunChatHistory } from '../utils/parseGameRunChatHistory'
-import { GameRunChatHistoryPanel } from './GameRunChatHistoryPanel'
-import { GameRunComponentScoreRow } from './GameRunComponentScoreRow'
 import { GameRunStudentAttemptList } from './GameRunStudentAttemptList'
 import { GameRunStudentList } from './GameRunStudentList'
 
@@ -57,28 +60,85 @@ export function GameRunAnalyticsPanel({
 
   const ownUserId = getUserId()
 
+  const [studentFilter, setStudentFilter] = useState('')
+
   const groups = useMemo(() => {
     const all = groupGameRunsByStudent(runs)
     if (!ownOnly) return all
     return all.filter((group) => group.userId === ownUserId)
   }, [runs, ownOnly, ownUserId])
 
+  const visibleGroups = useMemo(() => {
+    const query = studentFilter.trim().toLowerCase()
+    if (!query) return groups
+    return groups.filter((group) => group.displayName.toLowerCase().includes(query))
+  }, [groups, studentFilter])
+
   const effectiveUserId = ownOnly ? ownUserId : selectedUserId
   const selectedGroup = groups.find((group) => group.userId === effectiveUserId) ?? null
   const selectedAttempt =
     selectedGroup?.attempts.find((attempt) => attempt.runId === selectedRunId) ?? null
 
-  const {
-    detail,
-    loading: detailLoading,
-    error: detailError,
-  } = useGameRunAnalyticsDetail(classroomId, gameId, selectedRunId ?? undefined)
+  const [scrollMessageId, setScrollMessageId] = useState<string | undefined>(undefined)
 
-  const participantDetail =
-    detail?.participantDetails.find((row) => row.userId === effectiveUserId) ?? null
-  const chatHistory = useMemo(
-    () => parseGameRunChatHistory(selectedAttempt?.sessionPayload),
-    [selectedAttempt?.sessionPayload],
+  const { detail } = useGameRunAnalyticsDetail(classroomId, gameId, selectedRunId ?? undefined)
+
+  const componentScores = useMemo(
+    () =>
+      detail?.participantDetails.find((row) => row.userId === effectiveUserId)?.componentScores ??
+      [],
+    [detail, effectiveUserId],
+  )
+  const imageUrlByNodeId = useGameComponentImageUrls(componentScores)
+  const componentByNodeId = useMemo(() => {
+    const map = new Map<string, GameComponentScore>()
+    for (const component of componentScores) map.set(component.nodeId, component)
+    return map
+  }, [componentScores])
+
+  // Enrich the stored transcript with the per-node breakdown: real labels, the Image Pin
+  // image (re-signed), and the score earned — falling back to the raw transcript otherwise.
+  const chatMessages = useMemo<GameChatHistoryMessage[]>(
+    () =>
+      parseGameRunChatHistory(selectedAttempt?.sessionPayload).map((message) => {
+        const component = message.nodeId ? componentByNodeId.get(message.nodeId) : undefined
+        const imageUrl = message.nodeId ? imageUrlByNodeId.get(message.nodeId) : undefined
+
+        if (message.direction === 'incoming' && component) {
+          return {
+            id: message.id,
+            time: message.time,
+            direction: message.direction,
+            text: component.label,
+            image:
+              message.image ??
+              (imageUrl ? { variant: 'image-pin' as const, src: imageUrl } : undefined),
+          }
+        }
+
+        if (message.direction === 'receiving' && component) {
+          return {
+            id: message.id,
+            time: message.time,
+            direction: message.direction,
+            image: message.image,
+            text: t('pages.gameRunAnalytics.attempts.nodeScore', {
+              label: message.text,
+              score: component.score,
+              maxScore: component.maxScore,
+            }),
+          }
+        }
+
+        return {
+          id: message.id,
+          text: message.text,
+          time: message.time,
+          direction: message.direction,
+          image: message.image,
+        }
+      }),
+    [selectedAttempt?.sessionPayload, componentByNodeId, imageUrlByNodeId, t],
   )
 
   const handleSelectStudent = (userId: string) => {
@@ -93,6 +153,16 @@ export function GameRunAnalyticsPanel({
 
   const handleResetToAttempts = () => {
     setSelectedRunId(null)
+  }
+
+  const handleViewChat = (runId: string) => {
+    setScrollMessageId(undefined)
+    setSelectedRunId(runId)
+  }
+
+  const handleJumpToNode = (runId: string, messageId: string) => {
+    setSelectedRunId(runId)
+    setScrollMessageId(messageId)
   }
 
   if (loading) {
@@ -195,11 +265,22 @@ export function GameRunAnalyticsPanel({
       </Breadcrumb>
 
       {!selectedGroup && !ownOnly ? (
-        <GameRunStudentList
-          groups={groups}
-          selectedUserId={selectedUserId}
-          onSelectStudent={handleSelectStudent}
-        />
+        <div className="flex flex-col gap-4">
+          <FieldInput
+            value={studentFilter}
+            onValueChange={setStudentFilter}
+            label={t('pages.gameRunAnalytics.attempts.filterPlaceholder')}
+            placeholder={t('pages.gameRunAnalytics.attempts.filterPlaceholder')}
+            labelVisibility="sr-only"
+            showSearchIcon
+            size="compact"
+          />
+          <GameRunStudentList
+            groups={visibleGroups}
+            selectedUserId={selectedUserId}
+            onSelectStudent={handleSelectStudent}
+          />
+        </div>
       ) : selectedGroup ? (
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
           <section className="flex flex-col gap-3">
@@ -211,7 +292,7 @@ export function GameRunAnalyticsPanel({
               {t('pages.gameRunAnalytics.attempts.title')}
             </Text>
             <BlurredScrollArea
-              className="h-[min(28rem,60vh)] rounded-2xl"
+              className="h-[calc(100dvh-16rem)] min-h-[26rem] rounded-2xl"
               orientation="vertical"
               hideScrollBar
             >
@@ -219,13 +300,15 @@ export function GameRunAnalyticsPanel({
                 attempts={selectedGroup.attempts}
                 selectedRunId={selectedRunId}
                 onSelectAttempt={setSelectedRunId}
+                onJumpToNode={handleJumpToNode}
+                onViewChat={handleViewChat}
               />
             </BlurredScrollArea>
           </section>
 
           <section className="flex flex-col gap-3">
             {!selectedAttempt ? (
-              <Empty className="min-h-[min(28rem,60vh)] rounded-2xl border border-dashed border-border/70 bg-muted/10">
+              <Empty className="h-[calc(100dvh-16rem)] min-h-[26rem] rounded-2xl border border-dashed border-border/70 bg-muted/10">
                 <EmptyHeader>
                   <EmptyMedia variant="icon">
                     <MousePointerClick className="size-6" />
@@ -237,7 +320,10 @@ export function GameRunAnalyticsPanel({
                 </EmptyHeader>
               </Empty>
             ) : (
-              <Card layout="flush">
+              <Card
+                layout="flush"
+                className="flex h-[calc(100dvh-16rem)] min-h-[26rem] flex-col"
+              >
                 <CardHeader className="pt-4">
                   <CardTitle className="flex items-center gap-2 text-base font-semibold">
                     <span>
@@ -255,75 +341,24 @@ export function GameRunAnalyticsPanel({
                     )}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="flex flex-col gap-4 pb-4">
-                  {detailLoading ? (
+                <CardContent className="flex min-h-0 flex-1 flex-col pb-4">
+                  {chatMessages.length === 0 ? (
                     <Text
                       as="p"
                       variant="small"
                       muted
                     >
-                      {t('pages.gameRunAnalytics.detail.loading')}
+                      {t('pages.gameRunAnalytics.chatHistory.empty')}
                     </Text>
-                  ) : detailError ? (
-                    <Text
-                      as="p"
-                      variant="small"
-                      className="text-destructive"
-                    >
-                      {t('pages.gameRunAnalytics.detail.loadError')}
-                    </Text>
-                  ) : participantDetail ? (
-                    <>
-                      <Text
-                        as="p"
-                        variant="small"
-                        bold
-                      >
-                        {t('pages.gameRunAnalytics.detail.totalScore', {
-                          score: participantDetail.totalScore,
-                          maxScore: participantDetail.maxTotalScore,
-                        })}
-                      </Text>
-
-                      {participantDetail.componentScores.length === 0 ? (
-                        <Text
-                          as="p"
-                          variant="small"
-                          muted
-                        >
-                          {t('pages.gameRunAnalytics.detail.noComponentBreakdown')}
-                        </Text>
-                      ) : (
-                        <div className="flex flex-col gap-1.5">
-                          {participantDetail.componentScores.map((component) => (
-                            <GameRunComponentScoreRow
-                              key={component.nodeId}
-                              component={component}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </>
                   ) : (
-                    <Text
-                      as="p"
-                      variant="small"
-                      muted
-                    >
-                      {t('pages.gameRunAnalytics.detail.noParticipants')}
-                    </Text>
+                    <GameChatHistory
+                      messages={chatMessages}
+                      layout="play"
+                      autoScroll={false}
+                      scrollToMessageId={scrollMessageId}
+                      className="min-h-0 flex-1"
+                    />
                   )}
-
-                  <div className="flex flex-col gap-2">
-                    <Text
-                      as="h3"
-                      variant="small"
-                      bold
-                    >
-                      {t('pages.gameRunAnalytics.chatHistory.title')}
-                    </Text>
-                    <GameRunChatHistoryPanel messages={chatHistory} />
-                  </div>
                 </CardContent>
               </Card>
             )}

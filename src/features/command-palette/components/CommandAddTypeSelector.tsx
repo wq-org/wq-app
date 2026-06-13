@@ -6,8 +6,7 @@ import { Text } from '@/components/ui/text'
 import { ADD_OPTIONS } from '../config/commandAddOptions'
 import type { AddType } from '../types/command-bar.types'
 import type { UserRole } from '@/features/auth'
-import { useTheme } from '@/hooks/useTheme'
-import { getThemeClasses } from '@/lib/themes'
+import { useAccentClasses } from '@/hooks/useAccentClasses'
 import { cn } from '@/lib/utils'
 
 type CommandAddTypeSelectorProps = {
@@ -17,10 +16,7 @@ type CommandAddTypeSelectorProps = {
 
 export function CommandAddTypeSelector({ role, onSelect }: CommandAddTypeSelectorProps) {
   const { t } = useTranslation('features.commandPalette')
-  const { accent } = useTheme()
-  // Follow the global app accent; the neutral "default" accent maps to blue to preserve
-  // the original look until the user picks another accent.
-  const accentClasses = getThemeClasses(accent === 'default' ? 'blue' : accent)
+  const accentClasses = useAccentClasses()
 
   const availableOptions = ADD_OPTIONS.filter((option) =>
     role ? option.availableForRoles.some((availableRole) => availableRole === role) : true,

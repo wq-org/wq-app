@@ -27,8 +27,10 @@ export function AccentPicker({ className }: AccentPickerProps) {
           )}
         >
           <span
+            // Theme-aware neutral (black in light, white in dark) and not affected by
+            // [data-accent], so the default swatch never collides with a chosen accent.
             className="h-9 w-9 rounded-full border border-black/10 dark:border-white/10"
-            style={{ backgroundColor: 'oklch(0.205 0 0)' }}
+            style={{ backgroundColor: 'var(--foreground)' }}
           />
         </span>
       </button>

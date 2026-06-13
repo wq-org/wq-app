@@ -11,8 +11,7 @@ import { X } from 'lucide-react'
 import { gsap } from 'gsap'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { useTheme } from '@/hooks/useTheme'
-import { getThemeClasses } from '@/lib/themes'
+import { useAccentClasses } from '@/hooks/useAccentClasses'
 import type {
   CommandBarItem,
   CommandBarGroup,
@@ -108,10 +107,7 @@ export function CommandPalette({
   const navigate = useNavigate()
   const { getRole } = useUser()
   const { t } = useTranslation('features.commandPalette')
-  const { accent } = useTheme()
-  // Follow the global app accent; treat the neutral "default" accent as blue so the
-  // command palette keeps its original blue look until the user picks another accent.
-  const accentClasses = getThemeClasses(accent === 'default' ? 'blue' : accent)
+  const accentClasses = useAccentClasses()
   const isGamePreview = isCommandPaletteHiddenPath(location.pathname)
 
   const normalizedContextRole = normalizeCommandRole(commandBarContext)

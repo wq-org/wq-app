@@ -137,6 +137,10 @@
       "attempts": {
         "title": "Versuche",
         "score": "Punktzahl: {{score}}",
+        "totalScore": "Gesamtpunktzahl: {{score}} / {{maxScore}}",
+        "viewChatHistory": "Chatverlauf ansehen",
+        "nodeScore": "{{label}} · {{score}}/{{maxScore}}",
+        "filterPlaceholder": "Nach Name filtern…",
         "emptyTitle": "Kein Versuch ausgewählt",
         "selectHint": "Wähle einen Versuch, um Punkteaufschlüsselung und Chatverlauf zu sehen."
       },

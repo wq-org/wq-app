@@ -138,6 +138,10 @@
       "attempts": {
         "title": "Attempts",
         "score": "Score: {{score}}",
+        "totalScore": "Total score: {{score}} / {{maxScore}}",
+        "viewChatHistory": "View chat history",
+        "nodeScore": "{{label}} · {{score}}/{{maxScore}}",
+        "filterPlaceholder": "Filter by name…",
         "emptyTitle": "No attempt selected",
         "selectHint": "Select an attempt to see the score breakdown and chat history."
       },

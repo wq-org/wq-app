@@ -1,6 +1,7 @@
 import type { Edge, Node } from '@xyflow/react'
 
 import { resolveGameplayNodeMaxPoints } from '../nodes/game-if-else/game-if-else.utils'
+import type { GameChatImageDescriptor } from '../components/game-chat.types'
 import { getSessionPath, type SessionResultsByNode } from './flowOrder'
 
 /**
@@ -14,6 +15,8 @@ export type GamePlayChatMessage = {
   nodeId?: string
   score?: number
   maxScore?: number
+  /** Image attachment (e.g. an Image Pin question), rendered in the chat replay when present. */
+  image?: GameChatImageDescriptor
   /** ISO timestamp. */
   time: string
 }

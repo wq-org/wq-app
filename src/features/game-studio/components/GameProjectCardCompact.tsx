@@ -113,7 +113,9 @@ export function GameProjectCardCompact({
             </Button>
           </PopoverTrigger>
           <PopoverContent
-            align="end"
+            side="right"
+            align="start"
+            sideOffset={8}
             className="w-52 rounded-lg bg-popover/80 p-2 backdrop-blur-md dark:bg-zinc-900/80"
           >
             <Button
