@@ -86,6 +86,48 @@ export default defineConfig([
       ],
     },
   },
+  {
+    // Animation boundary: the lexical editor renders user content at scale and is
+    // reconciled by Lexical's own engine, which fights React-based animation runtimes.
+    // Keep it pure CSS/Tailwind — no JS animation libraries.
+    files: ['src/features/lexical-editor/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'warn',
+        {
+          paths: [
+            {
+              name: 'gsap',
+              message:
+                'No JS animation libs in lexical-editor. Use CSS/Tailwind transitions instead.',
+            },
+            {
+              name: '@gsap/react',
+              message:
+                'No JS animation libs in lexical-editor. Use CSS/Tailwind transitions instead.',
+            },
+            {
+              name: 'motion',
+              message:
+                'No JS animation libs in lexical-editor. Use CSS/Tailwind transitions instead.',
+            },
+            {
+              name: 'framer-motion',
+              message:
+                'No JS animation libs in lexical-editor. Use CSS/Tailwind transitions instead.',
+            },
+          ],
+          patterns: [
+            {
+              group: ['gsap/*', 'motion', 'motion/*'],
+              message:
+                'No JS animation libs in lexical-editor. Use CSS/Tailwind transitions instead.',
+            },
+          ],
+        },
+      ],
+    },
+  },
   ...RESTRICTED_FEATURES.map((featureName) => ({
     files: [`src/features/${featureName}/**/*.{ts,tsx}`],
     rules: {

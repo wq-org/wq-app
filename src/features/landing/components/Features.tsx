@@ -6,7 +6,7 @@ import {
 } from '@/components/ui/accordion'
 import { Image as ImageIcon, MapPin, FileText, Workflow } from 'lucide-react'
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { BorderBeam } from '@/components/ui/border-beam'
 import overview01 from '@/assets/images/overview_01.png'
 import overview02 from '@/assets/images/overview_02.png'

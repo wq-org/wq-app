@@ -1,6 +1,7 @@
 {
   "appearance": {
     "accentColor": "Akzentfarbe",
+    "accentHint": "Wird für Hervorhebungen in der App verwendet, z. B. in der Befehlspalette und im Schnell-Hinzufügen-Menü.",
     "modeTitle": "Darstellung",
     "modeHint": "Lege fest, wie die Oberfläche aussieht. System übernimmt die Einstellung deines Betriebssystems.",
     "mode": {

@@ -9,12 +9,11 @@ import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { getThemeBackgroundStyle } from '@/lib/themes'
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card'
-const RELEASE_BADGE_VARIANT: Record<CourseCardReleaseStatus, 'default' | 'secondary' | 'outline'> =
-  {
-    live: 'default',
-    offline: 'outline',
-    draft: 'secondary',
-  }
+const RELEASE_BADGE_VARIANT: Record<CourseCardReleaseStatus, 'default' | 'secondary'> = {
+  live: 'default',
+  offline: 'secondary',
+  draft: 'secondary',
+}
 
 export function CourseCard({
   id,

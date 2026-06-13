@@ -1,5 +1,4 @@
 import {
-  BellRing,
   BookOpen,
   Cloud,
   Gamepad2,
@@ -62,13 +61,6 @@ export const ADD_OPTIONS = [
     descriptionKey: 'addDialog.options.task.description',
     icon: ListTodo,
     availableForRoles: ['super_admin', 'institution_admin', 'teacher'] as const,
-  },
-  {
-    type: 'attendance' as const,
-    labelKey: 'actions.attendance',
-    descriptionKey: 'actions.attendanceStart',
-    icon: BellRing,
-    availableForRoles: ['teacher'] as const,
   },
 ] satisfies readonly AddOption[]
 

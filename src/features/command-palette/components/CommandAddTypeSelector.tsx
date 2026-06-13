@@ -6,6 +6,9 @@ import { Text } from '@/components/ui/text'
 import { ADD_OPTIONS } from '../config/commandAddOptions'
 import type { AddType } from '../types/command-bar.types'
 import type { UserRole } from '@/features/auth'
+import { useTheme } from '@/hooks/useTheme'
+import { getThemeClasses } from '@/lib/themes'
+import { cn } from '@/lib/utils'
 
 type CommandAddTypeSelectorProps = {
   role?: UserRole | null
@@ -14,6 +17,10 @@ type CommandAddTypeSelectorProps = {
 
 export function CommandAddTypeSelector({ role, onSelect }: CommandAddTypeSelectorProps) {
   const { t } = useTranslation('features.commandPalette')
+  const { accent } = useTheme()
+  // Follow the global app accent; the neutral "default" accent maps to blue to preserve
+  // the original look until the user picks another accent.
+  const accentClasses = getThemeClasses(accent === 'default' ? 'blue' : accent)
 
   const availableOptions = ADD_OPTIONS.filter((option) =>
     role ? option.availableForRoles.some((availableRole) => availableRole === role) : true,
@@ -45,8 +52,10 @@ export function CommandAddTypeSelector({ role, onSelect }: CommandAddTypeSelecto
               className="flex w-full items-center justify-between rounded-lg border border-border bg-card/60 p-4 text-left transition-colors hover:bg-muted/80 hover:shadow-sm"
             >
               <div className="flex items-center gap-3">
-                <div className="rounded-lg border border-blue-500/20 bg-blue-500/10 p-2">
-                  <Icon className="h-5 w-5 text-blue-500" />
+                <div
+                  className={cn('rounded-lg border p-2', accentClasses.border, accentClasses.bg)}
+                >
+                  <Icon className={cn('h-5 w-5', accentClasses.text)} />
                 </div>
                 <div>
                   <div className="font-medium text-foreground">{t(labelKey)}</div>

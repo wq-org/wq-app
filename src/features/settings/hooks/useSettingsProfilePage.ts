@@ -1,21 +1,19 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { Text } from '@/components/ui/text'
 import { updateProfile } from '@/features/auth'
 import type { AvatarOption } from '@/features/onboarding'
 import { useUser } from '@/contexts/user'
 import { getAllAvatarOptions } from '@/lib/avatarHelpers'
 import { validateLinkedInUrl } from '@/lib/validations'
-import type { SettingsPageProps, SettingsSaveValues } from '../types/settings.types'
-import { SettingsProfileForm } from '../components/SettingsProfileForm'
-import { SettingsLoadingState } from '../components/SettingsLoadingState'
+import type { SettingsSaveValues } from '../types/settings.types'
 
-const SettingsPage = ({ role, embedded }: SettingsPageProps) => {
+export function useSettingsProfilePage() {
   const { t } = useTranslation('settings')
   const { profile, loading, getUserId, refreshProfile } = useUser()
   const [isSaving, setIsSaving] = useState(false)
   const [linkedInError, setLinkedInError] = useState<string | null>(null)
+
   const avatarOptions = useMemo<AvatarOption[]>(
     () =>
       getAllAvatarOptions().map((avatar) => ({
@@ -102,52 +100,15 @@ const SettingsPage = ({ role, embedded }: SettingsPageProps) => {
     }
   }
 
-  return (
-    <div className={embedded ? 'w-full' : 'w-full min-h-screen pb-32'}>
-      <section className="animate-in fade-in-0 slide-in-from-bottom-4">
-        <div
-          className={
-            embedded
-              ? 'flex w-full flex-wrap items-start justify-center gap-6 py-0 md:py-2'
-              : 'container flex w-full flex-wrap items-start justify-center gap-6 py-6 md:py-10'
-          }
-        >
-          {loading ? <SettingsLoadingState /> : null}
-
-          {!loading && !profile ? (
-            <Text
-              as="p"
-              variant="body"
-              className="text-sm text-muted-foreground"
-            >
-              {t('profile.toasts.profileNotAvailable')}
-            </Text>
-          ) : null}
-
-          {!loading && profile ? (
-            <SettingsProfileForm
-              key={formKey}
-              role={role}
-              initialValues={{
-                displayName: profile.display_name ?? '',
-                linkedIn: profile.linkedin_url ?? '',
-                aboutMe: profile.description ?? '',
-              }}
-              initialAvatarPath={profile.avatar_url ?? ''}
-              username={profile.username ?? ''}
-              email={profile.email ?? ''}
-              institution={profile.institution}
-              avatarOptions={avatarOptions}
-              linkedInError={linkedInError}
-              isSaving={isSaving}
-              onLinkedInValidate={validateLinkedIn}
-              onSave={handleSave}
-            />
-          ) : null}
-        </div>
-      </section>
-    </div>
-  )
+  return {
+    t,
+    profile,
+    loading,
+    formKey,
+    avatarOptions,
+    linkedInError,
+    isSaving,
+    validateLinkedIn,
+    handleSave,
+  }
 }
-
-export { SettingsPage }

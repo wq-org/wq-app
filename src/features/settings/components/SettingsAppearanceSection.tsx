@@ -1,6 +1,7 @@
 import { Moon, Sun, SunMoon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import { AccentPicker } from '@/components/shared'
 import { FieldCard } from '@/components/ui/field-card'
 import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
@@ -60,6 +61,24 @@ export function SettingsAppearanceSection({ className }: SettingsAppearanceSecti
           </button>
         ))}
       </div>
+
+      <div className="mt-6 space-y-1">
+        <Text
+          as="h3"
+          variant="h3"
+        >
+          {t('appearance.accentColor')}
+        </Text>
+        <Text
+          as="p"
+          variant="body"
+          className="text-sm text-muted-foreground"
+        >
+          {t('appearance.accentHint')}
+        </Text>
+      </div>
+
+      <AccentPicker className="mt-4" />
     </FieldCard>
   )
 }

@@ -16,7 +16,7 @@ export type SettingsCapabilities = {
   showRoleHint: boolean
 }
 
-export type SettingsPageProps = {
+export type SettingsProfileSectionProps = {
   role: UserRole
   /** Omit standalone page chrome (min-h-screen + nested container). Use inside admin workspace shell. */
   embedded?: boolean

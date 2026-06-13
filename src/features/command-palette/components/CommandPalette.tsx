@@ -11,6 +11,8 @@ import { X } from 'lucide-react'
 import { gsap } from 'gsap'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { useTheme } from '@/hooks/useTheme'
+import { getThemeClasses } from '@/lib/themes'
 import type {
   CommandBarItem,
   CommandBarGroup,
@@ -35,12 +37,6 @@ import {
 } from '../constants/commandPaletteEvents'
 import { isCommandPaletteHiddenPath } from '../utils/isCommandPaletteHiddenPath'
 import { GAME_AGENT_MODE_CHANGED_EVENT } from '@/features/game-studio/context/gameAgentModeEvents'
-
-const activeStyles = {
-  text: 'text-blue-500',
-  bg: 'bg-blue-500/12',
-  border: 'border-blue-500/20',
-} as const
 
 function matchesRoute(item: CommandBarItem, pathname: string) {
   if (!item.to) return false
@@ -112,6 +108,10 @@ export function CommandPalette({
   const navigate = useNavigate()
   const { getRole } = useUser()
   const { t } = useTranslation('features.commandPalette')
+  const { accent } = useTheme()
+  // Follow the global app accent; treat the neutral "default" accent as blue so the
+  // command palette keeps its original blue look until the user picks another accent.
+  const accentClasses = getThemeClasses(accent === 'default' ? 'blue' : accent)
   const isGamePreview = isCommandPaletteHiddenPath(location.pathname)
 
   const normalizedContextRole = normalizeCommandRole(commandBarContext)
@@ -285,7 +285,7 @@ export function CommandPalette({
   const itemButtonClass = (isItemActive: boolean) =>
     cn(
       'relative z-10 inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-transparent bg-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-      isItemActive ? activeStyles.text : 'text-muted-foreground',
+      isItemActive ? accentClasses.text : 'text-muted-foreground',
     )
 
   const renderCommandItem = (item: CommandBarItem) => {
@@ -441,8 +441,8 @@ export function CommandPalette({
                     ref={activeIndicatorRef}
                     className={cn(
                       'pointer-events-none absolute left-0 top-0 z-0 h-14 w-14 rounded-full border opacity-0',
-                      activeStyles.bg,
-                      activeStyles.border,
+                      accentClasses.bg,
+                      accentClasses.border,
                     )}
                   />
 

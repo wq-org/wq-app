@@ -7,12 +7,11 @@ import { FieldCard } from '@/components/ui/field-card'
 import { FieldInput } from '@/components/ui/field-input'
 import { FieldTextarea } from '@/components/ui/field-textarea'
 import { Text } from '@/components/ui/text'
-import { AccentPicker } from '@/components/shared'
 import { settingsCapabilitiesByRole } from '../config/settingsCapabilities'
 import { useSettingsProfileForm } from '../hooks/useSettingsProfileForm'
 import type { Profile } from '@/contexts/user'
 import type { SettingsFormValues, SettingsSaveValues } from '../types/settings.types'
-import { USER_ROLES, type UserRole } from '@/features/auth'
+import type { UserRole } from '@/features/auth'
 import type { AvatarOption } from '@/features/onboarding'
 import { SettingsAvatarSection } from './SettingsAvatarSection'
 import { SettingsReadonlyFields } from './SettingsReadonlyFields'
@@ -52,7 +51,6 @@ export function SettingsProfileForm({
   const hasAvatarChanges = avatarPath !== initialAvatarPath
   const hasChanges = isDirty || hasAvatarChanges
   const displayName = values.displayName.trim() || t('profile.fields.name.placeholder')
-  const showAccentPicker = role === USER_ROLES.STUDENT || role === USER_ROLES.TEACHER
 
   const handleLinkedInValueChange = (nextValue: string) => {
     setField('linkedIn', nextValue)
@@ -174,29 +172,6 @@ export function SettingsProfileForm({
       </div>
 
       <SettingsAppearanceSection />
-
-      {showAccentPicker ? (
-        <FieldCard className="w-full">
-          <div className="space-y-1">
-            <Text
-              as="h3"
-              variant="h3"
-            >
-              {t('appearance.accentColor')}
-            </Text>
-            <Text
-              as="p"
-              variant="body"
-              className="text-sm text-muted-foreground"
-            >
-              {t('appearance.accentColor')}
-            </Text>
-          </div>
-          <div className="mt-4">
-            <AccentPicker />
-          </div>
-        </FieldCard>
-      ) : null}
 
       <div className="flex flex-wrap items-center gap-3">
         <Button

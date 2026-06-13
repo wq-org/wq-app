@@ -1,6 +1,7 @@
 {
   "appearance": {
     "accentColor": "Accent color",
+    "accentHint": "Used for highlights across the app, like the command palette and quick-add menu.",
     "modeTitle": "Appearance",
     "modeHint": "Choose how the interface looks. System follows your OS setting.",
     "mode": {

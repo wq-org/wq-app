@@ -5,7 +5,8 @@ export const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: 'border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90',
+        default:
+          'border-transparent bg-badge-default text-badge-default-foreground [a&]:hover:bg-badge-default/90',
         secondary:
           'border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90',
         violet:
@@ -54,7 +55,7 @@ export const badgeVariants = cva(
 export const badgeDashedBorderVariants = cva('border-2 border-dashed', {
   variants: {
     variant: {
-      default: 'border-primary/40',
+      default: 'border-badge-default/40',
       secondary: 'border-secondary-foreground/20',
       violet: 'border-[oklch(var(--oklch-violet)/0.45)]',
       indigo: 'border-[oklch(var(--oklch-indigo)/0.45)]',
