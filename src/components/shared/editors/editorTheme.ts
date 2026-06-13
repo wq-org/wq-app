@@ -12,11 +12,15 @@ export const editorTheme: EditorThemeClasses = {
     h6: 'editor-heading-h6',
   },
   list: {
+    checklist: 'editor-list-checklist',
     nested: {
       listitem: 'editor-nested-listitem',
     },
     ol: 'editor-list-ol',
+    // Cycles by depth (lexical applies depth % length): 1. → a. → i. → 1. …
+    olDepth: ['editor-list-ol1', 'editor-list-ol2', 'editor-list-ol3'],
     ul: 'editor-list-ul',
+    ulDepth: ['editor-list-ul1', 'editor-list-ul2', 'editor-list-ul3'],
     listitem: 'editor-listItem',
     listitemChecked: 'editor-listItemChecked',
     listitemUnchecked: 'editor-listItemUnchecked',

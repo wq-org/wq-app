@@ -6,6 +6,21 @@
     "nodeA": "Node A",
     "nodeB": "Node B"
   },
+  "agent": {
+    "title": "Agent",
+    "searchLabel": "Search PDFs",
+    "searchPlaceholder": "Search by filename…",
+    "pdfsEmpty": "No PDF files in your cloud yet.",
+    "pdfsSearchEmpty": "No PDFs match your search.",
+    "closePreview": "Close preview"
+  },
+  "canvas": {
+    "toasts": {
+      "panModeActivated": "Pan mode activated",
+      "selectModeActivated": "Select mode activated",
+      "agentModeActivated": "Agent mode activated"
+    }
+  },
   "emptyGamesView": {
     "title": "Create your first game",
     "description": "Build a flow with Start, game nodes, and End, then publish for students."

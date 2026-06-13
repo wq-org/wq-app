@@ -49,13 +49,29 @@
   display: block;
   height: auto;
   max-width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(31, 35, 40, 0.08);
+  transition: border-color 200ms;
 }
 
-.ImageNode__focused {
-  border-radius: 1rem;
-  box-shadow:
-    0 0 0 2px hsl(var(--background)),
-    0 0 0 4px hsl(var(--secondary));
+.ImageNode__image:hover:not(.ImageNode__image--selected) {
+  border-color: hsl(var(--secondary));
+}
+
+.ImageNode__image--selected {
+  border-color: var(--color-blue-500);
+}
+
+.dark .ImageNode__image {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark .ImageNode__image:hover:not(.ImageNode__image--selected) {
+  border-color: hsl(var(--secondary));
+}
+
+.dark .ImageNode__image--selected {
+  border-color: var(--color-blue-500);
 }
 
 /* Loading/error shells use ImageNodeFrame (Tailwind); keep class for theme hooks if needed. */

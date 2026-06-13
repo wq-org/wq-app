@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
-import { COMMAND_PRIORITY_HIGH, PASTE_COMMAND } from 'lexical'
+import { COMMAND_PRIORITY_CRITICAL, PASTE_COMMAND } from 'lexical'
 
 export type PasteOverflowInfo = {
   actualChars: number
@@ -61,7 +61,7 @@ export function PasteGuardPlugin({
 
         return false
       },
-      COMMAND_PRIORITY_HIGH,
+      COMMAND_PRIORITY_CRITICAL,
     )
   }, [editor, maxBytes, maxChars, onOverflow])
 

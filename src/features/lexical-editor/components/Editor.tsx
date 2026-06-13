@@ -24,6 +24,14 @@ import {
 import type { ScrollDrivenIndexItem } from '@/components/shared/scroll-driven-index'
 
 import {
+  CodeHighlightKitExtension,
+  mergeCodeHighlightTheme,
+} from '../plugins/code-highlight-plugin'
+import { MarkdownPasteExtension, markdownPasteNodes } from '../plugins/MarkdownPastePlugin'
+import '../plugins/code-highlight-plugin/codeHighlightTheme.css'
+import { CodeBlockActionMenuPlugin } from '../plugins/CodeBlockActionMenuPlugin'
+import { CodeBlockSelectionPlugin } from '../plugins/CodeBlockSelectionPlugin'
+import {
   FloatingFormatExtension,
   FloatingTextFormatToolbarPlugin,
 } from '../plugins/FloatingTextFormatToolbarPlugin'
@@ -39,10 +47,19 @@ import { FloatingImagePickerPlugin } from '../plugins/FloatingImagePickerPlugin'
 import { NodeEditorAutoLinkExtension } from '../plugins/AutoLinkExtension'
 import { FloatingLinkEditorPlugin } from '../plugins/FloatingLinkEditorPlugin'
 import { LessonLinkDialogPlugin } from '../plugins/LessonLinkDialogPlugin'
+import {
+  ExternalContentInsertPlugin,
+  type EditorExternalInsertApi,
+} from '../plugins/ExternalContentInsertPlugin'
 import { AddYouTubeLinksDialogPlugin } from '../plugins/AddYouTubeLinksDialogPlugin'
+import { AppendParagraphOnBottomClickPlugin } from '../plugins/AppendParagraphOnBottomClickPlugin'
+import { BlockRangeSelectionPlugin } from '../plugins/BlockRangeSelectionPlugin'
+import { InlineCodeShortcutPlugin } from '../plugins/InlineCodeShortcutPlugin'
+import { MarkdownShortcutPlugin } from '../plugins/MarkdownShortcutPlugin'
 import { LexicalDraggableBlockPlugin } from '../plugins/LexicalDraggableBlockPlugin'
 import { PasteGuardPlugin, type PasteOverflowInfo } from '../plugins/PasteGuardPlugin'
 import { SelectionHandles } from './SelectionHandles'
+import { SelectedNodeDeletePlugin } from '../plugins/SelectedNodeDeletePlugin'
 import { SlashMenuPlugin } from '../plugins/SlashMenuPlugin'
 import TableCellResizerPlugin from '../plugins/TableCellResizer'
 import { TableInteractionPlugin } from '../plugins/TableInteractionPlugin'
@@ -63,11 +80,19 @@ const theme = {
     h3: 'mt-[0.4rem] mb-[0.1rem] text-[1.1rem] font-semibold leading-[1.35]',
   },
   list: {
+    checklist: 'editor-list-checklist',
+    nested: {
+      listitem: 'editor-nested-listitem',
+    },
     listitem: 'editor-listItem',
     listitemChecked: 'editor-listItemChecked',
     listitemUnchecked: 'editor-listItemUnchecked',
     ol: 'editor-list-ol',
+    // Cycles by depth (lexical applies depth % length): 1. → a. → i. → 1. …
+    olDepth: ['editor-list-ol1', 'editor-list-ol2', 'editor-list-ol3'],
     ul: 'editor-list-ul',
+    // Keep bullets solid at every indent level (no hollow circle / square cycling).
+    ulDepth: ['editor-list-ul1', 'editor-list-ul2', 'editor-list-ul3'],
   },
   embedBlock: {
     base: 'my-4 max-w-full overflow-hidden rounded-xl',
@@ -86,7 +111,7 @@ const theme = {
   tableSelection: 'editor-tableSelection',
   text: {
     bold: 'font-bold',
-    code: 'rounded-[3px] bg-[rgba(135,131,120,0.15)] px-[0.3em] py-[0.1em] font-mono text-[0.875em] dark:bg-white/10',
+    code: 'rounded-md bg-[rgba(135,131,120,0.15)] px-[0.3em] py-[0.1em] font-mono text-[0.875em] text-[#c7254e] dark:bg-white/10 dark:text-[#e06c75]',
     italic: 'italic',
     strikethrough: 'line-through',
     underline: 'underline',
@@ -105,11 +130,13 @@ const lessonEditorExtension = defineExtension({
     TabIndentationExtension,
     FloatingFormatExtension,
     NodeEditorAutoLinkExtension,
+    MarkdownPasteExtension,
+    CodeHighlightKitExtension,
     configExtension(LinkExtension, { validateUrl, attributes: undefined }),
   ],
   name: 'wq-health-lesson-editor',
   namespace: 'wq-health-lesson-editor',
-  theme,
+  theme: mergeCodeHighlightTheme(theme),
   nodes: [
     ImageNode,
     ImagePlaceholderNode,
@@ -120,6 +147,7 @@ const lessonEditorExtension = defineExtension({
     TableRowNode,
     MarkNode,
     CommentMarkNode,
+    ...markdownPasteNodes,
   ],
 })
 
@@ -152,8 +180,14 @@ export type EditorProps = {
    * Defaults to `ariaLabel`, then the lesson fallback copy.
    */
   placeholderAriaLabel?: string
-  /** Per-button toggles for the floating format toolbar (merged with embedded defaults). */
+  /** Inline-toolbar toggles plus slash-menu table availability (merged with embedded defaults). */
   floatingToolbarFeatures?: Partial<FloatingToolbarFeatures>
+  /**
+   * Receives an imperative append API (text/link at document end) once the editor
+   * mounts, and `null` on unmount. Lets sibling panels (e.g. the note agent PDF
+   * viewer) insert content without owning a Lexical context.
+   */
+  onExternalInsertReady?: (api: EditorExternalInsertApi | null) => void
 }
 
 export type EditorPlaceholder = JSX.Element | ((isEditable: boolean) => JSX.Element | null)
@@ -289,6 +323,7 @@ export function Editor({
   placeholder,
   placeholderAriaLabel,
   floatingToolbarFeatures: floatingToolbarFeaturesPartial,
+  onExternalInsertReady,
 }: EditorProps) {
   const [anchorElem, setAnchorElem] = useState<HTMLDivElement | null>(null)
   const [imageHydrationGeneration, setImageHydrationGeneration] = useState(0)
@@ -339,7 +374,10 @@ export function Editor({
       contentEditable={null}
     >
       <LessonEditablePlugin readOnly={readOnly} />
+      {!readOnly && floatingToolbarFeatures.code ? <InlineCodeShortcutPlugin /> : null}
+      {!readOnly ? <SelectedNodeDeletePlugin /> : null}
       <CheckListPlugin />
+      {!readOnly ? <MarkdownShortcutPlugin /> : null}
       <LessonHydrationPlugin
         initialContent={initialContent}
         isLoading={isLoading}
@@ -357,6 +395,9 @@ export function Editor({
         <HeadingExtractorPlugin onHeadingsChange={onHeadingsChange} />
       ) : null}
       <TableCellResizerPlugin />
+      {!readOnly && onExternalInsertReady ? (
+        <ExternalContentInsertPlugin onReady={onExternalInsertReady} />
+      ) : null}
       {!readOnly && onPasteOverflow ? <PasteGuardPlugin onOverflow={handlePasteOverflow} /> : null}
       {!readOnly && !isLoading ? (
         <LessonAutosaveBridge
@@ -381,10 +422,18 @@ export function Editor({
             aria-label={ariaLabel}
             {...contentEditablePlaceholderProps}
           />
+          {!readOnly ? <AppendParagraphOnBottomClickPlugin /> : null}
           {!isEmbedded ? <SelectionHandles container={anchorElem} /> : null}
+          {!isEmbedded ? (
+            <BlockRangeSelectionPlugin
+              anchorElem={anchorElem}
+              enabled={!readOnly}
+            />
+          ) : null}
           {!isEmbedded ? <LexicalDraggableBlockPlugin /> : null}
           <SlashMenuPlugin
             registry={blockTypeRegistry}
+            features={floatingToolbarFeatures}
             portalMenuToDocumentBody={isEmbedded}
           />
           <LessonLinkDialogPlugin onReady={registerRequestLinkDialog} />
@@ -411,6 +460,8 @@ export function Editor({
                 anchorElem={anchorElem}
                 portalToDocumentBody={isEmbedded}
               />
+              <CodeBlockActionMenuPlugin anchorElem={anchorElem} />
+              {!readOnly ? <CodeBlockSelectionPlugin /> : null}
               <TableInteractionPlugin anchorElem={anchorElem} />
             </>
           ) : null}

@@ -3,6 +3,7 @@ import { useLocation, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { File, TextQuote, X } from 'lucide-react'
 import type { SerializedEditorState } from 'lexical'
+import { toast } from 'sonner'
 import {
   dismissSaveStatusToast,
   LessonTextSkeleton,
@@ -16,19 +17,36 @@ import {
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { FieldTextarea } from '@/components/ui/field-textarea'
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { useCourse } from '@/contexts/course'
 import { useLesson } from '@/contexts/lesson'
 import { useUser } from '@/contexts/user/UserContext'
 import { LESSON_CONTENT_SCHEMA_VERSION, type SaveStatus } from '@/features/lesson'
-import { Editor, syncLessonImageLinks, type PasteOverflowInfo } from '@/features/lexical-editor'
+import {
+  Editor,
+  syncLessonImageLinks,
+  type EditorExternalInsertApi,
+  type PasteOverflowInfo,
+} from '@/features/lexical-editor'
+import { cn } from '@/lib/utils'
 import { getThemeBackgroundStyle, getThemeClasses } from '@/lib/themes'
 import { LessonPreview } from '../components/LessonPreview'
 import { LessonSettingsDrawer } from '../components/LessonSettingsDrawer'
 import { LessonLiveStatusBanner, resolveWorkspaceInitialTab } from '@/features/course'
+import {
+  LESSON_AGENT_PANEL_ID,
+  LESSON_AGENT_PANEL_MAX_SIZE,
+  LESSON_AGENT_PANEL_MIN_SIZE,
+  LESSON_EDITOR_MAIN_PANEL_ID,
+  useLessonAgentPanel,
+} from '../hooks/useLessonAgentPanel'
+import { LessonAgentPage } from './LessonAgentPage'
 
 const AUTOSAVE_DELAY_MS = 600
 const AUTOSAVE_TOAST_ID = 'lesson-autosave-status'
 const DESCRIPTION_TEXTAREA_ID = 'lesson-description'
+const LESSON_EDITOR_SCROLL_ID = 'lesson-editor-scroll'
+const LESSON_EDITOR_SCROLL_SELECTOR = `#${LESSON_EDITOR_SCROLL_ID}`
 
 export const Lesson = () => {
   const location = useLocation()
@@ -39,12 +57,27 @@ export const Lesson = () => {
   return <LessonEditor />
 }
 
+function scrollLessonEditorToEnd() {
+  const scrollContainer = document.getElementById(LESSON_EDITOR_SCROLL_ID)
+  if (!scrollContainer) return
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  window.requestAnimationFrame(() => {
+    scrollContainer.scrollTo({
+      top: scrollContainer.scrollHeight,
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+    })
+  })
+}
+
 const LessonEditor = () => {
   const { t } = useTranslation('features.lesson')
   const { lessonId } = useParams<{ lessonId: string }>()
   const { lesson, fetchLessonById, updateLesson } = useLesson()
   const { selectedCourse } = useCourse()
   const { getUserInstitutionId } = useUser()
+  const { agentPanelRef, isAgentOpen, isAgentAnimating, isAgentClosing, handleAgentPanelResize } =
+    useLessonAgentPanel()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(true)
@@ -54,6 +87,36 @@ const LessonEditor = () => {
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isHeaderSaveInFlightRef = useRef(false)
   const queuedHeaderPayloadRef = useRef<{ title: string; description: string } | null>(null)
+  const externalInsertApiRef = useRef<EditorExternalInsertApi | null>(null)
+
+  const handleExternalInsertReady = useCallback((api: EditorExternalInsertApi | null) => {
+    externalInsertApiRef.current = api
+  }, [])
+
+  const handleSuccessfulPdfInsert = useCallback((message: string) => {
+    toast.success(message)
+    scrollLessonEditorToEnd()
+  }, [])
+
+  const handleInsertTextFromPdf = useCallback(
+    (text: string) => {
+      const didInsert = externalInsertApiRef.current?.appendText(text) ?? false
+      if (!didInsert) return
+
+      handleSuccessfulPdfInsert(t('page.agent.insertSelectionSuccess'))
+    },
+    [handleSuccessfulPdfInsert, t],
+  )
+
+  const handleInsertLinkFromPdf = useCallback(
+    (url: string) => {
+      const didInsert = externalInsertApiRef.current?.appendLink(url) ?? false
+      if (!didInsert) return
+
+      handleSuccessfulPdfInsert(t('page.agent.insertLinkSuccess'))
+    },
+    [handleSuccessfulPdfInsert, t],
+  )
 
   const showAutosaveError = useCallback(() => {
     showSaveStatusToast({
@@ -123,16 +186,6 @@ const LessonEditor = () => {
     queuedHeaderPayloadRef.current = null
     setHeadingItems([])
   }, [lessonId])
-
-  useEffect(() => {
-    document.documentElement.classList.add(SCROLL_DRIVEN_INDEX_SCROLL_CLASS)
-    document.body.classList.add(SCROLL_DRIVEN_INDEX_SCROLL_CLASS)
-
-    return () => {
-      document.documentElement.classList.remove(SCROLL_DRIVEN_INDEX_SCROLL_CLASS)
-      document.body.classList.remove(SCROLL_DRIVEN_INDEX_SCROLL_CLASS)
-    }
-  }, [])
 
   const enqueueHeaderSave = useCallback(
     (payload: { title: string; description: string }) => {
@@ -205,134 +258,179 @@ const LessonEditor = () => {
   const isLessonContentLoading = loading
 
   return (
-    <div className={`-mx-[calc(50vw-50%)] -mt-20 w-screen ${SCROLL_DRIVEN_INDEX_SCROLL_CLASS}`}>
-      <div
-        className="h-[30vh] w-full"
-        style={coverStyle}
-      />
-      <div className="mx-auto w-full max-w-[calc(32rem+16rem+2rem)]  ">
-        <div className="relative flex">
-          {headingItems.length > 0 ? (
-            <aside
-              aria-label="Table of contents"
-              className="hidden w-26 shrink-0 md:block"
-            >
-              <div className="sticky top-24">
-                <ScrollDrivenIndex
-                  items={headingItems}
-                  label="Content"
-                  tone="muted"
-                  alignment="left"
-                  hideScrollDrivenIndexProgress
-                />
-              </div>
-            </aside>
-          ) : null}
-
-          <div className="min-w-0 flex-1">
-            <div className="-mt-10 mb-6">
-              <div
-                className={`flex h-16 w-16 items-center justify-center rounded-2xl shadow-md ${themeClasses.solidBg}`}
-              >
-                <File
-                  className="h-8 w-8 text-white"
-                  strokeWidth={2}
-                />
-              </div>
-            </div>
-            {isLessonContentLoading ? (
-              <LessonTextSkeleton />
-            ) : (
-              <>
-                <input
-                  value={title}
-                  onChange={(event) => setTitle(event.target.value)}
-                  placeholder={titlePlaceholder}
-                  className="w-full border-0 bg-transparent py-1 text-4xl leading-[1.15] font-bold tracking-tight outline-none placeholder:text-zinc-400"
-                />
-                <div className="mt-2 flex max-w-full items-center gap-2">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="h-auto justify-start gap-2 px-0 py-1 text-muted-foreground"
-                    onClick={focusDescriptionField}
+    <div className="-mx-[calc(50vw-50%)] -mt-20 flex h-[calc(100dvh-5rem)] w-screen overflow-hidden">
+      <ResizablePanelGroup
+        orientation="horizontal"
+        className="h-full w-full"
+      >
+        <ResizablePanel
+          id={LESSON_EDITOR_MAIN_PANEL_ID}
+          minSize={40}
+          defaultSize={100}
+          className="min-w-0"
+        >
+          <div
+            id={LESSON_EDITOR_SCROLL_ID}
+            className={cn('h-full min-h-0 overflow-y-auto', SCROLL_DRIVEN_INDEX_SCROLL_CLASS)}
+          >
+            <div
+              className="h-[30vh] w-full"
+              style={coverStyle}
+            />
+            <div className="mx-auto w-full max-w-[calc(32rem+16rem+2rem)] px-4">
+              <div className="relative flex gap-8">
+                {headingItems.length > 0 ? (
+                  <aside
+                    aria-label="Table of contents"
+                    className="hidden w-26 shrink-0 md:block"
                   >
-                    <TextQuote
-                      className="size-4 shrink-0"
-                      strokeWidth={2}
-                      aria-hidden
-                    />
-                    {t('page.actions.description')}
-                  </Button>
-
-                  <FieldTextarea
-                    id={DESCRIPTION_TEXTAREA_ID}
-                    className="min-w-0 flex-1 pb-0 [&_label]:sr-only [&>div.relative]:my-1 **:data-[slot=textarea]:min-h-0 **:data-[slot=textarea]:max-h-11 **:data-[slot=textarea]:overflow-y-auto **:data-[slot=textarea]:py-1"
-                    value={description}
-                    onValueChange={setDescription}
-                    label={descriptionLabel}
-                    placeholder={descriptionPlaceholder}
-                    rows={1}
-                    hideSeparator
-                  />
-                </div>
-                {lessonId ? (
-                  <div className="mt-1 flex flex-col items-start justify-start">
-                    <LessonSettingsDrawer
-                      lessonId={lessonId}
-                      lessonTitle={title}
-                    />
-                  </div>
-                ) : null}
-                {pasteOverflow ? (
-                  <Alert
-                    variant="destructive"
-                    className="mt-4 ml-10"
-                  >
-                    <AlertTitle>Paste too large</AlertTitle>
-                    <AlertDescription>
-                      That&apos;s {pasteOverflow.actualChars.toLocaleString()} characters — the
-                      limit is {pasteOverflow.limitChars.toLocaleString()} per paste. Try splitting
-                      the content into smaller sections.
-                      <Button
-                        aria-label="Dismiss"
-                        className="ml-2 h-6 px-2"
-                        onClick={dismissPasteOverflow}
-                        size="sm"
-                        variant="ghost"
-                      >
-                        <X className="size-3" />
-                      </Button>
-                    </AlertDescription>
-                  </Alert>
-                ) : null}
-                <div className="mt-4">
-                  <LessonLiveStatusBanner
-                    courseId={selectedCourse?.id}
-                    lessonId={lessonId}
-                  />
-                </div>
-                <div className="mt-2 pb-24">
-                  {lessonId && !loading && lesson ? (
-                    <div key={lessonId}>
-                      <Editor
-                        initialContent={lesson?.content ?? null}
-                        isLoading={loading}
-                        lessonId={lessonId}
-                        onHeadingsChange={setHeadingItems}
-                        onPersistSerializedContent={persistSerializedContent}
-                        onPasteOverflow={handlePasteOverflow}
-                        onSaveStatusChange={handleSaveStatusChange}
+                    <div className="sticky top-6">
+                      <ScrollDrivenIndex
+                        items={headingItems}
+                        label="Content"
+                        tone="muted"
+                        alignment="left"
+                        hideScrollDrivenIndexProgress
+                        scrollContainerSelector={LESSON_EDITOR_SCROLL_SELECTOR}
                       />
                     </div>
-                  ) : null}
+                  </aside>
+                ) : null}
+
+                <div className="min-w-0 flex-1">
+                  <div className="-mt-10 mb-6">
+                    <div
+                      className={`flex h-16 w-16 items-center justify-center rounded-2xl shadow-md ${themeClasses.solidBg}`}
+                    >
+                      <File
+                        className="h-8 w-8 text-white"
+                        strokeWidth={2}
+                      />
+                    </div>
+                  </div>
+                  {isLessonContentLoading ? (
+                    <LessonTextSkeleton />
+                  ) : (
+                    <>
+                      <input
+                        value={title}
+                        onChange={(event) => setTitle(event.target.value)}
+                        placeholder={titlePlaceholder}
+                        className="w-full border-0 bg-transparent py-1 text-4xl leading-[1.15] font-bold tracking-tight outline-none placeholder:text-zinc-400"
+                      />
+                      <div className="mt-2 flex max-w-full items-center gap-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-auto justify-start gap-2 px-0 py-1 text-muted-foreground"
+                          onClick={focusDescriptionField}
+                        >
+                          <TextQuote
+                            className="size-4 shrink-0"
+                            strokeWidth={2}
+                            aria-hidden
+                          />
+                          {t('page.actions.description')}
+                        </Button>
+
+                        <FieldTextarea
+                          id={DESCRIPTION_TEXTAREA_ID}
+                          className="min-w-0 flex-1 pb-0 [&_label]:sr-only [&>div.relative]:my-1 **:data-[slot=textarea]:min-h-0 **:data-[slot=textarea]:max-h-11 **:data-[slot=textarea]:overflow-y-auto **:data-[slot=textarea]:py-1"
+                          value={description}
+                          onValueChange={setDescription}
+                          label={descriptionLabel}
+                          placeholder={descriptionPlaceholder}
+                          rows={1}
+                          hideSeparator
+                        />
+                      </div>
+                      {lessonId ? (
+                        <div className="mt-1 flex flex-col items-start justify-start">
+                          <LessonSettingsDrawer
+                            lessonId={lessonId}
+                            lessonTitle={title}
+                          />
+                        </div>
+                      ) : null}
+                      {pasteOverflow ? (
+                        <Alert
+                          variant="destructive"
+                          className="mt-4 ml-10"
+                        >
+                          <AlertTitle>Paste too large</AlertTitle>
+                          <AlertDescription>
+                            That&apos;s {pasteOverflow.actualChars.toLocaleString()} characters —
+                            the limit is {pasteOverflow.limitChars.toLocaleString()} per paste. Try
+                            splitting the content into smaller sections.
+                            <Button
+                              aria-label="Dismiss"
+                              className="ml-2 h-6 px-2"
+                              onClick={dismissPasteOverflow}
+                              size="sm"
+                              variant="ghost"
+                            >
+                              <X className="size-3" />
+                            </Button>
+                          </AlertDescription>
+                        </Alert>
+                      ) : null}
+                      <div className="mt-4">
+                        <LessonLiveStatusBanner
+                          courseId={selectedCourse?.id}
+                          lessonId={lessonId}
+                        />
+                      </div>
+                      <div className="mt-2 pb-24">
+                        {lessonId && !loading && lesson ? (
+                          <div key={lessonId}>
+                            <Editor
+                              initialContent={lesson?.content ?? null}
+                              isLoading={loading}
+                              lessonId={lessonId}
+                              onExternalInsertReady={handleExternalInsertReady}
+                              onHeadingsChange={setHeadingItems}
+                              onPersistSerializedContent={persistSerializedContent}
+                              onPasteOverflow={handlePasteOverflow}
+                              onSaveStatusChange={handleSaveStatusChange}
+                            />
+                          </div>
+                        ) : null}
+                      </div>
+                    </>
+                  )}
                 </div>
-              </>
-            )}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </ResizablePanel>
+
+        <ResizableHandle
+          withHandle
+          className={cn(
+            'transition-opacity duration-200 ease-out',
+            !isAgentOpen && !isAgentAnimating && 'pointer-events-none w-0 opacity-0',
+          )}
+        />
+
+        <ResizablePanel
+          id={LESSON_AGENT_PANEL_ID}
+          panelRef={agentPanelRef}
+          collapsible
+          collapsedSize={0}
+          defaultSize={0}
+          minSize={LESSON_AGENT_PANEL_MIN_SIZE}
+          maxSize={LESSON_AGENT_PANEL_MAX_SIZE}
+          onResize={handleAgentPanelResize}
+          className="min-w-0 overflow-hidden border-l border-border/60 bg-background"
+        >
+          <LessonAgentPage
+            isClosing={isAgentClosing}
+            onInsertText={handleInsertTextFromPdf}
+            onInsertLink={handleInsertLinkFromPdf}
+          />
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   )
 }

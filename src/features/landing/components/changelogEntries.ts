@@ -20,6 +20,44 @@ export type SiteChangelogEntry = {
 
 export const changelogEntries: SiteChangelogEntry[] = [
   {
+    id: '2026-06-13-dual-mode-agent-pdf-panels',
+    date: '13 June 2026',
+    title: 'Agent dual mode: browse cloud PDFs beside notes, lessons, and game nodes',
+    summary:
+      'The Agent tool in the bottom command bar now opens a PDF side panel in three places. In the notes editor, toggle Agent to slide in a resizable column where you can search your cloud PDFs, preview files, and insert selected text or links into the note. Lessons use the same agent PDF browser in dual layout. In Game Studio, choose Agent on the canvas toolbar, then open any game node—the dialog widens into a two-column layout with the node editor on the left and the same PDF list and preview on the right (without insert actions, since game nodes are not Lexical documents). Pan and Select on the game canvas keep the classic single-column node dialog.',
+    bullets: [
+      'Teachers and students: in the notes editor, tap Agent on the command bar to open dual mode—a side panel lists PDFs from your cloud; search by filename, open a preview, and insert highlighted text or links into the note body',
+      'Teachers: in lesson editing, Agent dual mode works the same way—browse and preview cloud PDFs beside the lesson editor without leaving the page',
+      'Teachers: in Game Studio (`/teacher/canvas/:id`), tap Agent on the command bar, then click a game node—the node dialog uses dual mode: Editor / Preview / Settings on the left, Agent PDF browser on the right',
+      'Teachers: Game Studio Pan and Select modes keep the standard single-column node dialog; dual layout appears only while Agent is the active canvas tool',
+      'Teachers and students: the game agent panel shows the same PDF cards and in-panel preview as notes—no floating insert toolbar, since game node content is configured in node-specific editors',
+      'Internal: `GameAgentPage`, `GameStudioAgentModeContext`, and `GameLayout` `layoutMode` dual/default; `TwoColumnDialogColumns` shared with `TwoColumnDialog`; notes use `NoteAgentPage` + resizable panel',
+    ],
+    badges: ['feature', 'new'],
+  },
+  {
+    id: '2026-06-12-notes-editor-markdown-paste-code-and-ux',
+    date: '12 June 2026',
+    title:
+      'Notes editor: paste AI markdown as formatted content, stronger code tools, and tighter embed layout',
+    summary:
+      'The personal notes editor now understands markdown when you paste from ChatGPT, Claude, or similar tools—headings, lists, bold, links, and fenced code blocks land as real Lexical blocks instead of raw `#` and `**` characters. Code got several passes: syntax-highlighted blocks have a reliable copy button with toast feedback, inline code uses a red badge style with a ⌘E / Ctrl+E shortcut, and Prism highlighting was simplified for maintainability. Layout polish includes a narrower note column, less left padding on the writing surface, and YouTube embeds that keep a proper 16:9 frame instead of stretching wide and flat.',
+    bullets: [
+      'Teachers and students: paste AI-generated markdown into a note—`#` headings, bullet and numbered lists, checklists, blockquotes, fenced code, **bold**, *italic*, `inline code`, links, and strikethrough convert automatically when the clipboard looks like markdown',
+      'Teachers and students: plain text and rich HTML from websites still paste normally—the formatter only intercepts when plain text clearly looks like markdown and HTML is not taking over',
+      'Teachers and students: select text and press ⌘E on Mac or Ctrl+E on Windows to toggle inline code without opening the floating toolbar',
+      'Teachers and students: inline code appears as a rounded red badge (light and dark themes) so snippets stand out from body text',
+      'Teachers and students: hover a syntax-highlighted code block to reveal a copy button; success and failure show styled Sonner toasts instead of silent failures',
+      'Teachers and students: the code-block copy menu stays open while you move the pointer to the button, so quick copy is less fiddly',
+      'Teachers and students: YouTube embeds in notes keep a 16:9 aspect ratio and a sensible max width—they no longer stretch full-width with a squashed height',
+      'Teachers and students: the note editor content shell uses shared layout tokens and slightly tighter left padding so long documents feel less indented',
+      'Teachers and students: oversized pastes are still blocked by the paste guard before markdown conversion runs, so huge clipboard payloads cannot bypass size limits',
+      'Internal: MarkdownPasteExtension registers at high priority; PasteGuardPlugin runs at critical priority; code-block copy uses `editor.read()` for Lexical 0.44 compatibility',
+      'Internal: inline-code and markdown paste plugins follow the feature plugin layout; changelog documents the editor batch for landing',
+    ],
+    badges: ['feature', 'improvement', 'fix'],
+  },
+  {
     id: '2026-06-11-personal-notes-list-editor-and-curved-cards',
     date: '11 June 2026',
     title:

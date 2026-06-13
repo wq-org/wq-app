@@ -19,6 +19,7 @@ type FieldInputProps = {
   hideSeparator?: boolean
   showClearButton?: boolean
   showSearchIcon?: boolean
+  /** Defaults to `visible` so list-page search fields show a label (match cloud). Use `sr-only` for compact in-panel filters. */
   labelVisibility?: 'sr-only' | 'visible'
   size?: 'default' | 'compact'
   inputClassName?: string
@@ -41,13 +42,14 @@ export const FieldInput = ({
   hideSeparator = false,
   showClearButton = true,
   showSearchIcon = false,
-  labelVisibility = 'visible',
+  labelVisibility,
   size = 'default',
   inputClassName,
   className,
 }: FieldInputProps) => {
   const generatedId = useId()
   const resolvedId = id ?? generatedId
+  const resolvedLabelVisibility = labelVisibility ?? 'visible'
 
   return (
     <div className={cn('w-full', className)}>
@@ -57,7 +59,7 @@ export const FieldInput = ({
         onValueChange={onValueChange}
         placeholder={placeholder}
         label={label}
-        labelVisibility={labelVisibility}
+        labelVisibility={resolvedLabelVisibility}
         name={name}
         type={type}
         inputMode={inputMode}

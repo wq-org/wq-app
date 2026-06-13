@@ -2,7 +2,9 @@ import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import type { FileValidationResult } from '../types/upload.types'
-import { MAX_VIDEO_DURATION, ALL_ALLOWED_TYPES } from '../types/upload.types'
+import { MAX_PDF_SIZE_BYTES, MAX_VIDEO_DURATION, ALL_ALLOWED_TYPES } from '../types/upload.types'
+
+const MAX_PDF_SIZE_MB = MAX_PDF_SIZE_BYTES / 1024 / 1024
 
 export function useFileValidation() {
   const { t } = useTranslation('features.commandPalette')
@@ -16,6 +18,21 @@ export function useFileValidation() {
             fileType: file.type || 'unknown',
             maxDuration: MAX_VIDEO_DURATION,
           }),
+        }
+      }
+
+      if (file.type === 'application/pdf' && file.size > MAX_PDF_SIZE_BYTES) {
+        const actualMb = (file.size / 1024 / 1024).toFixed(1)
+        const error = t('upload.validation.pdfTooLarge', {
+          maxSize: MAX_PDF_SIZE_MB,
+          actualSize: actualMb,
+        })
+        toast.error(t('upload.validation.pdfTooLargeTitle'), {
+          description: error,
+        })
+        return {
+          isValid: false,
+          error,
         }
       }
 

@@ -13,6 +13,9 @@ import 'pdfjs-dist/web/pdf_viewer.css'
 import { Spinner } from '@/components/ui/spinner'
 import { cn } from '@/lib/utils'
 import { configurePdfJsWorker } from './configure-pdf-js-worker'
+import { PDF_VIEWER_LAYOUT, type PdfViewerLayout } from './pdf-viewer-layout'
+import { PdfLinkInsertPopover } from './PdfLinkInsertPopover'
+import { PdfSelectionToolbar } from './PdfSelectionToolbar'
 import { PdfViewerToolbar } from './PdfViewerToolbar'
 
 configurePdfJsWorker()
@@ -46,16 +49,56 @@ function PdfViewerLoader() {
   )
 }
 
+export type PdfSelectionInsert = {
+  /** Visible label of the selection insert action, e.g. "In Notiz einfügen". */
+  insertLabel: string
+  /** Receives the currently selected PDF text (trimmed, non-empty). */
+  onInsertText: (text: string) => void
+}
+
+export type PdfLinkInsert = {
+  /** Visible label of the link insert action, e.g. "Link einfügen". */
+  insertLabel: string
+  /** Visible label of the open action, e.g. "Im neuen Tab öffnen". */
+  openLabel: string
+  /** Receives the clicked external link URL. */
+  onInsertLink: (url: string) => void
+}
+
 export type BasicPdfViewerProps = {
   source: string
   className?: string
+  /** `panel` uses a fixed sidebar height; `default` is for modals and expanded cards. */
+  layout?: PdfViewerLayout
+  /** When set, a floating toolbar appears under text selections offering an insert action. */
+  selectionInsert?: PdfSelectionInsert
+  /** When set, external link clicks open an insert/open popover instead of navigating. */
+  linkInsert?: PdfLinkInsert
 }
 
-export function BasicPdfViewer({ source, className }: BasicPdfViewerProps) {
+export function BasicPdfViewer({
+  source,
+  className,
+  layout = 'default',
+  selectionInsert,
+  linkInsert,
+}: BasicPdfViewerProps) {
+  const pages = (
+    <Pages className="relative z-0 min-h-0 flex-1 overflow-y-auto p-4">
+      <Page>
+        <CanvasLayer />
+        <TextLayer />
+        <AnnotationLayer />
+        <HighlightLayer />
+      </Page>
+    </Pages>
+  )
+
   return (
     <div
       className={cn(
-        'relative z-0 flex h-[min(70vh,720px)] w-full flex-col overflow-hidden rounded-xl border border-border bg-muted/20',
+        'relative z-0 flex w-full flex-col overflow-hidden rounded-xl border border-border bg-muted/20',
+        PDF_VIEWER_LAYOUT[layout],
         className,
       )}
     >
@@ -67,14 +110,24 @@ export function BasicPdfViewer({ source, className }: BasicPdfViewerProps) {
       >
         <PdfViewerFitWidthOnLoad />
 
-        <Pages className="relative z-0 min-h-0 flex-1 p-4">
-          <Page>
-            <CanvasLayer />
-            <TextLayer />
-            <AnnotationLayer />
-            <HighlightLayer />
-          </Page>
-        </Pages>
+        {linkInsert ? (
+          <PdfLinkInsertPopover
+            insertLabel={linkInsert.insertLabel}
+            openLabel={linkInsert.openLabel}
+            onInsertLink={linkInsert.onInsertLink}
+          >
+            {pages}
+          </PdfLinkInsertPopover>
+        ) : (
+          pages
+        )}
+
+        {selectionInsert ? (
+          <PdfSelectionToolbar
+            insertLabel={selectionInsert.insertLabel}
+            onInsertText={selectionInsert.onInsertText}
+          />
+        ) : null}
 
         <PdfViewerToolbar source={source} />
       </Root>

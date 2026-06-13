@@ -1,4 +1,8 @@
 {
+  "search": {
+    "label": "Search notes",
+    "placeholder": "Search by title or content…"
+  },
   "pages": {
     "list": {
       "title": "Notes",
@@ -6,7 +10,7 @@
         "lineOne": "your",
         "lineTwo": "notes."
       },
-      "description": "Your personal notes.",
+      "description": "Notes you can find again instantly.",
       "newNote": "New note",
       "searchLabel": "Search notes",
       "searchPlaceholder": "Search by title or content…",
@@ -22,6 +26,21 @@
       "settingsLabel": "Settings",
       "backToNotes": "Back to notes",
       "loadError": "Could not load this note."
+    },
+    "agent": {
+      "title": "Agent",
+      "placeholder": "Agent tools for this note will appear here.",
+      "searchLabel": "Search PDFs",
+      "searchPlaceholder": "Search by filename…",
+      "pdfsEmpty": "No PDF files in your cloud yet.",
+      "pdfsSearchEmpty": "No PDFs match your search.",
+      "closePreview": "Close preview",
+      "insertSelection": "Insert into note",
+      "insertSelectionSuccess": "Inserted text into note",
+      "insertLink": "Insert link",
+      "insertLinkSuccess": "Inserted link into note",
+      "openLink": "Open in new tab",
+      "modeActivated": "Agent mode activated"
     }
   },
   "card": {

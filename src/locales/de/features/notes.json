@@ -1,4 +1,8 @@
 {
+  "search": {
+    "label": "Notizen suchen",
+    "placeholder": "Nach Titel oder Inhalt suchen …"
+  },
   "pages": {
     "list": {
       "title": "Notizen",
@@ -6,7 +10,7 @@
         "lineOne": "deine",
         "lineTwo": "notizen."
       },
-      "description": "Deine persönlichen Notizen.",
+      "description": "Notizen, die du sofort wiederfindest.",
       "newNote": "Neue Notiz",
       "searchLabel": "Notizen suchen",
       "searchPlaceholder": "Nach Titel oder Inhalt suchen …",
@@ -22,6 +26,21 @@
       "settingsLabel": "Einstellungen",
       "backToNotes": "Zurück zu Notizen",
       "loadError": "Diese Notiz konnte nicht geladen werden."
+    },
+    "agent": {
+      "title": "Agent",
+      "placeholder": "Agent-Werkzeuge für diese Notiz erscheinen hier.",
+      "searchLabel": "PDFs durchsuchen",
+      "searchPlaceholder": "Nach Dateiname suchen …",
+      "pdfsEmpty": "Noch keine PDF-Dateien in deiner Cloud.",
+      "pdfsSearchEmpty": "Keine PDFs passen zu deiner Suche.",
+      "closePreview": "Vorschau schließen",
+      "insertSelection": "In Notiz einfügen",
+      "insertSelectionSuccess": "Text in Notiz eingefügt",
+      "insertLink": "Link einfügen",
+      "insertLinkSuccess": "Link in Notiz eingefügt",
+      "openLink": "Im neuen Tab öffnen",
+      "modeActivated": "Agent-Modus aktiviert"
     }
   },
   "card": {

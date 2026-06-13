@@ -1,9 +1,17 @@
-import { useState } from 'react'
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Edit, Gamepad2, Settings } from 'lucide-react'
+
 import { SelectTabs } from '@/components/shared'
+import { TwoColumnDialogColumns } from '@/components/shared/TwoColumnDialog'
 import type { TabItem } from '@/components/shared'
+
+import { useGameStudioAgentMode } from '../hooks/useGameStudioAgentMode'
+import { GameAgentPage } from '../pages/GameAgentPage'
+
+export type GameLayoutMode = 'default' | 'dual'
+
+type TabType = 'editor' | 'preview' | 'settings'
 
 interface GameLayoutProps {
   children?: ReactNode
@@ -24,8 +32,11 @@ interface GameLayoutProps {
   hiddenTabIds?: TabType[]
   /** Initial selected tab when the dialog opens. */
   initialTab?: TabType
+  /** `dual` shows the node editor left and agent PDF panel right. */
+  layoutMode?: GameLayoutMode
+  /** Right column in dual mode; defaults to {@link GameAgentPage}. */
+  agentPanel?: ReactNode
 }
-type TabType = 'editor' | 'preview' | 'settings'
 
 export function GameLayout({
   children,
@@ -38,9 +49,14 @@ export function GameLayout({
   disabledTabIds = [],
   hiddenTabIds = [],
   initialTab = 'editor',
+  layoutMode,
+  agentPanel,
 }: GameLayoutProps) {
   const { t } = useTranslation('features.gameStudio')
+  const { isAgentMode } = useGameStudioAgentMode()
   const [activeTab, setActiveTab] = useState<TabType>(initialTab)
+
+  const resolvedLayoutMode: GameLayoutMode = layoutMode ?? (isAgentMode ? 'dual' : 'default')
 
   if (previewOnly || playMode) {
     return <div className="flex w-full flex-col gap-6">{previewContent}</div>
@@ -79,9 +95,8 @@ export function GameLayout({
       ? ((['settings', 'preview', 'editor'] as const).find(isTabAvailable) ?? 'settings')
       : activeTab
 
-  return (
-    <div className="flex w-full flex-col h-full">
-      {/* Tabs */}
+  const nodePanel = (
+    <div className="flex h-full min-h-0 w-full flex-col">
       <SelectTabs
         tabs={tabs}
         activeTabId={resolvedTab}
@@ -90,8 +105,6 @@ export function GameLayout({
           setActiveTab(tabId as TabType)
         }}
       />
-
-      {/* Tab Content */}
       <div className="mt-6 flex min-h-0 flex-1 flex-col">
         {resolvedTab === 'editor' && <>{editorContent || children}</>}
         {resolvedTab === 'preview' && <>{previewContent}</>}
@@ -99,4 +112,18 @@ export function GameLayout({
       </div>
     </div>
   )
+
+  if (resolvedLayoutMode === 'dual') {
+    return (
+      <TwoColumnDialogColumns
+        className="max-h-none md:max-h-[calc(90vh-8rem)]"
+        leftClassName="p-0 md:pr-4"
+        rightClassName="border-t bg-background p-0 md:border-t-0 md:border-l md:pl-0"
+        leftChildren={nodePanel}
+        rightChildren={agentPanel ?? <GameAgentPage className="h-full" />}
+      />
+    )
+  }
+
+  return nodePanel
 }

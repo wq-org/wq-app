@@ -14,8 +14,17 @@ import {
 import { MenuOption } from '@lexical/react/LexicalTypeaheadMenuPlugin'
 import { $createHeadingNode, $createQuoteNode } from '@lexical/rich-text'
 import { $setBlocksType } from '@lexical/selection'
-import { $createParagraphNode, $getSelection, $isRangeSelection, type LexicalEditor } from 'lexical'
+import { $createTableNodeWithDimensions } from '@lexical/table'
+import { $insertNodeToNearestRoot } from '@lexical/utils'
 import {
+  $createParagraphNode,
+  $getSelection,
+  $isRangeSelection,
+  $isTextNode,
+  type LexicalEditor,
+} from 'lexical'
+import {
+  Code,
   Heading1,
   Heading2,
   Heading3,
@@ -32,6 +41,12 @@ import type { LessonBlockTypeRegistryRow } from '@/features/lesson'
 import { OPEN_EMOJI_PICKER_COMMAND } from '../commands/emojiPickerCommands'
 import { OPEN_IMAGE_PICKER_COMMAND } from '../commands/imagePickerCommands'
 import { OPEN_YOUTUBE_DIALOG_COMMAND } from '../commands/youtubeDialogCommands'
+import type { FloatingToolbarFeatures } from '../types/floatingToolbarFeatures'
+import { $createCodeNode } from './code-highlight-plugin'
+
+const DEFAULT_TABLE_ROWS = 3
+const DEFAULT_TABLE_COLUMNS = 3
+const DEFAULT_CODE_LANGUAGE = 'typescript'
 
 export const ICON_URLS = {
   bullet: '/img/list-ul.svg',
@@ -78,10 +93,12 @@ export class BlockOption extends MenuOption {
 export function getBlockOptions(
   editor: LexicalEditor,
   registry?: LessonBlockTypeRegistryRow[],
+  features?: Pick<FloatingToolbarFeatures, 'table'>,
 ): BlockOption[] {
   const pendingRegistryPlugins =
     registry?.filter((row) => row.plugin_key != null && row.plugin_key !== '').length ?? 0
   void pendingRegistryPlugins
+  const isTableEnabled = features?.table ?? true
 
   return [
     new BlockOption('Text', {
@@ -151,8 +168,20 @@ export function getBlockOptions(
     new BlockOption('Table', {
       Icon: Table2,
       keywords: ['table', 'tables', 'grid', 'rows', 'columns'],
-      isDisabled: true,
-      onSelect: () => {},
+      isDisabled: !isTableEnabled,
+      onSelect: () => {
+        const tableNode = $createTableNodeWithDimensions(
+          DEFAULT_TABLE_ROWS,
+          DEFAULT_TABLE_COLUMNS,
+          true,
+        )
+        $insertNodeToNearestRoot(tableNode)
+
+        const firstDescendant = tableNode.getFirstDescendant()
+        if ($isTextNode(firstDescendant)) {
+          firstDescendant.select()
+        }
+      },
     }),
     new BlockOption('Bulleted List', {
       iconKey: 'bullet',
@@ -172,6 +201,17 @@ export function getBlockOptions(
           const selection = $getSelection()
           if ($isRangeSelection(selection)) {
             $setBlocksType(selection, () => $createQuoteNode())
+          }
+        }),
+    }),
+    new BlockOption('Code Block', {
+      Icon: Code,
+      keywords: ['code', 'codeblock', 'snippet', 'pre', 'syntax'],
+      onSelect: () =>
+        editor.update(() => {
+          const selection = $getSelection()
+          if ($isRangeSelection(selection)) {
+            $setBlocksType(selection, () => $createCodeNode(DEFAULT_CODE_LANGUAGE))
           }
         }),
     }),

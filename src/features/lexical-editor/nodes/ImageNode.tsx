@@ -16,6 +16,14 @@ import { $applyNodeReplacement, DecoratorNode } from 'lexical'
 
 import { ImageNodeComponent } from './ImageNodeComponent'
 
+/** Class hooks for image hover/selected borders (mirrors `LCH__code` in codeHighlightTheme.css). */
+export const imageNodeClassNames = {
+  image: 'ImageNode__image',
+  imageSelected: 'ImageNode__image--selected',
+} as const
+
+export type ImageNodeClassNames = typeof imageNodeClassNames
+
 export type SerializedImageNode = Spread<
   {
     altText: string
@@ -196,6 +204,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     return (
       <ImageNodeComponent
         altText={this.__altText}
+        classNames={imageNodeClassNames}
         height={this.__height}
         maxWidth={this.__maxWidth}
         nodeKey={this.getKey()}

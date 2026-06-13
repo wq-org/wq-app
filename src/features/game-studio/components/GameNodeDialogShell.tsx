@@ -8,6 +8,8 @@ import {
 } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
 
+import { useGameStudioAgentMode } from '../hooks/useGameStudioAgentMode'
+
 export type GameNodeDialogShellProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -31,6 +33,8 @@ export function GameNodeDialogShell({
   footer,
   className,
 }: GameNodeDialogShellProps) {
+  const { isAgentMode } = useGameStudioAgentMode()
+
   return (
     <Dialog
       open={open}
@@ -38,7 +42,8 @@ export function GameNodeDialogShell({
     >
       <DialogContent
         className={cn(
-          'flex h-[90vh] flex-col overflow-visible sm:max-w-4xl rounded-3xl',
+          'flex h-[90vh] flex-col overflow-visible rounded-3xl',
+          isAgentMode ? 'w-[92vw] max-w-[92vw] sm:max-w-[92vw]' : 'sm:max-w-4xl',
           className,
         )}
         {...(!description ? { 'aria-describedby': undefined } : {})}
@@ -47,7 +52,11 @@ export function GameNodeDialogShell({
           <DialogTitle>{title}</DialogTitle>
           {description ? <DialogDescription>{description}</DialogDescription> : null}
         </DialogHeader>
-        <div className="min-h-0 flex-1 overflow-y-auto py-2">{children}</div>
+        <div
+          className={cn('min-h-0 flex-1 py-2', isAgentMode ? 'overflow-hidden' : 'overflow-y-auto')}
+        >
+          {children}
+        </div>
         {footer ? <div className="shrink-0 pt-4">{footer}</div> : null}
       </DialogContent>
     </Dialog>

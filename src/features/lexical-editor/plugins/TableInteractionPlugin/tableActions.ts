@@ -37,7 +37,12 @@ function $createRowWithCells(columnCount: number, headerState: number): TableRow
   return row
 }
 
-function getInsertionIndexAfterRemoval(
+/**
+ * Maps a (fromIndex, toIndex, position) move expressed against the ORIGINAL
+ * cell order to the splice index valid AFTER the moving cell was removed.
+ * Exported for unit tests.
+ */
+export function getInsertionIndexAfterRemoval(
   fromIndex: number,
   toIndex: number,
   position: 'before' | 'after',

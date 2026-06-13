@@ -26,8 +26,11 @@ export {
   type SaveStatus,
   type UseLessonAutosaveOptions,
 } from './hooks/useLessonAutosave'
+export { useLessonAgentPanel } from './hooks/useLessonAgentPanel'
+export { useLessonAgentPdfFiles } from './hooks/useLessonAgentPdfFiles'
 export { useLessonPrefetch } from './hooks/useLessonPrefetch'
 export { useLessons } from './hooks/useLessons'
+export { LessonAgentPage } from './pages/LessonAgentPage'
 export { Lesson as LessonRoute } from './pages/lesson'
 export { LessonRedirect } from './pages/LessonRedirect'
 export { LessonView } from './pages/LessonView'

@@ -45,6 +45,20 @@
       "help": "Hilfe",
       "tableOfContents": "Menü anzeigen"
     },
+    "agent": {
+      "title": "Agent",
+      "searchLabel": "PDFs suchen",
+      "searchPlaceholder": "Nach Dateiname suchen...",
+      "pdfsEmpty": "Noch keine PDF-Dateien in deiner Cloud.",
+      "pdfsSearchEmpty": "Keine PDFs passen zu deiner Suche.",
+      "closePreview": "Vorschau schließen",
+      "insertSelection": "In Lektion einfügen",
+      "insertSelectionSuccess": "Text in die Lektion eingefügt",
+      "insertLink": "Link einfügen",
+      "insertLinkSuccess": "Link in die Lektion eingefügt",
+      "openLink": "In neuem Tab öffnen",
+      "modeActivated": "Agent-Modus aktiviert"
+    },
     "meta": {
       "lastUpdatedLabel": "Zuletzt aktualisiert",
       "noFilesLinked": "keine Dateien verknüpft",

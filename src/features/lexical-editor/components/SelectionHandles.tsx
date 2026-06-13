@@ -3,12 +3,16 @@ import { useEffect, useRef, useState } from 'react'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { COMMAND_PRIORITY_LOW, SELECTION_CHANGE_COMMAND } from 'lexical'
 
+import { cn } from '@/lib/utils'
+
 const HANDLE_DIAMETER_PX = 16
 
 type HandlePosition = {
   top: number
   left: number
 }
+
+type SelectionHandlePlacement = 'start' | 'end'
 
 export type SelectionHandlesProps = {
   /** The positioning container; handles render absolutely inside this element. */
@@ -61,6 +65,37 @@ function computeHandlePositions(container: HTMLElement): {
       left: lastRect.right - containerRect.left + scrollLeft,
     },
   }
+}
+
+function SelectionHandle({
+  placement,
+  position,
+}: {
+  placement: SelectionHandlePlacement
+  position: HandlePosition
+}) {
+  const isStart = placement === 'start'
+
+  return (
+    <span
+      aria-hidden="true"
+      className="pointer-events-none absolute z-50 w-4 -translate-x-1/2"
+      style={{ top: position.top, left: position.left }}
+    >
+      <span
+        className={cn(
+          'absolute left-1/2 h-4 w-0.5 -translate-x-1/2 rounded-full bg-blue-500',
+          isStart ? 'top-3' : 'top-0',
+        )}
+      />
+      <span
+        className={cn(
+          'absolute left-0 size-4 rounded-full bg-blue-500 shadow-[0_2px_8px_rgba(59,130,246,0.55)]',
+          isStart ? 'top-0' : 'top-3',
+        )}
+      />
+    </span>
+  )
 }
 
 export function SelectionHandles({ container }: SelectionHandlesProps) {
@@ -126,17 +161,15 @@ export function SelectionHandles({ container }: SelectionHandlesProps) {
   return (
     <>
       {startPos ? (
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute z-50 size-4 -translate-x-1/2 rounded-full bg-blue-500 shadow-[0_2px_8px_rgba(59,130,246,0.55)]"
-          style={{ top: startPos.top, left: startPos.left }}
+        <SelectionHandle
+          placement="start"
+          position={startPos}
         />
       ) : null}
       {endPos ? (
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute z-50 size-4 -translate-x-1/2 rounded-full bg-blue-500 shadow-[0_2px_8px_rgba(59,130,246,0.55)]"
-          style={{ top: endPos.top, left: endPos.left }}
+        <SelectionHandle
+          placement="end"
+          position={endPos}
         />
       ) : null}
     </>

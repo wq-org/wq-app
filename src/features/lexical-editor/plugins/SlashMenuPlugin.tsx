@@ -17,6 +17,7 @@ import * as ReactDOM from 'react-dom'
 
 import type { LessonBlockTypeRegistryRow } from '@/features/lesson'
 
+import type { FloatingToolbarFeatures } from '../types/floatingToolbarFeatures'
 import { snapshotDomRect } from '../utils/emojiPickerPosition'
 import {
   clampHorizontalViewportPosition,
@@ -33,18 +34,20 @@ const SLASH_MENU_ESTIMATED_HEIGHT = 320
 
 type SlashMenuPluginProps = {
   registry?: LessonBlockTypeRegistryRow[]
+  features?: Pick<FloatingToolbarFeatures, 'table'>
   /** Use in modals/overflow containers so the menu is not clipped. */
   portalMenuToDocumentBody?: boolean
 }
 
 export function SlashMenuPlugin({
   registry,
+  features,
   portalMenuToDocumentBody = false,
 }: SlashMenuPluginProps) {
   const [editor] = useLexicalComposerContext()
   const [queryString, setQueryString] = useState<string | null>(null)
   const options = useMemo(() => {
-    const base = getBlockOptions(editor, registry)
+    const base = getBlockOptions(editor, registry, features)
     if (!queryString) {
       return base
     }
@@ -53,7 +56,7 @@ export function SlashMenuPlugin({
       const haystack = [o.title, ...o.keywords].join(' ').toLowerCase()
       return haystack.includes(normalizedQuery)
     })
-  }, [editor, queryString, registry])
+  }, [editor, features, queryString, registry])
 
   const checkForTriggerMatch = useBasicTypeaheadTriggerMatch('/', {
     allowWhitespace: true,

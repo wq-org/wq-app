@@ -150,7 +150,9 @@
       "description": "JPEG, JPG, or PNG images, PDF, and MP4 videos (max 60s). Max 20 MB per file."
     },
     "validation": {
-      "fileTypeNotAllowed": "“{{fileType}}” is not allowed. Use JPEG, JPG, or PNG images, PDF, or MP4 video (max {{maxDuration}}s)."
+      "fileTypeNotAllowed": "“{{fileType}}” is not allowed. Use JPEG, JPG, or PNG images, PDF, or MP4 video (max {{maxDuration}}s).",
+      "pdfTooLargeTitle": "PDF too large",
+      "pdfTooLarge": "This PDF is {{actualSize}} MB. Max allowed is {{maxSize}} MB — please compress or split it before uploading."
     },
     "stepper": {
       "filenameLabel": "Filename *",

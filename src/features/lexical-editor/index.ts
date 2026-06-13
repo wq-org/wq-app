@@ -1,4 +1,10 @@
 export { Editor, type EditorProps } from './components/Editor'
+export {
+  NOTE_EDITOR_SHELL_MAX_WIDTH,
+  NOTE_EDITOR_SHELL_PADDING,
+  NOTE_EDITOR_TOC_WIDTH,
+} from './constants/editorLayout'
+export { type EditorExternalInsertApi } from './plugins/ExternalContentInsertPlugin'
 export { useLexicalNodeEditor } from './hooks/useLexicalNodeEditor'
 export {
   DEFAULT_FLOATING_TOOLBAR_FEATURES,
