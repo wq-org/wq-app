@@ -110,70 +110,81 @@ const THEME_CLASSES_BY_ID = {
     bg: 'bg-primary/10',
     border: 'border-primary/20',
     solidBg: 'bg-primary',
+    hoverBorder: 'hover:border-primary',
   },
   violet: {
     text: 'text-violet-500',
     bg: 'bg-violet-500/10',
     border: 'border-violet-500/20',
     solidBg: 'bg-violet-500',
+    hoverBorder: 'hover:border-violet-500',
   },
   indigo: {
     text: 'text-indigo-500',
     bg: 'bg-indigo-500/10',
     border: 'border-indigo-500/20',
     solidBg: 'bg-indigo-500',
+    hoverBorder: 'hover:border-indigo-500',
   },
   blue: {
     text: 'text-blue-500',
     bg: 'bg-blue-500/10',
     border: 'border-blue-500/20',
     solidBg: 'bg-blue-500',
+    hoverBorder: 'hover:border-blue-500',
   },
   cyan: {
     text: 'text-cyan-500',
     bg: 'bg-cyan-500/10',
     border: 'border-cyan-500/20',
     solidBg: 'bg-cyan-500',
+    hoverBorder: 'hover:border-cyan-500',
   },
   teal: {
     text: 'text-teal-500',
     bg: 'bg-teal-500/10',
     border: 'border-teal-500/20',
     solidBg: 'bg-teal-500',
+    hoverBorder: 'hover:border-teal-500',
   },
   green: {
     text: 'text-green-500',
     bg: 'bg-green-500/10',
     border: 'border-green-500/20',
     solidBg: 'bg-green-500',
+    hoverBorder: 'hover:border-green-500',
   },
   lime: {
     text: 'text-lime-500',
     bg: 'bg-lime-500/10',
     border: 'border-lime-500/20',
     solidBg: 'bg-lime-500',
+    hoverBorder: 'hover:border-lime-500',
   },
   orange: {
     text: 'text-orange-500',
     bg: 'bg-orange-500/10',
     border: 'border-orange-500/20',
     solidBg: 'bg-orange-500',
+    hoverBorder: 'hover:border-orange-500',
   },
   pink: {
     text: 'text-pink-500',
     bg: 'bg-pink-500/10',
     border: 'border-pink-500/20',
     solidBg: 'bg-pink-500',
+    hoverBorder: 'hover:border-pink-500',
   },
   darkblue: {
     text: 'text-blue-700',
     bg: 'bg-blue-700/10',
     border: 'border-blue-700/20',
     solidBg: 'bg-blue-700',
+    hoverBorder: 'hover:border-blue-700',
   },
 } as const satisfies Record<
   ThemeClassId,
-  { text: string; bg: string; border: string; solidBg: string }
+  { text: string; bg: string; border: string; solidBg: string; hoverBorder: string }
 >
 
 export type ThemeClasses = (typeof THEME_CLASSES_BY_ID)[ThemeClassId]

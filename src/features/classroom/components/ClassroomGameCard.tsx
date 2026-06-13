@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Text } from '@/components/ui/text'
 import { useDisclosure } from '@/hooks/use-disclosure'
 import { COLORS, isThemeId, type ThemeId } from '@/lib/themes'
+import { useAccentClasses } from '@/hooks/useAccentClasses'
 import { lineClampClassName } from '@/lib/text-clamp'
 import { cn } from '@/lib/utils'
 
@@ -69,6 +70,7 @@ export function ClassroomGameCard({
   const themeLabel = themeId && isThemeId(themeId) ? COLORS[themeId].label : COLORS.blue.label
   const iconSurfaceClass = THEME_ICON_SURFACE[resolvedTheme]
   const iconFgClass = THEME_ICON_FG[resolvedTheme]
+  const accentClasses = useAccentClasses()
 
   const resolvedTitle = title?.trim() ? title : t('pages.classroomDetail.sections.gamesUntitled')
   const resolvedDescription = description?.trim()
@@ -116,7 +118,8 @@ export function ClassroomGameCard({
       aria-label={t('pages.classroomDetail.sections.gamesPlayAriaLabel', { title: resolvedTitle })}
       className={cn(
         className,
-        'relative w-53 h-35 cursor-pointer rounded-3xl hover:border-blue-500 duration-200 ease-in-out animate-in fade-in-0 slide-in-from-left-4',
+        'relative w-53 h-35 cursor-pointer rounded-3xl duration-200 ease-in-out animate-in fade-in-0 slide-in-from-left-4',
+        accentClasses.hoverBorder,
       )}
     >
       <Popover

@@ -8,6 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Text } from '@/components/ui/text'
 import { useDisclosure } from '@/hooks/use-disclosure'
 import { COLORS, isThemeId, type ThemeId } from '@/lib/themes'
+import { useAccentClasses } from '@/hooks/useAccentClasses'
 import { lineClampClassName } from '@/lib/text-clamp'
 import { cn } from '@/lib/utils'
 import type { GameProjectCardCompactProps } from '../types/game-studio.types'
@@ -51,6 +52,7 @@ export function GameProjectCardCompact({
   const popover = useDisclosure()
   const ignoreNextCardClickRef = useRef(false)
   const resolvedTheme: ThemeId = themeId && isThemeId(themeId) ? themeId : 'blue'
+  const accentClasses = useAccentClasses()
 
   const themeLabel = useMemo(
     () => (themeId && isThemeId(themeId) ? COLORS[themeId].label : COLORS.blue.label),
@@ -89,7 +91,8 @@ export function GameProjectCardCompact({
       onClick={handleClick}
       className={cn(
         className,
-        'relative w-53 h-35 rounded-3xl hover:border-blue-500 duration-200 ease-in-out cursor animate-in fade-in-0 slide-in-from-left-4',
+        'relative w-53 h-35 rounded-3xl duration-200 ease-in-out cursor animate-in fade-in-0 slide-in-from-left-4',
+        accentClasses.hoverBorder,
       )}
     >
       {onViewAnalytics ? (

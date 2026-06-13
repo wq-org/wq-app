@@ -4,6 +4,7 @@ import { BookOpen } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
 import { COLORS, isThemeId, type ThemeId } from '@/lib/themes'
+import { useAccentClasses } from '@/hooks/useAccentClasses'
 import { lineClampClassName } from '@/lib/text-clamp'
 import { cn } from '@/lib/utils'
 import type { CourseCardProps } from '../types/course.types'
@@ -43,6 +44,7 @@ export function CourseCardCompact({
   onView = () => {},
 }: CourseCardProps) {
   const resolvedTheme: ThemeId = themeId && isThemeId(themeId) ? themeId : 'blue'
+  const accentClasses = useAccentClasses()
 
   const themeLabel = useMemo(
     () => (themeId && isThemeId(themeId) ? COLORS[themeId].label : COLORS.blue.label),
@@ -61,7 +63,8 @@ export function CourseCardCompact({
       onClick={handleClick}
       className={cn(
         className,
-        'w-53 h-35 rounded-3xl hover:border-blue-500 duration-200 ease-in-out cursor animate-in fade-in-0 slide-in-from-left-4',
+        'w-53 h-35 rounded-3xl duration-200 ease-in-out cursor animate-in fade-in-0 slide-in-from-left-4',
+        accentClasses.hoverBorder,
       )}
     >
       <CardHeader className="flex flex-row items-center gap-2 space-y-0">
