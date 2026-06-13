@@ -2,11 +2,8 @@ import { File } from 'lucide-react'
 
 import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-
-const PDF_CARD_ICON_CLASS = {
-  color: 'text-blue-500',
-  bgColor: 'bg-blue-500/10',
-} as const
+import { useTheme } from '@/hooks/useTheme'
+import { getThemeClasses } from '@/lib/themes'
 
 export type PdfCardFile = {
   id: string
@@ -27,6 +24,11 @@ export type PdfCardListProps = {
 }
 
 export function PdfCard({ fileName, className, onSelect }: PdfCardProps) {
+  const { accent } = useTheme()
+  // Follow the global app accent; the neutral "default" accent maps to blue so the
+  // file card keeps its original blue look until the user picks another accent.
+  const accentClasses = getThemeClasses(accent === 'default' ? 'blue' : accent)
+
   return (
     <Card
       layout="flush"
@@ -40,7 +42,7 @@ export function PdfCard({ fileName, className, onSelect }: PdfCardProps) {
         }
       }}
       className={cn(
-        'cursor-pointer rounded-xl border border-border p-3 transition-colors hover:border-blue-500 hover:bg-blue-500/5',
+        'cursor-pointer rounded-xl border border-border p-3 transition-colors hover:border-foreground/30 hover:bg-muted/50',
         className,
       )}
     >
@@ -48,11 +50,11 @@ export function PdfCard({ fileName, className, onSelect }: PdfCardProps) {
         <div
           className={cn(
             'flex size-10 shrink-0 items-center justify-center rounded-lg',
-            PDF_CARD_ICON_CLASS.bgColor,
+            accentClasses.bg,
           )}
         >
           <File
-            className={cn('size-5', PDF_CARD_ICON_CLASS.color)}
+            className={cn('size-5', accentClasses.text)}
             strokeWidth={2}
             aria-hidden
           />
