@@ -33,6 +33,7 @@ import type { ImagePinSubmissionVariant, NormalizedPinPoint } from '../imagePinV
 import { resolvePlayPreviewFooterMaxScore } from '../../../utils/playPreviewSessionScore'
 import type { GameNodePreviewSessionCompletePayload } from '../../_registry/game-node-registry.types'
 import { useResolvedGameImagePinPreviewSrc } from '../hooks/useResolvedGameImagePinPreviewSrc'
+import { useImagePinGame } from '../hooks/useImagePinGame'
 import { ImagePin } from './ImagePin'
 import { ImagePinChatInput } from './ImagePinChatInput'
 
