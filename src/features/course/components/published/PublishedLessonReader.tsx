@@ -11,15 +11,21 @@ import { Text } from '@/components/ui/text'
 import { Editor } from '@/features/lexical-editor'
 import { getThemeBackgroundStyle, getThemeClasses } from '@/lib/themes'
 import type { ThemeId } from '@/lib/themes'
+import { cn } from '@/lib/utils'
 
 import type { PublishedCourseLesson } from '../../types/course-version.types'
 
 type PublishedLessonReaderProps = {
   lesson: PublishedCourseLesson
   themeId?: ThemeId
+  layout?: 'fullBleed' | 'contained'
 }
 
-export function PublishedLessonReader({ lesson, themeId }: PublishedLessonReaderProps) {
+export function PublishedLessonReader({
+  lesson,
+  themeId,
+  layout = 'fullBleed',
+}: PublishedLessonReaderProps) {
   const { t } = useTranslation('features.lesson')
   const [headingItems, setHeadingItems] = useState<ScrollDrivenIndexItem[]>([])
 
@@ -42,11 +48,17 @@ export function PublishedLessonReader({ lesson, themeId }: PublishedLessonReader
   const title = lesson.title?.trim() || t('page.fallbackTitle')
   const description = lesson.description?.trim() || t('page.fallbackDescription')
   const lessonKey = lesson.sourceLessonId ?? lesson.id
+  const isFullBleed = layout === 'fullBleed'
 
   return (
-    <div className={`-mx-[calc(50vw-50%)] -mt-20 w-screen ${SCROLL_DRIVEN_INDEX_SCROLL_CLASS}`}>
+    <div
+      className={cn(
+        SCROLL_DRIVEN_INDEX_SCROLL_CLASS,
+        isFullBleed ? '-mx-[calc(50vw-50%)] -mt-20 w-screen' : 'w-full',
+      )}
+    >
       <div
-        className="h-[30vh] w-full"
+        className={cn('w-full', isFullBleed ? 'h-[30vh]' : 'h-40 rounded-2xl')}
         style={coverStyle}
       />
       <div className="mx-auto w-full max-w-[calc(32rem+16rem+2rem)]">

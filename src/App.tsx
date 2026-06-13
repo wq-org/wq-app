@@ -75,6 +75,10 @@ import {
   AdminAuditLogs,
   AdminAnalytics,
   AdminBilling,
+  AdminCourseContentPage,
+  AdminCourseTopicLessonPage,
+  AdminCourseTopicPage,
+  AdminCoursesPage,
   AdminDashboard,
   AdminFeatureDefinitions,
   AdminFeatureDefinitionEditor,
@@ -84,6 +88,8 @@ import {
   AdminInstitutionDetails,
   AdminInstitutionInvites,
   AdminLicenses,
+  AdminGameDetailPage,
+  AdminGamesPage,
   AdminPlanEntitlementsEditor,
   NewInstitution,
   AdminPlanCatalog,
@@ -113,7 +119,12 @@ import {
   InstitutionAdminGDPRRequestPage,
   InstitutionAdminLicensePage,
   InstitutionAdminBillingPage,
+  InstitutionAdminCourseContentPage,
+  InstitutionAdminCourseTopicLessonPage,
+  InstitutionAdminCourseTopicPage,
   InstitutionAdminCoursesPage,
+  InstitutionAdminGameDetailPage,
+  InstitutionAdminGamesPage,
   InstitutionAdminAnalyticsPage,
   InstitutionAdminCloudStoragePage,
   InstitutionAdminAuditLogsPage,
@@ -346,6 +357,62 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="courses/:courseId/published/:courseVersionId/topic/:topicId/lesson/:lessonId"
+                  element={
+                    <RequireAuth>
+                      <AdminCourseTopicLessonPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="courses/:courseId/published/:courseVersionId/topic/:topicId"
+                  element={
+                    <RequireAuth>
+                      <AdminCourseTopicPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="courses/:courseId/published/:courseVersionId"
+                  element={
+                    <RequireAuth>
+                      <AdminCourseContentPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="courses/:courseId"
+                  element={
+                    <RequireAuth>
+                      <AdminCourseContentPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="courses"
+                  element={
+                    <RequireAuth>
+                      <AdminCoursesPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="games/:gameId"
+                  element={
+                    <RequireAuth>
+                      <AdminGameDetailPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="games"
+                  element={
+                    <RequireAuth>
+                      <AdminGamesPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
                   path="plan-catalog"
                   element={
                     <RequireAuth>
@@ -511,10 +578,58 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="courses/:courseId/published/:courseVersionId/topic/:topicId/lesson/:lessonId"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminCourseTopicLessonPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="courses/:courseId/published/:courseVersionId/topic/:topicId"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminCourseTopicPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="courses/:courseId/published/:courseVersionId"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminCourseContentPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="courses/:courseId"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminCourseContentPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
                   path="courses"
                   element={
                     <RequireAuth>
                       <InstitutionAdminCoursesPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="games/:gameId"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminGameDetailPage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="games"
+                  element={
+                    <RequireAuth>
+                      <InstitutionAdminGamesPage />
                     </RequireAuth>
                   }
                 />

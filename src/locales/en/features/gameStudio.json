@@ -1,4 +1,27 @@
 {
+  "catalog": {
+    "columns": {
+      "game": "Game",
+      "teacher": "Teacher",
+      "institution": "Institution",
+      "status": "Status",
+      "type": "Type",
+      "version": "Version",
+      "linkedCourses": "Linked courses",
+      "updated": "Updated"
+    },
+    "unknownTeacher": "Unknown teacher",
+    "unknownInstitution": "Unknown institution",
+    "noDescription": "No description",
+    "versionValue": "v{{version}}",
+    "linkedCourseCount_one": "{{count}} course",
+    "linkedCourseCount_other": "{{count}} courses",
+    "status": {
+      "draft": "Draft",
+      "published": "Published",
+      "archived": "Archived"
+    }
+  },
   "common": {
     "cancel": "Cancel",
     "save": "Save",

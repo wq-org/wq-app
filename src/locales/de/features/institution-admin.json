@@ -19,7 +19,8 @@
     "auditLogs": "Audit-Logs",
     "teachers": "Lehrkräfte",
     "students": "Studierende",
-    "courses": "Kurse"
+    "courses": "Kurse",
+    "games": "Spiele"
   },
   "components": {
     "academicYearCombobox": {
@@ -211,6 +212,32 @@
     "inviteStatus": {
       "pendingEmail": "Einladung ausstehend"
     }
+  },
+  "courses": {
+    "title": "Kurse",
+    "subtitle": "Alle Kurse von Lehrkräften Ihrer Institution.",
+    "searchLabel": "Kurse suchen",
+    "searchPlaceholder": "Nach Kurs, Lehrkraft oder Beschreibung suchen…",
+    "count": "Zeige {{shown}} von {{total}} Kursen",
+    "errorTitle": "Kurse konnten nicht geladen werden",
+    "emptyTitle": "Noch keine Kurse",
+    "emptyDescription": "Kurse von Lehrkräften Ihrer Institution erscheinen hier.",
+    "noMatches": "Keine Kurse entsprechen der Suche.",
+    "noInstitutionTitle": "Kein Institutionskontext",
+    "noInstitutionDescription": "Ihr Konto ist mit keiner Institution verknüpft."
+  },
+  "games": {
+    "title": "Spiele",
+    "subtitle": "Alle Spiele von Lehrkräften Ihrer Institution.",
+    "searchLabel": "Spiele suchen",
+    "searchPlaceholder": "Nach Spiel, Lehrkraft, Status oder Typ suchen…",
+    "count": "Zeige {{shown}} von {{total}} Spielen",
+    "errorTitle": "Spiele konnten nicht geladen werden",
+    "emptyTitle": "Noch keine Spiele",
+    "emptyDescription": "Spiele von Lehrkräften Ihrer Institution erscheinen hier.",
+    "noMatches": "Keine Spiele entsprechen der Suche.",
+    "noInstitutionTitle": "Kein Institutionskontext",
+    "noInstitutionDescription": "Ihr Konto ist mit keiner Institution verknüpft."
   },
   "faculties": {
     "title": "Fakultäten",

@@ -20,7 +20,6 @@ import { GameNodeRegistryIcon } from './GameNodeRegistryIcon'
 type GameRunStudentAttemptListProps = {
   attempts: readonly GameRunStudentAttempt[]
   selectedRunId: string | null
-  onSelectAttempt: (runId: string) => void
   /** Selects the attempt and scrolls the chat history to the node's prompt message. */
   onJumpToNode: (runId: string, messageId: string) => void
   /** Selects the attempt and reveals its frozen chat-history replay. */
@@ -46,7 +45,6 @@ function formatPlayedAt(value: string | null, locale: string): string {
 export function GameRunStudentAttemptList({
   attempts,
   selectedRunId,
-  onSelectAttempt,
   onJumpToNode,
   onViewChat,
 }: GameRunStudentAttemptListProps) {
@@ -73,21 +71,8 @@ export function GameRunStudentAttemptList({
         return (
           <Card
             key={attempt.runId}
-            role="button"
-            tabIndex={0}
-            onClick={() => onSelectAttempt(attempt.runId)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault()
-                onSelectAttempt(attempt.runId)
-              }
-            }}
             layout="flush"
-            className={cn(
-              'cursor-pointer transition-colors',
-              accentClasses.hoverBorder,
-              selected && accentClasses.solidBorder,
-            )}
+            className={cn('transition-colors', selected && accentClasses.solidBorder)}
           >
             <CardContent className="flex flex-col gap-3 px-4 py-3">
               <div className="flex items-center justify-between gap-2">

@@ -3,6 +3,7 @@ import type { LucideIcon } from 'lucide-react'
 import type { Edge, Node, NodeProps } from '@xyflow/react'
 
 import type { PublishIssue } from '../../types/publish-validation.types'
+import type { GamePlayChatMessage } from '../../utils/buildPlaySessionChatHistory'
 
 export type GameNodeCategory = 'nodes' | 'logic' | 'games'
 
@@ -34,6 +35,8 @@ export type GameNodeDataPatch =
 
 export type GameNodePreviewSessionCompletePayload = {
   score: number
+  /** Full node chat transcript when the preview records one (e.g. Image Pin). */
+  chatMessages?: GamePlayChatMessage[]
 }
 
 /** Props passed to a node's playable preview when rendered in the holistic game preview. */

@@ -80,6 +80,38 @@ export interface GameCardListProps {
 
 export type GameProjectCardListVariant = 'default' | 'compact'
 
+export type GameCatalogTeacherProfile = {
+  display_name: string | null
+  avatar_url: string | null
+}
+
+export type GameCatalogInstitutionProfile = {
+  id: string
+  name: string | null
+}
+
+export type GameCatalogStatus = 'draft' | 'published' | 'archived'
+
+export type GameCatalogItem = {
+  id: string
+  title: string
+  description: string | null
+  teacherId: string
+  institutionId: string | null
+  gameType: string
+  themeId: ThemeId
+  status: GameCatalogStatus
+  version: number | null
+  publishedVersion: number | null
+  currentPublishedVersionId: string | null
+  archivedAt: string | null
+  createdAt: string
+  updatedAt: string
+  teacherProfile: GameCatalogTeacherProfile | null
+  institution: GameCatalogInstitutionProfile | null
+  linkedCourseIds: string[]
+}
+
 export interface GameProjectCardListProps {
   projects: readonly {
     id: string

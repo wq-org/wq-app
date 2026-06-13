@@ -76,8 +76,16 @@ export type {
 export { AdminAnalytics } from './pages/analytics'
 export { AdminBilling } from './pages/billing'
 export { AdminAuditLogs } from './pages/auditLogs'
+export {
+  AdminCourseContentPage,
+  AdminCourseTopicLessonPage,
+  AdminCourseTopicPage,
+} from './pages/course-content'
+export { AdminCoursesPage } from './pages/courses'
 export { AdminDashboard } from './pages/dashboard'
 export { AdminFilesPage } from './pages/files'
+export { AdminGameDetailPage } from './pages/game-detail'
+export { AdminGamesPage } from './pages/games'
 export { AdminNotesPage } from './pages/notes'
 export { AdminTasksPage } from './pages/tasks'
 export { AdminFeatureDefinitions } from './pages/featureDefinitions'

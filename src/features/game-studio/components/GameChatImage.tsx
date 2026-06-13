@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { useDroppable } from '@dnd-kit/core'
 import { cn } from '@/lib/utils'
 import type { GameChatImageDescriptor } from './game-chat.types'
+import { ImagePin } from '../nodes/game-image-pin/components/ImagePin'
 
 type GameChatImageProps = GameChatImageDescriptor & {
   className?: string
@@ -44,6 +45,8 @@ function GameChatImagePinStatic({
   alt,
   rect,
   showTargetRect = false,
+  pinDrop,
+  pinVariant,
   className,
   children,
 }: ImagePinViewProps) {
@@ -62,6 +65,8 @@ function GameChatImagePinStatic({
         alt={alt}
         rect={rect}
         showTargetRect={showTargetRect}
+        pinDrop={pinDrop}
+        pinVariant={pinVariant}
         dims={dims}
         onDims={setDims}
       />
@@ -77,6 +82,8 @@ function GameChatImagePinDroppable({
   alt,
   rect,
   showTargetRect = false,
+  pinDrop,
+  pinVariant,
   className,
   children,
   droppableId,
@@ -104,6 +111,8 @@ function GameChatImagePinDroppable({
         alt={alt}
         rect={rect}
         showTargetRect={showTargetRect}
+        pinDrop={pinDrop}
+        pinVariant={pinVariant}
         dims={dims}
         onDims={setDims}
       />
@@ -117,6 +126,8 @@ type MediaProps = {
   alt?: string
   rect: ImagePinViewProps['rect']
   showTargetRect?: boolean
+  pinDrop?: ImagePinViewProps['pinDrop']
+  pinVariant?: ImagePinViewProps['pinVariant']
   dims: { w: number; h: number } | null
   onDims: (dims: { w: number; h: number }) => void
 }
@@ -126,6 +137,8 @@ function GameChatImagePinMedia({
   alt,
   rect,
   showTargetRect = false,
+  pinDrop,
+  pinVariant,
   dims,
   onDims,
 }: MediaProps) {
@@ -164,6 +177,18 @@ function GameChatImagePinMedia({
             vectorEffect="non-scaling-stroke"
           />
         </svg>
+      ) : null}
+      {pinDrop ? (
+        <div
+          className="pointer-events-none absolute"
+          style={{
+            left: `${pinDrop.x * 100}%`,
+            top: `${pinDrop.y * 100}%`,
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
+          <ImagePin variant={pinVariant ?? 'default'} />
+        </div>
       ) : null}
     </>
   )

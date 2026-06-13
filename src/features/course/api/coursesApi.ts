@@ -1,9 +1,30 @@
 import { supabase } from '@/lib/supabase'
 import { getUserInstitutionId } from '@/features/auth'
 import type { ThemeId } from '@/lib/themes'
-import type { Course, CourseTeacherProfile, UpdateCourseData } from '../types/course.types'
+import type {
+  Course,
+  CourseCatalogItem,
+  CourseInstitutionProfile,
+  CourseTeacherProfile,
+  UpdateCourseData,
+} from '../types/course.types'
 import type { ClassroomCourseListItem } from '../types/course-version.types'
 import { getCourseDeliveryStatusCountsByCourseIds } from './courseVersionApi'
+
+const COURSE_CATALOG_SELECT = `
+  id,
+  title,
+  description,
+  teacher_id,
+  institution_id,
+  theme_id,
+  is_published,
+  created_at,
+  updated_at,
+  teacher:profiles!courses_teacher_id_fkey(display_name, avatar_url),
+  institution:institutions!courses_institution_id_fkey(id, name),
+  course_versions(version_no, status)
+` as const
 
 /**
  * Create a new course
@@ -44,6 +65,15 @@ type TeacherCourseRow = Omit<Course, 'teacher_profile' | 'published_version_no'>
   course_versions: Array<{ version_no: number; status: string }> | null
 }
 
+type CourseCatalogRow = Omit<TeacherCourseRow, 'teacher'> & {
+  teacher: CourseTeacherProfile | CourseTeacherProfile[] | null
+  institution: CourseInstitutionProfile | CourseInstitutionProfile[] | null
+}
+
+type CourseCatalogFilters = {
+  institutionId?: string
+}
+
 export function mapTeacherCourseRow(row: TeacherCourseRow): Course {
   const { teacher, course_versions, ...course } = row
   const publishedVersionNo = (course_versions ?? [])
@@ -55,6 +85,58 @@ export function mapTeacherCourseRow(row: TeacherCourseRow): Course {
     teacher_profile: teacher ?? null,
     published_version_no: publishedVersionNo > 0 ? publishedVersionNo : null,
   }
+}
+
+function normalizeCourseInstitution(
+  institution: CourseCatalogRow['institution'],
+): CourseInstitutionProfile | null {
+  if (institution == null) return null
+  return Array.isArray(institution) ? (institution[0] ?? null) : institution
+}
+
+function normalizeCourseTeacher(teacher: CourseCatalogRow['teacher']): CourseTeacherProfile | null {
+  if (teacher == null) return null
+  return Array.isArray(teacher) ? (teacher[0] ?? null) : teacher
+}
+
+function mapCourseCatalogRow(row: CourseCatalogRow): CourseCatalogItem {
+  const { institution, teacher, ...courseRow } = row
+  return {
+    ...mapTeacherCourseRow({
+      ...courseRow,
+      teacher: normalizeCourseTeacher(teacher),
+    }),
+    institution: normalizeCourseInstitution(institution),
+  }
+}
+
+export async function listCourseCatalog(
+  filters: CourseCatalogFilters = {},
+): Promise<CourseCatalogItem[]> {
+  let query = supabase
+    .from('courses')
+    .select(COURSE_CATALOG_SELECT)
+    .order('updated_at', { ascending: false })
+
+  if (filters.institutionId) {
+    query = query.eq('institution_id', filters.institutionId)
+  }
+
+  const { data, error } = await query
+
+  if (error) throw new Error(error.message)
+
+  const courses = ((data ?? []) as unknown as CourseCatalogRow[]).map(mapCourseCatalogRow)
+  const deliveryCounts = await getCourseDeliveryStatusCountsByCourseIds(courses.map((c) => c.id))
+
+  return courses.map((course) => {
+    const counts = deliveryCounts[course.id]
+    return {
+      ...course,
+      student_visible_delivery_count: counts?.studentVisibleDeliveryCount ?? 0,
+      offline_delivery_count: counts?.offlineDeliveryCount ?? 0,
+    }
+  })
 }
 
 /**

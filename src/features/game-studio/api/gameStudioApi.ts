@@ -8,10 +8,38 @@ import {
   getLatestPublishedGameVersionId,
   getPublishedGameVersion,
 } from './gameVersionApi'
-import type { FlowGameConfig, GameCardProps } from '../types/game-studio.types'
+import type {
+  FlowGameConfig,
+  GameCardProps,
+  GameCatalogInstitutionProfile,
+  GameCatalogItem,
+  GameCatalogStatus,
+  GameCatalogTeacherProfile,
+} from '../types/game-studio.types'
 import type { PublishedGameVersion } from '../types/game-version.types'
 import { resolveGameLinkedCourseIds } from '../utils/gameCourseLink.utils'
 import { getDefaultFlowGameConfig } from '../utils/gameConfigSerialization'
+
+const GAME_CATALOG_SELECT = `
+  id,
+  title,
+  description,
+  teacher_id,
+  institution_id,
+  course_id,
+  game_type,
+  theme_id,
+  status,
+  version,
+  published_version,
+  current_published_version_id,
+  archived_at,
+  created_at,
+  updated_at,
+  teacher:profiles!games_teacher_id_fkey(display_name, avatar_url),
+  institution:institutions!games_institution_id_fkey(id, name),
+  game_course_links(course_id)
+` as const
 
 export interface GameForStudio {
   id: string
@@ -33,6 +61,63 @@ export interface GameForStudio {
   created_at: string
   updated_at: string
   game_course_links?: { course_id: string }[]
+}
+
+type GameCatalogRow = {
+  id: string
+  title: string
+  description: string | null
+  teacher_id: string
+  institution_id: string | null
+  course_id: string | null
+  game_type: string
+  theme_id: ThemeId
+  status: string | null
+  version: number | null
+  published_version: number | null
+  current_published_version_id: string | null
+  archived_at: string | null
+  created_at: string
+  updated_at: string
+  teacher: GameCatalogTeacherProfile | GameCatalogTeacherProfile[] | null
+  institution: GameCatalogInstitutionProfile | GameCatalogInstitutionProfile[] | null
+  game_course_links?: { course_id: string }[] | null
+}
+
+type GameCatalogFilters = {
+  institutionId?: string
+}
+
+function normalizeGameCatalogRelation<T>(value: T | T[] | null | undefined): T | null {
+  if (value == null) return null
+  return Array.isArray(value) ? (value[0] ?? null) : value
+}
+
+function resolveGameCatalogStatus(row: GameCatalogRow): GameCatalogStatus {
+  if (row.archived_at) return 'archived'
+  return row.status === 'published' ? 'published' : 'draft'
+}
+
+function mapGameCatalogRow(row: GameCatalogRow): GameCatalogItem {
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    teacherId: row.teacher_id,
+    institutionId: row.institution_id,
+    gameType: row.game_type,
+    themeId: row.theme_id,
+    status: resolveGameCatalogStatus(row),
+    version: row.version,
+    publishedVersion: row.published_version,
+    currentPublishedVersionId: row.current_published_version_id,
+    archivedAt: row.archived_at,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    teacherProfile: normalizeGameCatalogRelation(row.teacher),
+    institution: normalizeGameCatalogRelation(row.institution),
+    linkedCourseIds: (row.game_course_links ?? []).map((link) => link.course_id),
+  }
 }
 
 /**
@@ -302,6 +387,26 @@ export async function getTeacherFlowGames(teacherId: string): Promise<GameForStu
   if (error) throw new Error(error.message)
 
   return (data ?? []) as GameForStudio[]
+}
+
+export async function listGameCatalog(
+  filters: GameCatalogFilters = {},
+): Promise<GameCatalogItem[]> {
+  let query = supabase
+    .from('games')
+    .select(GAME_CATALOG_SELECT)
+    .is('deleted_at', null)
+    .order('updated_at', { ascending: false })
+
+  if (filters.institutionId) {
+    query = query.eq('institution_id', filters.institutionId)
+  }
+
+  const { data, error } = await query
+
+  if (error) throw new Error(error.message)
+
+  return ((data ?? []) as unknown as GameCatalogRow[]).map(mapGameCatalogRow)
 }
 
 async function getFollowedTeacherIdsForCurrentUser(): Promise<string[]> {

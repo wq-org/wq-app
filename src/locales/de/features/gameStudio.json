@@ -1,4 +1,27 @@
 {
+  "catalog": {
+    "columns": {
+      "game": "Spiel",
+      "teacher": "Lehrkraft",
+      "institution": "Institution",
+      "status": "Status",
+      "type": "Typ",
+      "version": "Version",
+      "linkedCourses": "Verknüpfte Kurse",
+      "updated": "Aktualisiert"
+    },
+    "unknownTeacher": "Unbekannte Lehrkraft",
+    "unknownInstitution": "Unbekannte Institution",
+    "noDescription": "Keine Beschreibung",
+    "versionValue": "v{{version}}",
+    "linkedCourseCount_one": "{{count}} Kurs",
+    "linkedCourseCount_other": "{{count}} Kurse",
+    "status": {
+      "draft": "Entwurf",
+      "published": "Veröffentlicht",
+      "archived": "Archiviert"
+    }
+  },
   "common": {
     "cancel": "Abbrechen",
     "save": "Speichern",

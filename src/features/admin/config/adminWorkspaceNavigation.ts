@@ -1,7 +1,9 @@
 import {
+  BookOpen,
   Building2,
   ClipboardList,
   FileStack,
+  Gamepad2,
   Home,
   Blocks,
   ShieldCheck,
@@ -46,6 +48,16 @@ const SUPER_ADMIN_NAVIGATION: AdminWorkspaceNavigation = {
       titleKey: 'nav.users',
       url: '/users',
       icon: Users,
+    },
+    {
+      titleKey: 'nav.courses',
+      url: '/courses',
+      icon: BookOpen,
+    },
+    {
+      titleKey: 'nav.games',
+      url: '/games',
+      icon: Gamepad2,
     },
     {
       titleKey: 'nav.planCatalog',

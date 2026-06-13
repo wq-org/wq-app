@@ -18,6 +18,7 @@ import type { SessionResultsByNode } from '../utils/flowOrder'
 import {
   buildPlaySessionChatHistory,
   type GamePlayChatMessage,
+  type NodeChatHistoriesByNodeId,
 } from '../utils/buildPlaySessionChatHistory'
 import { GamePreviewSegmentAnchor } from './game-preview-session/GamePreviewSegmentAnchor'
 import { GamePreviewSessionShell } from './game-preview-session/GamePreviewSessionShell'
@@ -28,12 +29,14 @@ export type GamePlaySessionResult = {
   maxScore: number
   resultsByNode: SessionResultsByNode
   chatHistory: GamePlayChatMessage[]
+  nodeChatHistories: NodeChatHistoriesByNodeId
 }
 
 export type GamePlaySessionSnapshot = {
   score: number
   maxScore: number
   resultsByNode: SessionResultsByNode
+  nodeChatHistories: NodeChatHistoriesByNodeId
   isComplete: boolean
 }
 
@@ -58,6 +61,7 @@ export function GamePreviewPlayFlow({
   const {
     revealedSegments,
     resultsByNode,
+    nodeChatHistories,
     cumulativeScore,
     isComplete,
     activeSegmentId,
@@ -79,9 +83,10 @@ export function GamePreviewPlayFlow({
       score: liveScore,
       maxScore: sessionMaxScore,
       resultsByNode,
+      nodeChatHistories,
       isComplete,
     })
-  }, [isComplete, liveScore, onSessionSnapshot, resultsByNode, sessionMaxScore])
+  }, [isComplete, liveScore, nodeChatHistories, onSessionSnapshot, resultsByNode, sessionMaxScore])
 
   const hasFiredCompleteRef = useRef(false)
 
@@ -92,7 +97,8 @@ export function GamePreviewPlayFlow({
       score: completedScoreBaseline,
       maxScore: sessionMaxScore,
       resultsByNode,
-      chatHistory: buildPlaySessionChatHistory(nodes, edges, resultsByNode),
+      nodeChatHistories,
+      chatHistory: buildPlaySessionChatHistory(nodes, edges, resultsByNode, nodeChatHistories),
     })
   }, [
     isComplete,
@@ -100,6 +106,7 @@ export function GamePreviewPlayFlow({
     completedScoreBaseline,
     sessionMaxScore,
     resultsByNode,
+    nodeChatHistories,
     nodes,
     edges,
   ])
@@ -195,7 +202,10 @@ export function GamePreviewPlayFlow({
                     onSessionComplete={
                       isActive
                         ? (payload) =>
-                            handleSegmentComplete(segment.node.id, { score: payload.score })
+                            handleSegmentComplete(segment.node.id, {
+                              score: payload.score,
+                              chatMessages: payload.chatMessages,
+                            })
                         : undefined
                     }
                     onSessionScoreChange={isActive ? handleSessionScoreChange : undefined}

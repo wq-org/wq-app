@@ -15,15 +15,19 @@ export { EmptyLessonsView } from './components/EmptyLessonsView'
 export { EmptyTopicsView } from './components/EmptyTopicsView'
 export {
   PublishedCoursePageShell,
+  PublishedCourseReadOnlyContent,
   PublishedCourseTopicList,
   PublishedCourseVersionSelect,
   PublishedCourseView,
   PublishedLessonReader,
+  PublishedTopicLessonReadOnlyContent,
   PublishedTopicDetails,
+  PublishedTopicReadOnlyContent,
   PublishedTopicView,
 } from './components/published'
 export { useCourses } from './hooks/useCourses'
 export { useCourseDetail } from './hooks/useCourseDetail'
+export { useCourseCatalog } from './hooks/useCourseCatalog'
 export { usePublishedCourseVersion } from './hooks/usePublishedCourseVersion'
 export { usePublishedCourseVersionsList } from './hooks/usePublishedCourseVersionsList'
 export { useCourseReleaseStatus } from './hooks/useCourseReleaseStatus'
@@ -34,6 +38,8 @@ export { useLessonReleaseStatus } from './hooks/useLessonReleaseStatus'
 export { COURSE_SEARCH_FIELDS } from './types/course.types'
 export type {
   Course,
+  CourseCatalogItem,
+  CourseInstitutionProfile,
   CreateCourseData,
   UpdateCourseData,
   CourseCardProps,
@@ -54,6 +60,7 @@ export type {
 export type { EnrollmentCourse, CourseMemberType, CourseMember } from './api/enrollmentsApi'
 export {
   createCourse,
+  listCourseCatalog,
   getTeacherCourses,
   getTeacherPublishedCourses,
   getCourseById,

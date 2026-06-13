@@ -11,6 +11,7 @@ export { GamePreviewPage } from './pages/GamePreviewPage'
 export { EmptyProjectsView } from './components/EmptyProjectsView'
 export { GameCard } from './components/GameCard'
 export { GameCardList } from './components/GameCardList'
+export { GameReadOnlyDetail } from './components/GameReadOnlyDetail'
 export { GameLayout, type GameLayoutMode } from './components/GameDialogLayout'
 export { GameAgentPage } from './pages/GameAgentPage'
 export { GameStudioAgentModeProvider } from './context/GameStudioAgentModeContext'
@@ -79,7 +80,9 @@ export {
 export {
   buildPlaySessionChatHistory,
   type GamePlayChatMessage,
+  type NodeChatHistoriesByNodeId,
 } from './utils/buildPlaySessionChatHistory'
+export { formatGameChatMessageTime } from './utils/formatGameChatMessageTime'
 export { GameChatHistory } from './components/GameChatHistory'
 export type { GameChatHistoryMessage } from './components/game-chat.types'
 export { computePlayPreviewSessionMaxScore } from './utils/playPreviewSessionScore'
@@ -98,6 +101,10 @@ export {
 // ---- Shared types ----
 export type {
   GameCardProps,
+  GameCatalogInstitutionProfile,
+  GameCatalogItem,
+  GameCatalogStatus,
+  GameCatalogTeacherProfile,
   GameProjectCardCompactProps,
   GameProjectCardListProps,
   GameProjectCardListVariant,
@@ -123,6 +130,7 @@ export {
   unpublishGame,
   getGameForStudio,
   getLatestPublishedGameVersion,
+  listGameCatalog,
   archiveGame,
   softDeleteGame,
   getTeacherFlowGames,
@@ -143,13 +151,17 @@ export {
   countPublishedDeliveriesForGame,
 } from './api/gameVersionApi'
 export { useTeacherGameProjects } from './hooks/useTeacherGameProjects'
+export { useGameCatalog } from './hooks/useGameCatalog'
 export { useCourseLinkedGames } from './hooks/useCourseLinkedGames'
+export { useGameReadOnlyPreview } from './hooks/useGameReadOnlyPreview'
+export type { GameReadOnlyPreview, GameReadOnlyPreviewStatus } from './hooks/useGameReadOnlyPreview'
 export { useGameReleaseStatus } from './hooks/useGameReleaseStatus'
 export {
   resolveGameLifecycleState,
   buildGameReleaseDiff,
   formatGamePublishedAt,
 } from './utils/gameLifecycle.utils'
+export { toGameCatalogCardProps } from './utils/gameCatalogCard.utils'
 export { toPublishedGameVersion } from './utils/gameVersion.utils'
 
 // ---- Flow-traversal utilities ----

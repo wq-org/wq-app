@@ -17,6 +17,7 @@
     "teachers": "Teachers",
     "students": "Students",
     "courses": "Courses",
+    "games": "Games",
     "settings": "Settings"
   },
   "shell": {
@@ -140,13 +141,59 @@
       "notFound": "Institution not found or you no longer have access.",
       "tabs": {
         "overview": "Overview",
-        "subscription": "Subscription"
+        "subscription": "Subscription",
+        "courses": "Courses",
+        "games": "Games"
       },
       "subscriptionAlreadyActive": "This institution already has an active subscription.",
       "assigningSubscription": "Assigning subscription…",
       "subscriptionAssigned": "Subscription assigned.",
-      "subscriptionAssignError": "Could not assign subscription."
+      "subscriptionAssignError": "Could not assign subscription.",
+      "courses": {
+        "title": "Courses",
+        "description": "Courses owned by this institution, newest updates first.",
+        "searchLabel": "Search courses",
+        "searchPlaceholder": "Search by course, teacher, or description…",
+        "count": "Showing {{shown}} of {{total}} courses",
+        "errorTitle": "Could not load courses",
+        "emptyTitle": "No courses yet",
+        "emptyDescription": "Courses created by teachers in this institution will appear here.",
+        "noMatches": "No courses match your search."
+      },
+      "games": {
+        "title": "Games",
+        "description": "Games owned by this institution, newest updates first.",
+        "searchLabel": "Search games",
+        "searchPlaceholder": "Search by game, teacher, status, or type…",
+        "count": "Showing {{shown}} of {{total}} games",
+        "errorTitle": "Could not load games",
+        "emptyTitle": "No games yet",
+        "emptyDescription": "Games created by teachers in this institution will appear here.",
+        "noMatches": "No games match your search."
+      }
     }
+  },
+  "courses": {
+    "title": "Courses",
+    "subtitle": "All courses across every institution, newest updates first.",
+    "searchLabel": "Search courses",
+    "searchPlaceholder": "Search by course, teacher, institution, or description…",
+    "count": "Showing {{shown}} of {{total}} courses",
+    "errorTitle": "Could not load courses",
+    "emptyTitle": "No courses yet",
+    "emptyDescription": "Courses will appear here once teachers create them.",
+    "noMatches": "No courses match your search."
+  },
+  "games": {
+    "title": "Games",
+    "subtitle": "All games across every institution, newest updates first.",
+    "searchLabel": "Search games",
+    "searchPlaceholder": "Search by game, teacher, institution, status, or type…",
+    "count": "Showing {{shown}} of {{total}} games",
+    "errorTitle": "Could not load games",
+    "emptyTitle": "No games yet",
+    "emptyDescription": "Games will appear here once teachers create them.",
+    "noMatches": "No games match your search."
   },
   "institutionInvites": {
     "pageTitle": "Institution invites",

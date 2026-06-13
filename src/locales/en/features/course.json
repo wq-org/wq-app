@@ -1,4 +1,25 @@
 {
+  "catalog": {
+    "columns": {
+      "course": "Course",
+      "teacher": "Teacher",
+      "institution": "Institution",
+      "status": "Status",
+      "version": "Version",
+      "deliveries": "Deliveries",
+      "updated": "Updated"
+    },
+    "unknownTeacher": "Unknown teacher",
+    "unknownInstitution": "Unknown institution",
+    "noDescription": "No description",
+    "versionValue": "v{{version}}",
+    "deliveryCount": "{{active}} live / {{offline}} offline",
+    "status": {
+      "live": "Live",
+      "offline": "Offline",
+      "draft": "Draft"
+    }
+  },
   "settings": {
     "title": "Course Settings",
     "subtitle": "Manage your course details and settings",

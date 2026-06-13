@@ -1,7 +1,11 @@
 import type { Edge, Node } from '@xyflow/react'
 
 import type { ThemeId } from '@/lib/themes'
-import type { GamePlayChatMessage, SessionResultsByNode } from '@/features/game-studio'
+import type {
+  GamePlayChatMessage,
+  SessionResultsByNode,
+  NodeChatHistoriesByNodeId,
+} from '@/features/game-studio'
 
 export type ClassroomDeliveredGame = {
   id: string
@@ -52,6 +56,7 @@ export type GameRunParticipantDetail = GameRunParticipantSummary & {
 
 export type GameRunAnalyticsDetail = GameRunAnalyticsItem & {
   participantDetails: readonly GameRunParticipantDetail[]
+  versionContent: { nodes: Node[]; edges: Edge[] } | null
 }
 
 /** Delivery-pinned playable content for a game delivered to a classroom. */
@@ -77,6 +82,7 @@ export type RecordClassroomGameRunInput = {
   maxScore: number
   resultsByNode: SessionResultsByNode
   chatHistory: GamePlayChatMessage[]
+  nodeChatHistories?: NodeChatHistoriesByNodeId
   /** ISO timestamp when play began; defaults to save time. */
   startedAt?: string
 }

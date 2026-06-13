@@ -19,13 +19,12 @@ import { FieldInput } from '@/components/ui/field-input'
 import { Text } from '@/components/ui/text'
 import { useUser } from '@/contexts/user'
 
-import { GameChatHistory, type GameChatHistoryMessage } from '@/features/game-studio'
+import { GameChatHistory } from '@/features/game-studio'
 
-import type { GameComponentScore } from '../types/classroom-game.types'
 import { useGameRunAnalytics, useGameRunAnalyticsDetail } from '../hooks/useGameRunAnalytics'
 import { useGameComponentImageUrls } from '../hooks/useGameComponentImageUrl'
 import { groupGameRunsByStudent } from '../utils/groupGameRunsByStudent'
-import { parseGameRunChatHistory } from '../utils/parseGameRunChatHistory'
+import { buildAnalyticsChatReplay } from '../utils/buildAnalyticsChatReplay'
 import { GameRunStudentAttemptList } from './GameRunStudentAttemptList'
 import { GameRunStudentList } from './GameRunStudentList'
 
@@ -90,55 +89,20 @@ export function GameRunAnalyticsPanel({
     [detail, effectiveUserId],
   )
   const imageUrlByNodeId = useGameComponentImageUrls(componentScores)
-  const componentByNodeId = useMemo(() => {
-    const map = new Map<string, GameComponentScore>()
-    for (const component of componentScores) map.set(component.nodeId, component)
-    return map
-  }, [componentScores])
 
-  // Enrich the stored transcript with the per-node breakdown: real labels, the Image Pin
-  // image (re-signed), and the score earned — falling back to the raw transcript otherwise.
-  const chatMessages = useMemo<GameChatHistoryMessage[]>(
+  const chatMessages = useMemo(
     () =>
-      parseGameRunChatHistory(selectedAttempt?.sessionPayload).map((message) => {
-        const component = message.nodeId ? componentByNodeId.get(message.nodeId) : undefined
-        const imageUrl = message.nodeId ? imageUrlByNodeId.get(message.nodeId) : undefined
-
-        if (message.direction === 'incoming' && component) {
-          return {
-            id: message.id,
-            time: message.time,
-            direction: message.direction,
-            text: component.label,
-            image:
-              message.image ??
-              (imageUrl ? { variant: 'image-pin' as const, src: imageUrl } : undefined),
-          }
-        }
-
-        if (message.direction === 'receiving' && component) {
-          return {
-            id: message.id,
-            time: message.time,
-            direction: message.direction,
-            image: message.image,
-            text: t('pages.gameRunAnalytics.attempts.nodeScore', {
-              label: message.text,
-              score: component.score,
-              maxScore: component.maxScore,
-            }),
-          }
-        }
-
-        return {
-          id: message.id,
-          text: message.text,
-          time: message.time,
-          direction: message.direction,
-          image: message.image,
-        }
-      }),
-    [selectedAttempt?.sessionPayload, componentByNodeId, imageUrlByNodeId, t],
+      selectedAttempt
+        ? buildAnalyticsChatReplay({
+            sessionPayload: selectedAttempt.sessionPayload,
+            versionContent: detail?.versionContent ?? null,
+            componentScores,
+            imageUrlByNodeId,
+            locale: i18n.language,
+            t,
+          })
+        : [],
+    [selectedAttempt, detail?.versionContent, componentScores, imageUrlByNodeId, i18n.language, t],
   )
 
   const handleSelectStudent = (userId: string) => {
@@ -299,7 +263,6 @@ export function GameRunAnalyticsPanel({
               <GameRunStudentAttemptList
                 attempts={selectedGroup.attempts}
                 selectedRunId={selectedRunId}
-                onSelectAttempt={setSelectedRunId}
                 onJumpToNode={handleJumpToNode}
                 onViewChat={handleViewChat}
               />

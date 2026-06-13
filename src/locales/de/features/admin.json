@@ -17,6 +17,7 @@
     "teachers": "Lehrkräfte",
     "students": "Lernende",
     "courses": "Kurse",
+    "games": "Spiele",
     "settings": "Einstellungen"
   },
   "shell": {
@@ -140,13 +141,59 @@
       "notFound": "Institution nicht gefunden oder kein Zugriff mehr.",
       "tabs": {
         "overview": "Übersicht",
-        "subscription": "Abonnement"
+        "subscription": "Abonnement",
+        "courses": "Kurse",
+        "games": "Spiele"
       },
       "subscriptionAlreadyActive": "Diese Institution hat bereits ein aktives Abonnement.",
       "assigningSubscription": "Abonnement wird zugewiesen…",
       "subscriptionAssigned": "Abonnement zugewiesen.",
-      "subscriptionAssignError": "Abonnement konnte nicht zugewiesen werden."
+      "subscriptionAssignError": "Abonnement konnte nicht zugewiesen werden.",
+      "courses": {
+        "title": "Kurse",
+        "description": "Kurse dieser Institution, neueste Aktualisierungen zuerst.",
+        "searchLabel": "Kurse suchen",
+        "searchPlaceholder": "Nach Kurs, Lehrkraft oder Beschreibung suchen…",
+        "count": "Zeige {{shown}} von {{total}} Kursen",
+        "errorTitle": "Kurse konnten nicht geladen werden",
+        "emptyTitle": "Noch keine Kurse",
+        "emptyDescription": "Kurse von Lehrkräften dieser Institution erscheinen hier.",
+        "noMatches": "Keine Kurse entsprechen der Suche."
+      },
+      "games": {
+        "title": "Spiele",
+        "description": "Spiele dieser Institution, neueste Aktualisierungen zuerst.",
+        "searchLabel": "Spiele suchen",
+        "searchPlaceholder": "Nach Spiel, Lehrkraft, Status oder Typ suchen…",
+        "count": "Zeige {{shown}} von {{total}} Spielen",
+        "errorTitle": "Spiele konnten nicht geladen werden",
+        "emptyTitle": "Noch keine Spiele",
+        "emptyDescription": "Spiele von Lehrkräften dieser Institution erscheinen hier.",
+        "noMatches": "Keine Spiele entsprechen der Suche."
+      }
     }
+  },
+  "courses": {
+    "title": "Kurse",
+    "subtitle": "Alle Kurse über alle Institutionen hinweg, neueste Aktualisierungen zuerst.",
+    "searchLabel": "Kurse suchen",
+    "searchPlaceholder": "Nach Kurs, Lehrkraft, Institution oder Beschreibung suchen…",
+    "count": "Zeige {{shown}} von {{total}} Kursen",
+    "errorTitle": "Kurse konnten nicht geladen werden",
+    "emptyTitle": "Noch keine Kurse",
+    "emptyDescription": "Kurse erscheinen hier, sobald Lehrkräfte sie erstellen.",
+    "noMatches": "Keine Kurse entsprechen der Suche."
+  },
+  "games": {
+    "title": "Spiele",
+    "subtitle": "Alle Spiele über alle Institutionen hinweg, neueste Aktualisierungen zuerst.",
+    "searchLabel": "Spiele suchen",
+    "searchPlaceholder": "Nach Spiel, Lehrkraft, Institution, Status oder Typ suchen…",
+    "count": "Zeige {{shown}} von {{total}} Spielen",
+    "errorTitle": "Spiele konnten nicht geladen werden",
+    "emptyTitle": "Noch keine Spiele",
+    "emptyDescription": "Spiele erscheinen hier, sobald Lehrkräfte sie erstellen.",
+    "noMatches": "Keine Spiele entsprechen der Suche."
   },
   "institutionInvites": {
     "pageTitle": "Einladungen",

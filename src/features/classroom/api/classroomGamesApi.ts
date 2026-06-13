@@ -296,6 +296,9 @@ export async function getGameRunAnalyticsDetail(
   return {
     ...base,
     participantDetails,
+    versionContent: versionContent
+      ? { nodes: versionContent.nodes ?? [], edges: versionContent.edges ?? [] }
+      : null,
   }
 }
 
@@ -456,6 +459,9 @@ export async function recordClassroomGameRun(input: RecordClassroomGameRunInput)
     maxScore: input.maxScore,
     resultsByNode: input.resultsByNode,
     chatHistory: input.chatHistory,
+    ...(input.nodeChatHistories && Object.keys(input.nodeChatHistories).length > 0
+      ? { nodeChatHistories: input.nodeChatHistories }
+      : {}),
   }
 
   const { error: participantError } = await supabase.from('game_session_participants').insert({

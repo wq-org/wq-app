@@ -6,6 +6,11 @@ export interface CourseTeacherProfile {
   avatar_url: string | null
 }
 
+export type CourseInstitutionProfile = {
+  id: string
+  name: string | null
+}
+
 export type CourseCardReleaseStatus = 'live' | 'offline' | 'draft'
 
 export interface Course {
@@ -26,6 +31,10 @@ export interface Course {
   student_visible_delivery_count?: number
   /** Deliveries temporarily hidden from students; populated by getTeacherCourses. */
   offline_delivery_count?: number
+}
+
+export type CourseCatalogItem = Course & {
+  institution: CourseInstitutionProfile | null
 }
 
 // Type for creating a new course (no id, created_at, updated_at)

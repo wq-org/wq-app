@@ -31,7 +31,7 @@ import {
 } from '../image-pin.schema'
 import type { ImagePinSubmissionVariant, NormalizedPinPoint } from '../imagePinValidation'
 import { resolvePlayPreviewFooterMaxScore } from '../../../utils/playPreviewSessionScore'
-import { useImagePinGame } from '../hooks/useImagePinGame'
+import type { GameNodePreviewSessionCompletePayload } from '../../_registry/game-node-registry.types'
 import { useResolvedGameImagePinPreviewSrc } from '../hooks/useResolvedGameImagePinPreviewSrc'
 import { ImagePin } from './ImagePin'
 import { ImagePinChatInput } from './ImagePinChatInput'
@@ -41,7 +41,7 @@ export type ImagePinPreviewProps = {
   nodeData: GameImagePinNodeData
   onSessionScoreChange?: (score: number) => void
   onSessionResolved?: (payload: { score: number }) => void
-  onSessionComplete?: (payload: { score: number }) => void
+  onSessionComplete?: (payload: GameNodePreviewSessionCompletePayload) => void
   embedded?: boolean
   continuousSession?: boolean
   sessionActive?: boolean
@@ -148,6 +148,7 @@ export function ImagePinPreview({
     earnedScore,
     resolvedSession,
     isSessionComplete,
+    getPersistedChatMessages,
   } = useImagePinGame({
     nodeId,
     nodeData: previewNodeData,
@@ -184,8 +185,17 @@ export function ImagePinPreview({
   useEffect(() => {
     if (!isSessionComplete || sessionCompleteReportedRef.current) return
     sessionCompleteReportedRef.current = true
-    onSessionComplete?.({ score: earnedScore })
-  }, [continuousSession, earnedScore, isSessionComplete, onSessionComplete])
+    onSessionComplete?.({
+      score: earnedScore,
+      chatMessages: getPersistedChatMessages(new Date().toISOString()),
+    })
+  }, [
+    continuousSession,
+    earnedScore,
+    getPersistedChatMessages,
+    isSessionComplete,
+    onSessionComplete,
+  ])
 
   const prompts = [
     {

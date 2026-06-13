@@ -19,7 +19,8 @@
     "auditLogs": "Audit logs",
     "teachers": "Teachers",
     "students": "Students",
-    "courses": "Courses"
+    "courses": "Courses",
+    "games": "Games"
   },
   "components": {
     "academicYearCombobox": {
@@ -211,6 +212,32 @@
     "inviteStatus": {
       "pendingEmail": "Invite pending"
     }
+  },
+  "courses": {
+    "title": "Courses",
+    "subtitle": "All courses created by teachers in your institution.",
+    "searchLabel": "Search courses",
+    "searchPlaceholder": "Search by course, teacher, or description…",
+    "count": "Showing {{shown}} of {{total}} courses",
+    "errorTitle": "Could not load courses",
+    "emptyTitle": "No courses yet",
+    "emptyDescription": "Courses created by teachers in your institution will appear here.",
+    "noMatches": "No courses match your search.",
+    "noInstitutionTitle": "No institution context",
+    "noInstitutionDescription": "Your account is not linked to an institution."
+  },
+  "games": {
+    "title": "Games",
+    "subtitle": "All games created by teachers in your institution.",
+    "searchLabel": "Search games",
+    "searchPlaceholder": "Search by game, teacher, status, or type…",
+    "count": "Showing {{shown}} of {{total}} games",
+    "errorTitle": "Could not load games",
+    "emptyTitle": "No games yet",
+    "emptyDescription": "Games created by teachers in your institution will appear here.",
+    "noMatches": "No games match your search.",
+    "noInstitutionTitle": "No institution context",
+    "noInstitutionDescription": "Your account is not linked to an institution."
   },
   "faculties": {
     "title": "Faculties",

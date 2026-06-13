@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, CreditCard, LayoutDashboard } from 'lucide-react'
+import { ArrowLeft, BookOpen, CreditCard, Gamepad2, LayoutDashboard } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { PlanFeaturesCard, SelectTabs, TabsContent } from '@/components/shared'
@@ -11,11 +11,13 @@ import { Text } from '@/components/ui/text'
 import { useUser } from '@/contexts/user'
 import {
   InstitutionSubscriptionDetails,
+  isTerminalBillingStatus,
   useInstitutionLicensingForInstitution,
 } from '@/features/institution-admin'
-import { isTerminalBillingStatus } from '@/features/institution-admin/config/billingStatus'
 
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
+import { InstitutionCoursesTab } from '../components/InstitutionCoursesTab'
+import { InstitutionGamesTab } from '../components/InstitutionGamesTab'
 import { InstitutionOverviewFields } from '../components/InstitutionOverviewFields'
 import { assignInstitutionSubscription } from '../api/institutionSubscriptionApi'
 import { useInstitutions } from '../hooks/useInstitutions'
@@ -26,6 +28,8 @@ import {
 
 const OVERVIEW_TAB = 'overview'
 const SUBSCRIPTION_TAB = 'subscription'
+const COURSES_TAB = 'courses'
+const GAMES_TAB = 'games'
 
 const AdminInstitutionDetails = () => {
   const { institutionId } = useParams<{ institutionId: string }>()
@@ -103,6 +107,16 @@ const AdminInstitutionDetails = () => {
         icon: CreditCard,
         title: t('institutions.details.tabs.subscription'),
       },
+      {
+        id: COURSES_TAB,
+        icon: BookOpen,
+        title: t('institutions.details.tabs.courses'),
+      },
+      {
+        id: GAMES_TAB,
+        icon: Gamepad2,
+        title: t('institutions.details.tabs.games'),
+      },
     ],
     [t],
   )
@@ -177,7 +191,7 @@ const AdminInstitutionDetails = () => {
   return (
     <AdminWorkspaceShell>
       <div className="flex min-h-0 flex-1 flex-col px-4 py-8 animate-in fade-in-0 slide-in-from-bottom-4">
-        <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="space-y-1">
               <Button
@@ -270,6 +284,22 @@ const AdminInstitutionDetails = () => {
               isLoading={licensing.isLoading}
               error={licensing.error}
             />
+          </TabsContent>
+
+          <TabsContent
+            tabId={COURSES_TAB}
+            activeTabId={activeTab}
+            className="mt-0 px-0"
+          >
+            <InstitutionCoursesTab institutionId={institution.id} />
+          </TabsContent>
+
+          <TabsContent
+            tabId={GAMES_TAB}
+            activeTabId={activeTab}
+            className="mt-0 px-0"
+          >
+            <InstitutionGamesTab institutionId={institution.id} />
           </TabsContent>
         </div>
       </div>

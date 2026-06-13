@@ -61,6 +61,7 @@ export function ClassroomGamePlayPanel({ classroomId, gameId }: ClassroomGamePla
         maxScore: result.maxScore,
         resultsByNode: result.resultsByNode,
         chatHistory: result.chatHistory,
+        nodeChatHistories: result.nodeChatHistories,
         startedAt: startedAtRef.current,
       })
 
@@ -87,7 +88,13 @@ export function ClassroomGamePlayPanel({ classroomId, gameId }: ClassroomGamePla
       score: sessionSnapshot.score,
       maxScore: sessionSnapshot.maxScore,
       resultsByNode,
-      chatHistory: buildPlaySessionChatHistory(content.nodes, content.edges, resultsByNode),
+      nodeChatHistories: sessionSnapshot.nodeChatHistories,
+      chatHistory: buildPlaySessionChatHistory(
+        content.nodes,
+        content.edges,
+        resultsByNode,
+        sessionSnapshot.nodeChatHistories,
+      ),
     }
   }, [content, sessionSnapshot])
 

@@ -19,7 +19,10 @@ export type GamePlayChatMessage = {
   image?: GameChatImageDescriptor
   /** ISO timestamp. */
   time: string
+  bold?: boolean
 }
+
+export type NodeChatHistoriesByNodeId = Record<string, GamePlayChatMessage[]>
 
 function getNodeTitle(node: Node): string {
   const data = node.data as Record<string, unknown> | undefined
@@ -48,6 +51,7 @@ export function buildPlaySessionChatHistory(
   nodes: Node[],
   edges: Edge[],
   resultsByNode: SessionResultsByNode,
+  nodeChatHistories?: NodeChatHistoriesByNodeId,
 ): GamePlayChatMessage[] {
   const time = new Date().toISOString()
   const path = getSessionPath(nodes, edges, resultsByNode)
@@ -66,6 +70,12 @@ export function buildPlaySessionChatHistory(
   for (const node of path.pathNodes) {
     const result = resultsByNode[node.id]
     if (!result || result.played === false) continue
+
+    const nodeChat = nodeChatHistories?.[node.id]
+    if (nodeChat?.length) {
+      messages.push(...nodeChat)
+      continue
+    }
 
     messages.push({
       id: `${node.id}-prompt`,

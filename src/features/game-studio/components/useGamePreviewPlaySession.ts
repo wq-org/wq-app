@@ -8,6 +8,10 @@ import { formatPublishIssueFallback } from '../utils/formatPublishIssue'
 import { resolveGameplayNodeMaxPoints } from '../nodes/game-if-else/game-if-else.utils'
 import { GAME_START_TYPE } from '../nodes/game-start/game-start.schema'
 import type { SessionResultsByNode } from '../utils/flowOrder'
+import type {
+  NodeChatHistoriesByNodeId,
+  GamePlayChatMessage,
+} from '../utils/buildPlaySessionChatHistory'
 import {
   getFirstPlayPreviewSegment,
   resolveNextPlayPreviewSegment,
@@ -31,6 +35,7 @@ export function useGamePreviewPlaySession({ nodes, edges }: UseGamePreviewPlaySe
 
   const [revealedSegments, setRevealedSegments] = useState<PlayPreviewSegment[]>([])
   const [resultsByNode, setResultsByNode] = useState<SessionResultsByNode>({})
+  const [nodeChatHistories, setNodeChatHistories] = useState<NodeChatHistoriesByNodeId>({})
   const [cumulativeScore, setCumulativeScore] = useState(0)
   const [isComplete, setIsComplete] = useState(false)
 
@@ -38,6 +43,7 @@ export function useGamePreviewPlaySession({ nodes, edges }: UseGamePreviewPlaySe
     const first = getFirstPlayPreviewSegment(nodes, edges)
     setRevealedSegments(first ? [first] : [])
     setResultsByNode({})
+    setNodeChatHistories({})
     setCumulativeScore(0)
     setIsComplete(false)
   }, [graphKey, nodes, edges])
@@ -74,7 +80,12 @@ export function useGamePreviewPlaySession({ nodes, edges }: UseGamePreviewPlaySe
   const handleSegmentComplete = useCallback(
     (
       nodeId: string,
-      payload: { score: number; ifElseBranch?: 'A' | 'B'; isTotalScore?: boolean },
+      payload: {
+        score: number
+        ifElseBranch?: 'A' | 'B'
+        isTotalScore?: boolean
+        chatMessages?: GamePlayChatMessage[]
+      },
     ) => {
       const node = nodes.find((n) => n.id === nodeId)
       if (!node) return
@@ -87,6 +98,9 @@ export function useGamePreviewPlaySession({ nodes, edges }: UseGamePreviewPlaySe
       const result = toSessionNodeResult(nodeScore, maxPoints, payload.ifElseBranch)
       const nextResults = { ...resultsByNode, [nodeId]: result }
       setResultsByNode(nextResults)
+      if (payload.chatMessages?.length) {
+        setNodeChatHistories((prev) => ({ ...prev, [nodeId]: payload.chatMessages! }))
+      }
       setCumulativeScore(sessionTotal)
       revealNext(nodeId, nextResults)
     },
@@ -107,6 +121,7 @@ export function useGamePreviewPlaySession({ nodes, edges }: UseGamePreviewPlaySe
     startNode,
     revealedSegments,
     resultsByNode,
+    nodeChatHistories,
     cumulativeScore,
     isComplete,
     activeSegmentId,

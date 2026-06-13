@@ -22,6 +22,8 @@ import {
   type NormalizedPinPoint,
 } from '../imagePinValidation'
 import { calcAttemptPoints, calcPointsPerQuestion } from '../../../utils/gameScoringUtils'
+import { buildPersistedImagePinChatMessages } from '../utils/buildPersistedImagePinChatMessages'
+import type { GamePlayChatMessage } from '../../../utils/buildPlaySessionChatHistory'
 
 export {
   PIN_DRAGGABLE_ID,
@@ -648,6 +650,9 @@ export function useImagePinGame({
 
   const pinAtSource = hasActiveQuestion && currentPin === null
 
+  const getPersistedChatMessages = (time: string): GamePlayChatMessage[] =>
+    buildPersistedImagePinChatMessages(nodeId, state.messages, submissions, time)
+
   return {
     displayMessages,
     handleDragEnd,
@@ -662,5 +667,6 @@ export function useImagePinGame({
     earnedScore,
     resolvedSession,
     isSessionComplete,
+    getPersistedChatMessages,
   }
 }

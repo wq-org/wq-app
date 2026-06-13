@@ -1,10 +1,12 @@
 import {
   BarChart3,
+  BookOpen,
   ChartSpline,
   ClipboardList,
   Cloud,
   BadgeCheck,
   CreditCard,
+  Gamepad2,
   GraduationCap,
   Home,
   School,
@@ -71,6 +73,16 @@ const INSTITUTION_ADMIN_NAV_ITEMS: readonly InstitutionAdminNavItem[] = [
     titleKey: 'nav.classrooms',
     url: '/classrooms',
     icon: School,
+  },
+  {
+    titleKey: 'nav.courses',
+    url: '/courses',
+    icon: BookOpen,
+  },
+  {
+    titleKey: 'nav.games',
+    url: '/games',
+    icon: Gamepad2,
   },
   {
     titleKey: 'nav.licenseUsage',

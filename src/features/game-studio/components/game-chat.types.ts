@@ -21,6 +21,10 @@ export type GameChatImagePinDescriptor = {
   rect?: GameChatImagePinRect
   /** When true, shows the target rectangle overlay (review/editor only). Defaults to false in live play. */
   showTargetRect?: boolean
+  /** Normalized pin centre (0..1) — persisted for analytics replay. */
+  pinDrop?: { x: number; y: number }
+  /** Pin colour after submission (`correct` / `wrong`). */
+  pinVariant?: 'correct' | 'wrong'
   /** When set, the image becomes a dnd-kit drop target with this id. Requires an enclosing DndContext. */
   droppableId?: string
 }
