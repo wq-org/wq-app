@@ -5,7 +5,10 @@ import { cn } from '@/lib/utils'
 
 import type { DragDropMathCanvasRow } from '../../types/drag-drop-math.schema'
 import type { MathTokenCommitPayload } from '../../hooks/useMathDropNodeEditor'
-import { CANVAS_EMPTY_DROP_ID } from '../../constants/canvas-dnd.constants'
+import {
+  CANVAS_EMPTY_DROP_ID,
+  DND_MATH_CANVAS_EMPTY_MIN_HEIGHT_CLASS,
+} from '../../constants/canvas-dnd.constants'
 import { CanvasRowList } from './CanvasRowList'
 
 export type DnDMathCanvasProps = {
@@ -48,16 +51,20 @@ export function DnDMathCanvas({
       className={cn(
         'relative w-full transition-[min-height,padding,box-shadow] duration-150',
         embedded
-          ? 'min-h-[160px] bg-transparent px-4 py-4'
+          ? 'min-h-0 bg-transparent px-4 py-2'
           : 'rounded-2xl border border-dashed border-border/70 bg-secondary/30',
         !embedded &&
           (isEmpty
-            ? 'min-h-[200px] px-6 py-5'
+            ? `${DND_MATH_CANVAS_EMPTY_MIN_HEIGHT_CLASS} px-6 py-5`
             : isDragSession
-              ? 'min-h-[160px] px-5 pt-4 pb-8'
+              ? 'min-h-[88px] px-5 pt-4 pb-8'
               : 'min-h-0 px-4 pt-3 pb-8'),
         embedded &&
-          (isEmpty ? 'min-h-[200px]' : isDragSession ? 'min-h-[160px] pb-6' : 'min-h-0 pb-6'),
+          (isEmpty
+            ? DND_MATH_CANVAS_EMPTY_MIN_HEIGHT_CLASS
+            : isDragSession
+              ? 'min-h-[88px] pb-4'
+              : 'min-h-0 pb-4'),
         isEmpty &&
           isOver &&
           !embedded &&

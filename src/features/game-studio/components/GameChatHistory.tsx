@@ -67,7 +67,13 @@ export function GameChatHistory({
       ref={listRef}
       className={cn(
         'flex flex-col',
-        isPlayLayout ? 'gap-3 pb-2 pt-1' : flat ? 'gap-3 py-1' : 'gap-4 pb-6 pt-5',
+        isPlayLayout
+          ? flat
+            ? 'gap-2 pb-1 pt-0'
+            : 'gap-3 pb-2 pt-1'
+          : flat
+            ? 'gap-3 py-1'
+            : 'gap-4 pb-6 pt-5',
       )}
     >
       {messages.map((message) => (

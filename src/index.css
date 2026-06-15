@@ -366,6 +366,22 @@ body {
   --primary-foreground: oklch(0.145 0 0);
 }
 
+/* Accent isolation — re-assert the neutral primary/ring inside a subtree so the
+   accent picker ([data-accent]) does not tint deliberately-neutral controls
+   (game-studio node buttons/composers, settings actions). Values mirror the
+   :root / .dark defaults. Score is never wrapped, so it keeps the accent. */
+.accent-isolate {
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --ring: oklch(0.708 0 0);
+}
+
+.dark .accent-isolate {
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --ring: oklch(0.556 0 0);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

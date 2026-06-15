@@ -116,6 +116,7 @@ export async function listCourseCatalog(
   let query = supabase
     .from('courses')
     .select(COURSE_CATALOG_SELECT)
+    .is('deleted_at', null)
     .order('updated_at', { ascending: false })
 
   if (filters.institutionId) {
@@ -153,6 +154,7 @@ export async function getTeacherCourses(teacherId: string): Promise<Course[]> {
     `,
     )
     .eq('teacher_id', teacherId)
+    .is('deleted_at', null)
     .order('created_at', { ascending: false })
 
   if (error) {
@@ -316,7 +318,12 @@ export async function getClassroomCourses(classroomId: string): Promise<Classroo
  * Get a single course by ID
  */
 export async function getCourseById(courseId: string): Promise<Course> {
-  const { data, error } = await supabase.from('courses').select('*').eq('id', courseId).single()
+  const { data, error } = await supabase
+    .from('courses')
+    .select('*')
+    .eq('id', courseId)
+    .is('deleted_at', null)
+    .single()
 
   if (error) {
     console.error('Error fetching course:', error)
@@ -349,10 +356,26 @@ export async function updateCourse(courseId: string, updates: UpdateCourseData):
  * Delete a course
  */
 export async function deleteCourse(courseId: string): Promise<void> {
-  const { error } = await supabase.from('courses').delete().eq('id', courseId)
+  // Soft delete: a published course can't be hard-deleted (immutable version
+  // snapshots pin topic_versions via ON DELETE RESTRICT). Mark it deleted and
+  // filter it out of reads instead.
+  const { data, error } = await supabase
+    .from('courses')
+    .update({ deleted_at: new Date().toISOString() })
+    .eq('id', courseId)
+    .is('deleted_at', null)
+    .select('id')
 
   if (error) {
     console.error('Error deleting course:', error)
     throw error
+  }
+
+  // RLS silently filters non-updatable rows: no error, zero rows changed.
+  // Surface that as a failure instead of letting the UI report success.
+  if (!data || data.length === 0) {
+    throw new Error(
+      'Course could not be deleted — insufficient permissions or it no longer exists.',
+    )
   }
 }

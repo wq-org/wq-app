@@ -1124,7 +1124,7 @@ const App = () => {
                         <AppShell
                           role="teacher"
                           commandBarContext="game-studio"
-                          className="flex flex-col h-screen"
+                          className="box-border flex h-dvh max-h-dvh flex-col overflow-hidden pt-10"
                         >
                           <div className="container flex min-h-0 flex-1 flex-col">
                             <GamePreviewPage />

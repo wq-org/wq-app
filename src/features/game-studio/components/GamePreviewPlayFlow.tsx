@@ -125,7 +125,8 @@ export function GamePreviewPlayFlow({
   return (
     <GamePreviewSessionShell
       className="h-full min-h-0 flex-1"
-      scrollContentClassName="pb-2"
+      scrollContentClassName="gap-2 pb-1 pt-1"
+      footerClassName="gap-1.5 pt-1.5 pb-1.5"
     >
       {revealedSegments.map((segment, index) => {
         const isActive = activeSegmentId === segment.id
@@ -167,7 +168,7 @@ export function GamePreviewPlayFlow({
                   </AlertDescription>
                 </Alert>
               ) : segment.kind === 'ifElse' ? (
-                <div className={cn('min-h-[20rem]', !isActive && 'opacity-90')}>
+                <div className={cn('min-h-0', !isActive && 'opacity-90')}>
                   <GameIfElsePreview
                     nodeId={segment.node.id}
                     nodeData={(segment.node.data ?? {}) as GameIfElseNodeData}
@@ -191,7 +192,7 @@ export function GamePreviewPlayFlow({
                   />
                 </div>
               ) : (
-                <div className={cn('min-h-[20rem]', !isActive && 'opacity-90')}>
+                <div className={cn('min-h-0', !isActive && 'opacity-90')}>
                   <IfElseEmbeddedNodePreview
                     flowNode={segment.node}
                     sessionActive={isActive}

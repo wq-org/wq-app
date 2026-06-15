@@ -52,7 +52,7 @@ export function SettingsAppearanceSection({ className }: SettingsAppearanceSecti
             className={cn(
               'flex flex-1 cursor-pointer flex-col items-center gap-2 rounded-xl border-2 px-3 py-4 transition-colors',
               mode === value
-                ? 'border-primary bg-primary/5 text-primary'
+                ? 'border-foreground bg-foreground/5 text-foreground'
                 : 'border-border text-muted-foreground hover:border-muted-foreground/50 hover:text-foreground',
             )}
           >

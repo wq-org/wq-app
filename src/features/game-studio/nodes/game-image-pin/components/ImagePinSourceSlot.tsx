@@ -37,8 +37,8 @@ export function ImagePinSourceSlot({ pinAtSource, className }: ImagePinSourceSlo
       <div
         ref={setNodeRef}
         className={cn(
-          'relative flex h-20 w-full min-w-0 items-center justify-center rounded-2xl border transition-shadow',
-          isOver && 'ring-2 ring-[#0000FF] ring-offset-2 ring-offset-background',
+          'relative flex h-16 w-full min-w-0 items-center justify-center rounded-2xl border transition-shadow',
+          isOver && 'ring-2 ring-ring ring-offset-2 ring-offset-background',
         )}
       >
         {pinAtSource ? <DraggablePin /> : null}

@@ -50,6 +50,7 @@ export async function getTopicsByCourseId(courseId: string): Promise<Topic[]> {
     .from('topics')
     .select('id, course_id, title, description, order_index, created_at, updated_at')
     .eq('course_id', courseId)
+    .is('deleted_at', null)
     .order('order_index', { ascending: true })
 
   if (error) {
@@ -64,11 +65,25 @@ export async function getTopicsByCourseId(courseId: string): Promise<Topic[]> {
  * Delete a topic.
  */
 export async function deleteTopic(topicId: string): Promise<void> {
-  const { error } = await supabase.from('topics').delete().eq('id', topicId)
+  // Soft delete: a published topic can't be hard-deleted (its course_version
+  // snapshot pins a topic_versions row via ON DELETE RESTRICT). Mark it deleted
+  // and filter it out of reads instead.
+  const { data, error } = await supabase
+    .from('topics')
+    .update({ deleted_at: new Date().toISOString() })
+    .eq('id', topicId)
+    .is('deleted_at', null)
+    .select('id')
 
   if (error) {
     console.error('Error deleting topic:', error)
     throw error
+  }
+
+  // RLS silently filters non-updatable rows: no error, zero rows changed.
+  // Surface that as a failure instead of letting the UI report success.
+  if (!data || data.length === 0) {
+    throw new Error('Topic could not be deleted — insufficient permissions or it no longer exists.')
   }
 }
 
@@ -80,6 +95,7 @@ export async function getTopicById(topicId: string): Promise<Topic | null> {
     .from('topics')
     .select('id, course_id, title, description, order_index, created_at, updated_at')
     .eq('id', topicId)
+    .is('deleted_at', null)
     .single()
 
   if (error || !data) {

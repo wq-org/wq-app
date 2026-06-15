@@ -34,7 +34,7 @@ export function DnDMathSubmitConfirmDialog({
       open={open}
       onOpenChange={onOpenChange}
     >
-      <DialogContent>
+      <DialogContent className="accent-isolate">
         <DialogHeader>
           <DialogTitle>{t('dragDropMathGamePreview.submitConfirmDialogTitle')}</DialogTitle>
           <DialogDescription>
@@ -51,6 +51,7 @@ export function DnDMathSubmitConfirmDialog({
           </Button>
           <Button
             type="button"
+            variant="invert"
             onClick={() => {
               onConfirm()
               onOpenChange(false)

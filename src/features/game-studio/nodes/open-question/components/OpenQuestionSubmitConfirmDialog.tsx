@@ -31,7 +31,7 @@ export function OpenQuestionSubmitConfirmDialog({
       open={open}
       onOpenChange={onOpenChange}
     >
-      <DialogContent>
+      <DialogContent className="accent-isolate">
         <DialogHeader>
           <DialogTitle>{t('openQuestionGamePreview.submitConfirmDialogTitle')}</DialogTitle>
           <DialogDescription>
@@ -48,6 +48,7 @@ export function OpenQuestionSubmitConfirmDialog({
           </Button>
           <Button
             type="button"
+            variant="invert"
             onClick={() => {
               onConfirm()
               onOpenChange(false)

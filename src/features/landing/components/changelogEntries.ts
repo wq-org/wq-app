@@ -20,6 +20,34 @@ export type SiteChangelogEntry = {
 
 export const changelogEntries: SiteChangelogEntry[] = [
   {
+    id: '2026-06-15-game-play-layout-soft-delete-accent-isolation',
+    date: '15 June 2026',
+    title:
+      'Tighter game play sessions, soft-delete for courses and topics, and accent-safe studio controls',
+    summary:
+      'Game Simulation and classroom play sessions use space more efficiently—chat history, image pins, and Drag & Drop Math canvases sit in a compact scroll area with inputs pinned at the bottom, and preview images scale to a sensible max height instead of stretching edge to edge. Teachers can delete courses and topics even after publishing: the app soft-deletes them from your lists while frozen classroom snapshots stay intact. Game Studio controls, submit dialogs, and settings actions now stay neutral regardless of your chosen accent color, Image Pin markers read clearly in light and dark mode, and a reusable completion dialog is ready for end-of-game score and optional star ratings. The teacher dashboard drops the placeholder Schedule block until real scheduling ships.',
+    bullets: [
+      'Teachers and students: game play and simulation sessions feel less padded—tighter gaps in chat history, slimmer page chrome, and sticky footers (answer inputs, math canvas, pin drag targets) that stay visible without a large empty gap above them',
+      'Teachers and students: Image Pin pictures in play preview center on screen with a max height (~70vh) and width cap on larger screens—they no longer blow up to full column width on wide layouts',
+      'Teachers and students: Drag & Drop Math in play mode uses a shorter collapsed canvas (~two chip rows visible, scroll for more); expand still opens a tall workspace when you need it',
+      'Teachers and students: Open Question and Drag & Drop Math submit confirmations use clearer neutral primary buttons that are not tinted by your accent color choice',
+      'Teachers: delete a course or topic from settings even when it has been published to classrooms—the item disappears from your catalog and topic lists, but delivered version snapshots and student access to what was already rolled out are preserved',
+      'Teachers: if delete fails (for example insufficient permissions), you now get an explicit error instead of a silent success',
+      'Teachers: Image Pin tap markers on the picture use neutral gray tones in both themes so they stay visible without fighting your accent color',
+      'Teachers: Image Pin drag-and-drop highlights use the standard theme ring color instead of a hard-coded blue',
+      'Teachers: learning-field picks in Image Pin settings use a subtle blue selection tint that stays readable in light and dark mode',
+      'Teachers: Game Simulation (`/teacher/canvas/:id/preview`) fits the viewport height reliably (`dvh`) so the session shell does not scroll behind the app chrome',
+      'Teachers: the teacher home dashboard no longer shows a placeholder Schedule section—Courses, Games, and Tasks remain; schedule will return when the feature is ready',
+      'Everyone: Settings appearance mode cards (light / dark / system) highlight with foreground borders instead of accent-tinted primary, so the picker matches the rest of neutral settings chrome',
+      'Everyone: profile Save uses the invert button style inside an accent-isolated zone so it stays high-contrast regardless of accent',
+      'Students (when wired): a shared Game completion dialog can show your final score message and optional 1–5 star rating before you exit—rating is never required; submitting with no stars just closes the run',
+      'Internal: `courses.deleted_at` and `topics.deleted_at` migrations; catalog and topic APIs filter `deleted_at IS NULL` and soft-delete via `update` instead of hard `delete`',
+      'Internal: `.accent-isolate` CSS utility resets primary/ring inside game composers, submit dialogs, and settings actions; math chip shells use `text-foreground`; `Textarea` forwards refs; `Ai01` click-to-focus skips interactive children',
+      'Internal: `GameCompletionDialog`, `GamePreviewSessionShell` `footerClassName`, shared DnD math canvas height tokens in `canvas-dnd.constants.ts`',
+    ],
+    badges: ['feature', 'improvement', 'fix'],
+  },
+  {
     id: '2026-06-13-dual-mode-agent-pdf-panels',
     date: '13 June 2026',
     title: 'Agent dual mode: browse cloud PDFs beside notes, lessons, and game nodes',

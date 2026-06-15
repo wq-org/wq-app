@@ -7,7 +7,8 @@ import { cn } from '@/lib/utils'
 const imagePinVariants = cva('rounded-full border-2 border-white animate-pulse relative', {
   variants: {
     variant: {
-      default: 'bg-primary',
+      // Neutral by default: visible in light and dark mode, no off-palette blue.
+      default: 'bg-neutral-600 dark:bg-neutral-300',
       secondary: 'bg-secondary',
       correct: 'bg-blue-400',
       wrong: 'bg-red-400',
@@ -23,8 +24,8 @@ const pingVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary',
-        secondary: 'bg-primary',
+        default: 'bg-neutral-600 dark:bg-neutral-300',
+        secondary: 'bg-neutral-600 dark:bg-neutral-300',
         correct: 'bg-blue-400',
         wrong: 'bg-red-400',
       },

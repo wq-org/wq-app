@@ -122,7 +122,7 @@ export function OpenQuestionPreviewChatHistory({
   }
 
   const messageList = (
-    <div className="flex flex-col gap-4 py-1">
+    <div className={cn('flex flex-col', flat ? 'gap-2 py-0' : 'gap-4 py-1')}>
       {seedMessages.map((message) => (
         <div
           key={message.id}

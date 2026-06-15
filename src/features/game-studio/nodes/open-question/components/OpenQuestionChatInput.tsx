@@ -41,7 +41,7 @@ export function OpenQuestionChatInput({
         className="shrink-0 self-end"
       />
       <Ai01
-        className="min-w-0 flex-1"
+        className="accent-isolate min-w-0 flex-1"
         fullWidth
         composerShellClassName="border-muted shadow-none"
         placeholder={placeholder}

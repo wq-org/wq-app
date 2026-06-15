@@ -475,7 +475,7 @@ export function DnDMathPreview({
   const showInlineChrome = !continuousSession
 
   return (
-    <div className={cn('flex flex-col gap-3', continuousSession ? 'min-h-0' : 'h-full')}>
+    <div className={cn('flex flex-col gap-2', continuousSession ? 'min-h-0' : 'h-full')}>
       {!embedded ? (
         <Text
           as="p"

@@ -23,9 +23,6 @@ import {
   BookOpen,
   BookOpenCheck,
   BookOpenText,
-  Calendar,
-  Calendar1,
-  CalendarDays,
   DraftingCompass,
   Joystick,
   LampDesk,
@@ -102,7 +99,6 @@ const Dashboard = () => {
 
   const [activeCourseTabId, setActiveCourseTabId] = useState<string>(DEFAULT_FILTER_TAB_ID)
   const [activeGameTabId, setActiveGameTabId] = useState<string>(DEFAULT_FILTER_TAB_ID)
-  const [activeScheduleTabId, setActiveScheduleTabId] = useState<string>('all')
   const [activeTaskTabId, setActiveTaskTabId] = useState<string>(DEFAULT_FILTER_TAB_ID)
 
   useEffect(() => {
@@ -149,28 +145,6 @@ const Dashboard = () => {
       })),
     [teacherClassrooms],
   )
-
-  const scheduleScopeTabs: TabItem[] = useMemo(() => {
-    const allTab: TabItem = {
-      id: 'all',
-      title: t('dashboard.scheduleTabs.all'),
-      icon: CalendarDays,
-    }
-    const perClassroom: TabItem[] = teacherClassrooms.map((row) => ({
-      id: row.id,
-      title: row.title,
-      icon: Calendar1,
-    }))
-    return [allTab, ...perClassroom]
-  }, [teacherClassrooms, t])
-
-  useEffect(() => {
-    if (activeScheduleTabId === 'all') return
-    const stillPresent = teacherClassrooms.some((row) => row.id === activeScheduleTabId)
-    if (!stillPresent) {
-      setActiveScheduleTabId('all')
-    }
-  }, [teacherClassrooms, activeScheduleTabId])
 
   const courseCards: CourseCardProps[] = useMemo(() => courses.map(toCourseCardProps), [courses])
 
@@ -229,10 +203,6 @@ const Dashboard = () => {
     setActiveGameTabId(tabId)
   }
 
-  const handleScheduleTabChange = (tabId: string) => {
-    setActiveScheduleTabId(tabId)
-  }
-
   const handleTaskTabChange = (tabId: string) => {
     setActiveTaskTabId(tabId)
   }
@@ -273,50 +243,6 @@ const Dashboard = () => {
                 items={classroomCardItems}
                 onClassroomView={handleClassroomView}
               />
-            )}
-          </DashboardSection>
-        </div>
-
-        <div className="flex gap-8 w-full">
-          <DashboardSection
-            title="Schedule"
-            classNameContainer="h-55.5 max-h-80 min-h-0"
-            icon={Calendar}
-            showExpandButton
-            expandTo="/teacher/schedule"
-            showContainerBorder
-          >
-            {fetchEnabled && classroomsLoading ? (
-              <LoadingPage
-                variant="embedded"
-                message={t('dashboard.loadingSchedule')}
-                size={72}
-              />
-            ) : (
-              <>
-                <SelectTabs
-                  variant="compact"
-                  tabs={scheduleScopeTabs}
-                  activeTabId={activeScheduleTabId}
-                  onTabChange={handleScheduleTabChange}
-                />
-                {scheduleScopeTabs.map((tab) => (
-                  <SelectTabsContent
-                    key={tab.id}
-                    tabId={tab.id}
-                    activeTabId={activeScheduleTabId}
-                    className="mt-2 min-h-0 px-0"
-                  >
-                    <p className="text-sm text-muted-foreground">
-                      {tab.id === 'all'
-                        ? t('dashboard.scheduleTabs.placeholderAll')
-                        : t('dashboard.scheduleTabs.placeholderClassroom', {
-                            name: tab.title,
-                          })}
-                    </p>
-                  </SelectTabsContent>
-                ))}
-              </>
             )}
           </DashboardSection>
         </div>

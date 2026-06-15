@@ -88,8 +88,8 @@ export function Ai01({
       if (disabled) return
       const target = event.target
       if (!(target instanceof HTMLElement)) return
-      if (target.closest('textarea')) return
-      if (target.closest('button')) return
+      if (target.closest('textarea, button, a, input, [role="button"]')) return
+      event.preventDefault()
       focusComposer()
     },
     [disabled, focusComposer],

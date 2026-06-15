@@ -173,7 +173,7 @@ export function SettingsProfileForm({
 
       <SettingsAppearanceSection />
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="accent-isolate flex flex-wrap items-center gap-3">
         <Button
           type="button"
           variant="outline"
@@ -184,7 +184,7 @@ export function SettingsProfileForm({
         </Button>
         <Button
           type="submit"
-          variant="darkblue"
+          variant="invert"
           disabled={isSaving || !hasChanges || Boolean(linkedInError)}
         >
           <Check className="h-4 w-4" />

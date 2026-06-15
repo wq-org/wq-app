@@ -25,11 +25,11 @@ export function GamePreviewPage() {
   const sessionMaxScore = useMemo(() => computePlayPreviewSessionMaxScore(nodes), [nodes])
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden pt-4 pb-2">
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden pb-1">
       <Text
         as="h1"
         variant="h3"
-        className="w-full shrink-0 pb-3 text-center text-lg font-semibold text-foreground"
+        className="w-full shrink-0 pb-1 text-center text-lg font-semibold text-foreground"
       >
         {t('previewDrawer.title')}
       </Text>

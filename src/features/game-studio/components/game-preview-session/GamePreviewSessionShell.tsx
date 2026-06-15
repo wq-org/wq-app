@@ -20,6 +20,8 @@ export type GamePreviewSessionShellProps = {
   className?: string
   /** Extra classes on the scrollable content column (e.g. bottom padding above fixed footer). */
   scrollContentClassName?: string
+  /** Extra classes on the sticky footer chrome (chat inputs, canvas panel, etc.). */
+  footerClassName?: string
 }
 
 export function GamePreviewSessionShell({
@@ -27,6 +29,7 @@ export function GamePreviewSessionShell({
   header,
   className,
   scrollContentClassName,
+  footerClassName,
 }: GamePreviewSessionShellProps) {
   const [footerContent, setFooterContent] = useState<ReactNode | null>(null)
   const [dndSession, setDndSession] = useState<GamePreviewDndSession | null>(null)
@@ -114,11 +117,11 @@ export function GamePreviewSessionShell({
   const body = (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <BlurredScrollArea
-        className="min-h-0 flex-1"
+        className={cn('min-h-0 w-full overflow-hidden', footerContent ? 'shrink' : 'flex-1')}
         viewportClassName="min-h-0"
         viewportRef={viewportRef}
       >
-        <div className={cn('flex flex-col gap-6 px-1 pb-4', scrollContentClassName)}>
+        <div className={cn('flex flex-col gap-3 px-1 pb-2', scrollContentClassName)}>
           {children}
           <div
             {...{ [GAME_PREVIEW_SCROLL_END_ATTR]: '' }}
@@ -129,16 +132,27 @@ export function GamePreviewSessionShell({
       </BlurredScrollArea>
 
       {footerContent ? (
-        <div className="sticky bottom-0 z-10 flex w-full shrink-0 flex-col gap-2 border-t border-border/60 bg-background/95 px-2 pt-2 pb-2 backdrop-blur-sm supports-[backdrop-filter]:bg-background/80">
-          {footerContent}
-        </div>
+        <>
+          <div
+            className="min-h-0 flex-1 shrink"
+            aria-hidden="true"
+          />
+          <div
+            className={cn(
+              'z-10 flex w-full shrink-0 flex-col gap-2 border-t border-border/60 bg-background/95 px-2 pt-2 pb-2 backdrop-blur-sm supports-[backdrop-filter]:bg-background/80',
+              footerClassName,
+            )}
+          >
+            {footerContent}
+          </div>
+        </>
       ) : null}
     </div>
   )
 
   return (
     <GamePreviewSessionContext.Provider value={contextValue}>
-      <div className={cn('flex min-h-0 flex-1 flex-col gap-3 overflow-hidden', className)}>
+      <div className={cn('flex min-h-0 flex-1 flex-col gap-2 overflow-hidden', className)}>
         {header}
 
         {dndSession ? (

@@ -233,8 +233,8 @@ export function ImagePinSettings({
                       onClick={() => handleLearningFieldSelect(option.id)}
                       aria-pressed={isSelected}
                       className={cn(
-                        'flex w-full flex-col items-start rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                        isSelected && 'bg-primary/10',
+                        'flex w-full flex-col items-start rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-blue-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                        isSelected && 'bg-blue-500/10',
                       )}
                     >
                       <span className="font-medium text-foreground">{option.label}</span>

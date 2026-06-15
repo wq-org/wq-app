@@ -8,6 +8,11 @@ import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
+import {
+  DND_MATH_CANVAS_COLLAPSED_HEIGHT_CLASS,
+  DND_MATH_CANVAS_COLLAPSED_MIN_HEIGHT_CLASS,
+  DND_MATH_CANVAS_EXPANDED_HEIGHT_CLASS,
+} from '../constants/canvas-dnd.constants'
 import { DnDMathCanvas, type DnDMathCanvasProps } from './canvas/DnDMathCanvas'
 import { MathNodePalette } from './MathNodePalette'
 
@@ -64,8 +69,11 @@ export function DnDMathCanvasPanel({
           orientation="vertical"
           hideScrollBar
           className={cn(
-            'min-h-[200px] transition-[height] duration-200 ease-in-out',
-            isExpanded ? 'h-[60vh]' : 'h-[240px]',
+            DND_MATH_CANVAS_COLLAPSED_MIN_HEIGHT_CLASS,
+            'transition-[height] duration-200 ease-in-out',
+            isExpanded
+              ? DND_MATH_CANVAS_EXPANDED_HEIGHT_CLASS
+              : DND_MATH_CANVAS_COLLAPSED_HEIGHT_CLASS,
           )}
           viewportClassName="pb-1"
         >
@@ -81,7 +89,7 @@ export function DnDMathCanvasPanel({
         </BlurredScrollArea>
       </div>
 
-      <div className="shrink-0 border-t border-border/60 px-3 py-3">
+      <div className="shrink-0 border-t border-border/60 px-3 py-2">
         <BlurredScrollArea
           orientation="horizontal"
           hideHorizontalScrollBar
