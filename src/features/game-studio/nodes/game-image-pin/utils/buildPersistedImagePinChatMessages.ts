@@ -1,5 +1,5 @@
-import type { GameChatHistoryMessage } from '../../components/game-chat.types'
-import type { GamePlayChatMessage } from '../../utils/buildPlaySessionChatHistory'
+import type { GameChatHistoryMessage } from '../../../components/game-chat.types'
+import type { GamePlayChatMessage } from '../../../utils/buildPlaySessionChatHistory'
 import type { ImagePinSubmission } from '../hooks/useImagePinGame'
 
 /** Converts live Image Pin preview messages into a JSON-safe transcript for session_payload. */
