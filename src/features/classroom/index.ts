@@ -1,5 +1,10 @@
 export { getClassroomById } from './api/classroomApi'
-export { listTeacherClassrooms } from './api/classroomsTeacherApi'
+export { createTeacherClassroom, listTeacherClassrooms } from './api/classroomsTeacherApi'
+export {
+  createAndSendClassroomStudentInvite,
+  listClassroomPendingInvites,
+} from './api/classroomInvitesApi'
+export { useClassroomPendingInvites } from './hooks/useClassroomPendingInvites'
 export { ClassroomCard } from './components/ClassroomCard'
 export { ClassroomCardList } from './components/ClassroomCardList'
 export type { ClassroomCardListItem } from './components/ClassroomCardList'
@@ -25,7 +30,12 @@ export {
   buildStudentClassroomGameHistoryRoute,
 } from './utils/classroomGameRoute.utils'
 export { useTeacherClassrooms } from './hooks/useTeacherClassrooms'
-export type { ClassroomSummary, TeacherClassroomListRow } from './types/classroom.types'
+export type {
+  ClassroomPendingInvite,
+  ClassroomSummary,
+  TeacherClassroomListRow,
+  TeacherClassroomSummary,
+} from './types/classroom.types'
 
 // Published course rendering lives in the course feature, but the classroom
 // domain owns the delivered/published experience. Re-export the primitives the

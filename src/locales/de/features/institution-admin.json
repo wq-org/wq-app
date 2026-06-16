@@ -152,17 +152,10 @@
     },
     "actions": {
       "edit": "Bearbeiten",
-      "assignClassGroup": "Klassengruppe zuweisen",
       "withdrawFromClass": "Aus Klasse zurückziehen",
       "removeFromInstitution": "Aus Institution entfernen",
       "resendInvitation": "Einladung erneut senden",
       "disabledPeerInstitutionAdmin": "Das Verwalten anderer Institutions-Admins ist aus Sicherheitsgründen eingeschränkt. Bitte einen Plattform-Administrator kontaktieren."
-    },
-    "assignClassGroupDialog": {
-      "title": "Klassengruppe zuweisen",
-      "description": "",
-      "cancelButton": "Abbrechen",
-      "confirmButton": "Bestätigen"
     },
     "withdrawFromClassDialog": {
       "title": "Aus Klasse zurückziehen",

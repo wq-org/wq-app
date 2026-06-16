@@ -1,17 +1,9 @@
 import { ArrowLeft, GraduationCap, Settings, UserRoundPlus, Users } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { Badge } from '@/components/ui/badge'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Spinner } from '@/components/ui/spinner'
@@ -48,7 +40,7 @@ export function ClassroomDetailPage() {
   const [isSavingSettings, setIsSavingSettings] = useState(false)
   const [settingsError, setSettingsError] = useState<string | null>(null)
 
-  const { classroom, members, breadcrumb, isLoading, error, reload } = useClassroomDetail({
+  const { classroom, members, isLoading, error, reload } = useClassroomDetail({
     classroomId: classroomId ?? null,
   })
 
@@ -169,50 +161,6 @@ export function ClassroomDetailPage() {
           }}
           onConfirmWithdraw={handleConfirmKickOut}
         />
-
-        {breadcrumb && classroom ? (
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link to="/institution_admin/faculties">{t('faculties.title')}</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link to={`/institution_admin/faculties/${breadcrumb.facultyId}/programmes`}>
-                    {breadcrumb.facultyName}
-                  </Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link
-                    to={`/institution_admin/faculties/${breadcrumb.facultyId}/programmes/${breadcrumb.programmeId}`}
-                  >
-                    {breadcrumb.programmeName}
-                  </Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link
-                    to={`/institution_admin/faculties/${breadcrumb.facultyId}/programmes/${breadcrumb.programmeId}/cohorts/${breadcrumb.cohortId}`}
-                  >
-                    {breadcrumb.cohortName}
-                  </Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{classroom.title}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        ) : null}
 
         <div className="flex items-center gap-4">
           <Button

@@ -1,18 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
-import { generateClassroomName } from '@/shared/utils/generateClassroomName'
-
-import { listClassGroupOfferings } from '../api/classGroupOfferingsApi'
-import { listClassGroupsByInstitution } from '../api/classGroupsApi'
 import { createClassroom } from '../api/classroomsApi'
 import { fetchInstitutionUserDirectory } from '../api/institutionUserInvitesApi'
-import type { ClassGroupOfferingRecord } from '../types/class-group-offering.types'
-import type { ClassGroupRecord } from '../types/class-group.types'
 import type { ClassroomRecord } from '../types/classroom.types'
 import type { InstitutionDirectoryRow } from '../types/institution-users.types'
-
-/** Badge variant for create-classroom dialog chips (see CreateClassroomDialog). */
-export const CREATE_CLASSROOM_DIALOG_BADGE_VARIANT = 'teal' as const
 
 type TeacherOption = {
   id: string
@@ -32,48 +23,16 @@ export function useCreateClassroomDialog({
   onCreated,
 }: UseCreateClassroomDialogParams) {
   const [title, setTitle] = useState('')
-  const [classGroups, setClassGroups] = useState<readonly ClassGroupRecord[]>([])
-  const [selectedClassGroupId, setSelectedClassGroupId] = useState('')
-  const [offerings, setOfferings] = useState<readonly ClassGroupOfferingRecord[]>([])
-  const [selectedOfferingId, setSelectedOfferingId] = useState('')
   const [teachers, setTeachers] = useState<readonly TeacherOption[]>([])
   const [selectedTeacherId, setSelectedTeacherId] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [nameSuggestions, setNameSuggestions] = useState<readonly string[]>([])
-
-  const refreshNameSuggestions = useCallback(() => {
-    const suggestions = [
-      generateClassroomName('superhero'),
-      generateClassroomName('superhero'),
-      generateClassroomName('luxury'),
-      generateClassroomName('luxury'),
-    ]
-    setNameSuggestions(suggestions)
-  }, [])
-
-  const classGroupNameById = useMemo(() => {
-    const map = new Map<string, string>()
-    for (const group of classGroups) {
-      map.set(group.id, group.name.trim())
-    }
-    return map
-  }, [classGroups])
-
-  const selectedClassGroupName = classGroupNameById.get(selectedClassGroupId) ?? ''
-
-  const selectedOffering = useMemo(
-    () => offerings.find((offering) => offering.id === selectedOfferingId) ?? null,
-    [offerings, selectedOfferingId],
-  )
 
   useEffect(() => {
     if (!open || !institutionId) {
       return
     }
-
-    refreshNameSuggestions()
 
     let cancelled = false
     setIsLoading(true)
@@ -81,19 +40,13 @@ export function useCreateClassroomDialog({
 
     const load = async () => {
       try {
-        const [classGroupRows, directoryRows] = await Promise.all([
-          listClassGroupsByInstitution(institutionId),
-          fetchInstitutionUserDirectory(institutionId),
-        ])
+        const directoryRows = await fetchInstitutionUserDirectory(institutionId)
 
         if (cancelled) return
 
-        const activeTeachers = toTeacherOptions(directoryRows)
-        setClassGroups(classGroupRows)
-        setTeachers(activeTeachers)
+        setTeachers(toTeacherOptions(directoryRows))
       } catch (loadError) {
         if (!cancelled) {
-          setClassGroups([])
           setTeachers([])
           setError(loadError instanceof Error ? loadError.message : 'Failed to load classroom form')
         }
@@ -108,47 +61,12 @@ export function useCreateClassroomDialog({
     return () => {
       cancelled = true
     }
-  }, [institutionId, open, refreshNameSuggestions])
-
-  useEffect(() => {
-    if (!open || !selectedClassGroupId) {
-      setOfferings([])
-      setSelectedOfferingId('')
-      return
-    }
-
-    let cancelled = false
-    setError(null)
-
-    const loadOfferings = async () => {
-      try {
-        const rows = await listClassGroupOfferings(selectedClassGroupId)
-        if (cancelled) return
-        setOfferings(rows)
-        setSelectedOfferingId((previous) => previous || rows[0]?.id || '')
-      } catch (loadError) {
-        if (!cancelled) {
-          setOfferings([])
-          setSelectedOfferingId('')
-          setError(loadError instanceof Error ? loadError.message : 'Failed to load offerings')
-        }
-      }
-    }
-
-    void loadOfferings()
-    return () => {
-      cancelled = true
-    }
-  }, [open, selectedClassGroupId])
+  }, [institutionId, open])
 
   const resetForm = () => {
     setTitle('')
-    setSelectedClassGroupId('')
-    setOfferings([])
-    setSelectedOfferingId('')
     setSelectedTeacherId('')
     setError(null)
-    setNameSuggestions([])
   }
 
   const toggleTeacher = (teacherId: string) => {
@@ -164,9 +82,6 @@ export function useCreateClassroomDialog({
     if (!nextTitle) {
       return false
     }
-    if (!selectedClassGroupId || !selectedOfferingId) {
-      return false
-    }
 
     setIsSubmitting(true)
     setError(null)
@@ -174,8 +89,6 @@ export function useCreateClassroomDialog({
     try {
       const created = await createClassroom({
         institutionId,
-        classGroupId: selectedClassGroupId,
-        classGroupOfferingId: selectedOfferingId,
         primaryTeacherId: selectedTeacherId || null,
         title: nextTitle,
       })
@@ -193,16 +106,6 @@ export function useCreateClassroomDialog({
   return {
     title,
     setTitle,
-    nameSuggestions,
-    refreshNameSuggestions,
-    classGroups,
-    selectedClassGroupId,
-    setSelectedClassGroupId,
-    selectedClassGroupName,
-    offerings,
-    selectedOfferingId,
-    setSelectedOfferingId,
-    selectedOffering,
     teachers,
     selectedTeacherId,
     toggleTeacher,

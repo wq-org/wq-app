@@ -87,4 +87,13 @@ export type UpdateGameData = {
 /**
  * Types of items that can be added via CommandAddDialog
  */
-export type AddType = 'course' | 'institution' | 'game' | 'node' | 'note' | 'task' | 'attendance'
+export type AddType =
+  | 'classroom'
+  | 'course'
+  | 'institution'
+  | 'game'
+  | 'inviteStudent'
+  | 'node'
+  | 'note'
+  | 'task'
+  | 'attendance'

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
-import { DoorOpen, Eraser, Mail, Trash2, UserMinus, UserRoundPlus, UsersRound } from 'lucide-react'
+import { DoorOpen, Eraser, Mail, Trash2, UserMinus, UserRoundPlus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
@@ -27,7 +27,6 @@ import {
   revokeTeacherStudentInvite,
 } from '../api/institutionUserInvitesApi'
 import { useInstitutionUsers } from '../hooks/useInstitutionUsers'
-import { AssignClassGroupDialog } from '../components/AssignClassGroupDialog'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
 import { InstitutionUsersEmptyState } from '../components/InstitutionUsersEmptyState'
 import { RemoveFromInstitutionDialog } from '../components/RemoveFromInstitutionDialog'
@@ -89,7 +88,6 @@ const InstitutionUsers = () => {
   const totalUsers = filteredDirectory.length
   const totalAll = directory.length
 
-  const assignDialogOpen = dialog?.mode === 'assignClass'
   const withdrawDialogOpen = dialog?.mode === 'withdrawFromClass'
   const removeDialogOpen = dialog?.mode === 'removeFromInstitution'
 
@@ -104,11 +102,6 @@ const InstitutionUsers = () => {
     }
   }
 
-  const openAssignDialog = (user: InstitutionUserRow) => {
-    setUserActionsPopoverId(null)
-    setDialog({ mode: 'assignClass', user })
-  }
-
   const openWithdrawFromClassDialog = (user: InstitutionUserRow) => {
     setUserActionsPopoverId(null)
     setDialog({ mode: 'withdrawFromClass', user })
@@ -117,10 +110,6 @@ const InstitutionUsers = () => {
   const openRemoveFromInstitutionDialog = (user: InstitutionUserRow) => {
     setUserActionsPopoverId(null)
     setDialog({ mode: 'removeFromInstitution', user })
-  }
-
-  function handleConfirmAssignClassGroup() {
-    setDialog(null)
   }
 
   function handleConfirmWithdrawFromClass() {
@@ -410,7 +399,6 @@ const InstitutionUsers = () => {
                           onPopoverOpenChange={(open) =>
                             setUserActionsPopoverId(open ? row.user_id : null)
                           }
-                          onAssign={() => openAssignDialog(directoryMemberToUserRow(row))}
                           onWithdraw={() =>
                             openWithdrawFromClassDialog(directoryMemberToUserRow(row))
                           }
@@ -427,12 +415,6 @@ const InstitutionUsers = () => {
           </div>
         )}
       </div>
-
-      <AssignClassGroupDialog
-        open={assignDialogOpen}
-        onOpenChange={handleDialogOpenChange}
-        onConfirmAssign={handleConfirmAssignClassGroup}
-      />
 
       <WithdrawFromClassDialog
         open={withdrawDialogOpen}
@@ -457,7 +439,6 @@ type MemberRowActionsProps = {
   viewerRole: string | null
   popoverOpen: boolean
   onPopoverOpenChange: (open: boolean) => void
-  onAssign: () => void
   onWithdraw: () => void
   onRemove: () => void
 }
@@ -467,7 +448,6 @@ function MemberRowActions({
   viewerRole,
   popoverOpen,
   onPopoverOpenChange,
-  onAssign,
   onWithdraw,
   onRemove,
 }: MemberRowActionsProps) {
@@ -515,19 +495,6 @@ function MemberRowActions({
         className="w-64 p-2"
       >
         <div className="flex flex-col gap-1">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="w-full justify-start font-normal"
-            onClick={onAssign}
-          >
-            <UsersRound
-              className="size-4 shrink-0"
-              aria-hidden
-            />
-            {t('users.actions.assignClassGroup')}
-          </Button>
           <Button
             type="button"
             variant="ghost"

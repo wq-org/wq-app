@@ -152,17 +152,10 @@
     },
     "actions": {
       "edit": "Edit",
-      "assignClassGroup": "Assign to class group",
       "withdrawFromClass": "Withdraw from class",
       "removeFromInstitution": "Remove from institution",
       "resendInvitation": "Resend invitation",
       "disabledPeerInstitutionAdmin": "Managing other institution admins is restricted for security. Use a platform administrator if needed."
-    },
-    "assignClassGroupDialog": {
-      "title": "Assign to class group",
-      "description": "",
-      "cancelButton": "Cancel",
-      "confirmButton": "Confirm"
     },
     "withdrawFromClassDialog": {
       "title": "Withdraw from class",

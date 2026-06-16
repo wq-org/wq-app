@@ -64,14 +64,24 @@
       "create": "Create {{type}}"
     },
     "types": {
+      "classroom": "Classroom",
       "course": "Course",
       "institution": "Institution",
       "game": "Game",
+      "inviteStudent": "Student invite",
       "note": "Note",
       "task": "Task",
       "node": "Node"
     },
     "options": {
+      "classroom": {
+        "label": "New Classroom",
+        "description": "Create a learning group and invite students"
+      },
+      "inviteStudent": {
+        "label": "Invite student",
+        "description": "Send an email invite linked to a classroom"
+      },
       "course": {
         "label": "Add Course",
         "description": "Create a new course"
@@ -96,6 +106,41 @@
     "toasts": {
       "noteEditorUnavailable": "Your note was created, but the editor is only available for teachers and students.",
       "taskNotWired": "Tasks will be available when the tasks API is connected."
+    }
+  },
+  "inviteStudentDialog": {
+    "title": "Invite student",
+    "subtitle": "Send an email invite — the student joins this classroom automatically when they accept.",
+    "steps": {
+      "pickClassroom": "Classroom",
+      "enterEmail": "Email",
+      "result": "Status"
+    },
+    "classroomPicker": {
+      "label": "Pick a classroom",
+      "empty": "You have no classrooms yet. Create one first."
+    },
+    "fields": {
+      "emailLabel": "Student email",
+      "emailPlaceholder": "name@school.edu"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "next": "Next",
+      "send": "Send invite",
+      "inviteAnother": "Invite another",
+      "done": "Done"
+    },
+    "success": {
+      "title": "Invite sent to {{email}}",
+      "description": "The student appears as pending in this classroom and is enrolled once they accept the email link."
+    },
+    "error": {
+      "title": "Could not send invite",
+      "description": "{{message}}"
+    },
+    "errors": {
+      "classroomRequired": "An invite must be linked to a classroom — open it from the classroom page."
     }
   },
   "attendanceDialog": {

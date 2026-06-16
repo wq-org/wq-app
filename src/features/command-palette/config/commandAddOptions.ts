@@ -4,6 +4,7 @@ import {
   Gamepad2,
   Hand,
   Home,
+  LampDesk,
   MessageCircle,
   MousePointer2,
   Plus,
@@ -13,6 +14,7 @@ import {
   ListTodo,
   NotebookPen,
   StickyNote,
+  UserRoundPlus,
 } from 'lucide-react'
 import { ComputerIcon } from '@/components/shared'
 import type { AddType, CommandBarItem, CommandBarView } from '../types/command-bar.types'
@@ -27,6 +29,20 @@ export type AddOption = {
 }
 
 export const ADD_OPTIONS = [
+  {
+    type: 'classroom' as const,
+    labelKey: 'addDialog.options.classroom.label',
+    descriptionKey: 'addDialog.options.classroom.description',
+    icon: LampDesk,
+    availableForRoles: ['teacher'] as const,
+  },
+  {
+    type: 'inviteStudent' as const,
+    labelKey: 'addDialog.options.inviteStudent.label',
+    descriptionKey: 'addDialog.options.inviteStudent.description',
+    icon: UserRoundPlus,
+    availableForRoles: ['teacher'] as const,
+  },
   {
     type: 'course' as const,
     labelKey: 'addDialog.options.course.label',
@@ -65,9 +81,11 @@ export const ADD_OPTIONS = [
 ] satisfies readonly AddOption[]
 
 export const TYPE_LABEL_KEYS: Record<AddType, string> = {
+  classroom: 'addDialog.types.classroom',
   course: 'addDialog.types.course',
   institution: 'addDialog.types.institution',
   game: 'addDialog.types.game',
+  inviteStudent: 'addDialog.types.inviteStudent',
   node: 'addDialog.types.node',
   note: 'addDialog.types.note',
   task: 'addDialog.types.task',

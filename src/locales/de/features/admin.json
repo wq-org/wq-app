@@ -647,9 +647,6 @@
       "inviteAlertTitle": "Einladungs-E-Mail",
       "inviteAlertDescription": "Nach der Erstellung wird ein Einladungslink an die angegebene E-Mail-Adresse gesendet. Der Link ist 30 Minuten gültig."
     },
-    "review": {
-      "structureHint": "Sobald Programme angelegt sind, können Klassengruppen Codes wie {{exampleCode}} (Präfix {{prefix}}) verwenden — konsistent mit der Namenslogik im Rest der Anwendung."
-    },
     "billing": {
       "legalName": "Rechtlicher Name",
       "billingEmail": "Abrechnungs-E-Mail",

@@ -61,6 +61,7 @@ export function CommandPalette({
   const [open, setOpen] = useState(false)
   const [activeDialog, setActiveDialog] = useState<ActionId | undefined>(undefined)
   const [addInitialType, setAddInitialType] = useState<AddType | undefined>(undefined)
+  const [addClassroomId, setAddClassroomId] = useState<string | undefined>(undefined)
   const [isVisible, setIsVisible] = useState(true)
   const paletteRef = useRef<HTMLDivElement>(null)
   const notchRef = useRef<HTMLButtonElement>(null)
@@ -207,6 +208,7 @@ export function CommandPalette({
       const customEvent = event as CustomEvent<OpenCommandAddEventDetail>
       setActiveDialog('add')
       setAddInitialType(customEvent.detail?.initialType)
+      setAddClassroomId(customEvent.detail?.classroomId)
       setOpen(true)
     }
     const onOpenUpload = () => {
@@ -368,6 +370,7 @@ export function CommandPalette({
   function handleOnClickAddNewDialog() {
     setActiveDialog('add')
     setAddInitialType(undefined)
+    setAddClassroomId(undefined)
     setOpen(true)
   }
 
@@ -378,6 +381,7 @@ export function CommandPalette({
   const handleDialogExitComplete = useCallback(() => {
     setActiveDialog(undefined)
     setAddInitialType(undefined)
+    setAddClassroomId(undefined)
   }, [])
 
   const handleItemClick = (item: CommandBarItem) => {
@@ -527,6 +531,7 @@ export function CommandPalette({
                         onCourseCreated={onCourseCreated}
                         onRequestClose={handleCloseOverlayDialog}
                         initialType={addInitialType}
+                        classroomId={addClassroomId}
                       />
                     ) : null}
                   </CommandPaletteMotionShell>

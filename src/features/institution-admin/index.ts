@@ -6,15 +6,6 @@ export { InstitutionTeachers as InstitutionAdminTeachersPage } from './pages/tea
 export { InstitutionStudents as InstitutionAdminStudentsPage } from './pages/students'
 export { InstitutionUsers as InstitutionAdminUsersPage } from './pages/users'
 export { InstitutionInviteUsers as InstitutionAdminInviteUsersPage } from './pages/invite-users'
-export { InstitutionFaculties as InstitutionAdminFacultiesPage } from './pages/faculties'
-export { InstitutionFacultiesCreate as InstitutionAdminFacultiesCreatePage } from './pages/faculties-create'
-export { InstitutionFacultiesProgrammes as InstitutionAdminFacultiesProgrammesPage } from './pages/faculties-programmes'
-export { InstitutionFacultyProgrammes as InstitutionAdminFacultyProgrammesPage } from './pages/faculty-programmes'
-export { InstitutionProgrammeOfferings as InstitutionAdminProgrammeOfferingsPage } from './pages/programme-offerings'
-export { InstitutionFacultiesCohorts as InstitutionAdminFacultiesCohortsPage } from './pages/faculties-cohorts'
-export { InstitutionCohortOfferings as InstitutionAdminCohortOfferingsPage } from './pages/cohort-offerings'
-export { InstitutionFacultiesClassGroups as InstitutionAdminFacultiesClassGroupsPage } from './pages/faculties-class-groups'
-export { InstitutionClassGroupOfferings as InstitutionAdminClassGroupOfferingsPage } from './pages/class-group-offerings'
 export { InstitutionClassrooms as InstitutionAdminClassroomsPage } from './pages/classrooms'
 export { ClassroomDetailPage as InstitutionAdminClassroomDetailPage } from './pages/classroom-detail'
 export { AdminLicenses as InstitutionAdminLicensesPage } from './pages/licenses'
@@ -34,8 +25,6 @@ export { AdminAnalytics as InstitutionAdminAnalyticsPage } from './pages/analyti
 export { InstitutionCloudStorage as InstitutionAdminCloudStoragePage } from './pages/cloud-storage'
 export { InstitutionAuditLogs as InstitutionAdminAuditLogsPage } from './pages/audit-logs'
 export { InstitutionAdminSettings as InstitutionAdminSettingsPage } from './pages/settings'
-export { FacultyCard } from './components/FacultyCard'
-export { FacultyCardList } from './components/FacultyCardList'
 
 export { useInstitutionLicensingForInstitution } from './hooks/useInstitutionLicensingForInstitution'
 export { isTerminalBillingStatus } from './config/billingStatus'
@@ -44,5 +33,3 @@ export type {
   EffectiveFeatureGroup,
   EffectiveFeatureSource,
 } from './types/licensing.types'
-export { FacultyProgrammeCard } from './components/FacultyProgrammeCard'
-export { FacultyProgrammeCardList } from './components/FacultyProgrammeCardList'

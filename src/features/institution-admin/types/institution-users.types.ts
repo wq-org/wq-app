@@ -49,6 +49,5 @@ export function directoryMemberToUserRow(row: InstitutionMemberDirectoryRow): In
 
 export type InstitutionUsersDialogState =
   | null
-  | { mode: 'assignClass'; user: InstitutionUserRow }
   | { mode: 'withdrawFromClass'; user: InstitutionUserRow }
   | { mode: 'removeFromInstitution'; user: InstitutionUserRow }

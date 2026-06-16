@@ -1,10 +1,6 @@
-import { RefreshCw } from 'lucide-react'
-import { useMemo, useState } from 'react'
-import { format } from 'date-fns'
-import { de, enUS } from 'date-fns/locale'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -24,16 +20,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { FieldInput } from '@/components/ui/field-input'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 
-import {
-  useCreateClassroomDialog,
-  CREATE_CLASSROOM_DIALOG_BADGE_VARIANT,
-} from '../hooks/useCreateClassroomDialog'
-import type { ClassGroupOfferingRecord } from '../types/class-group-offering.types'
+import { useCreateClassroomDialog } from '../hooks/useCreateClassroomDialog'
 import type { ClassroomRecord } from '../types/classroom.types'
 
 type CreateClassroomDialogProps = {
@@ -43,39 +34,16 @@ type CreateClassroomDialogProps = {
   onCreated: (classroom: ClassroomRecord) => void
 }
 
-function formatOfferingDateRange(offering: ClassGroupOfferingRecord, locale: string): string {
-  const dateLocale = locale.startsWith('de') ? de : enUS
-  const formatStr = 'd. MMMM yyyy'
-  const startLabel = offering.starts_at
-    ? format(new Date(offering.starts_at), formatStr, { locale: dateLocale })
-    : '–'
-  const endLabel = offering.ends_at
-    ? format(new Date(offering.ends_at), formatStr, { locale: dateLocale })
-    : '–'
-  return `${startLabel} – ${endLabel}`
-}
-
 export function CreateClassroomDialog({
   open,
   onOpenChange,
   institutionId,
   onCreated,
 }: CreateClassroomDialogProps) {
-  const { t, i18n } = useTranslation('features.institution-admin')
-  const [offeringPopoverOpen, setOfferingPopoverOpen] = useState(false)
+  const { t } = useTranslation('features.institution-admin')
   const {
     title,
     setTitle,
-    nameSuggestions,
-    refreshNameSuggestions,
-    classGroups,
-    selectedClassGroupId,
-    setSelectedClassGroupId,
-    selectedClassGroupName,
-    offerings,
-    selectedOfferingId,
-    setSelectedOfferingId,
-    selectedOffering,
     teachers,
     selectedTeacherId,
     toggleTeacher,
@@ -86,42 +54,25 @@ export function CreateClassroomDialog({
     handleSubmit,
   } = useCreateClassroomDialog({ institutionId, open, onCreated })
 
-  const classGroupNames = useMemo(() => classGroups.map((g) => g.name), [classGroups])
-
-  const classGroupIdByName = useMemo(() => {
-    const map = new Map<string, string>()
-    for (const g of classGroups) {
-      map.set(g.name, g.id)
-    }
-    return map
-  }, [classGroups])
-
-  const teacherLabels = useMemo(() => teachers.map((t) => t.label), [teachers])
+  const teacherLabels = useMemo(() => teachers.map((teacher) => teacher.label), [teachers])
 
   const teacherIdByLabel = useMemo(() => {
     const map = new Map<string, string>()
-    for (const t of teachers) {
-      map.set(t.label, t.id)
+    for (const teacher of teachers) {
+      map.set(teacher.label, teacher.id)
     }
     return map
   }, [teachers])
 
-  const selectedTeacherLabel = useMemo(() => {
-    return teachers.find((teacher) => teacher.id === selectedTeacherId)?.label ?? ''
-  }, [selectedTeacherId, teachers])
-
-  const selectedOfferingLabel = useMemo(() => {
-    if (!selectedOffering) return t('classrooms.createDialog.offering.noneSelected')
-    const dateRange = formatOfferingDateRange(selectedOffering, i18n.language)
-    return `${selectedClassGroupName} (${selectedOffering.status}) – ${dateRange}`
-  }, [i18n.language, selectedClassGroupName, selectedOffering, t])
+  const selectedTeacherLabel = useMemo(
+    () => teachers.find((teacher) => teacher.id === selectedTeacherId)?.label ?? '',
+    [selectedTeacherId, teachers],
+  )
 
   const validationError = useMemo(() => {
     if (!title.trim()) return t('classrooms.createDialog.validation.titleRequired')
-    if (!selectedClassGroupId) return t('classrooms.createDialog.validation.classGroupRequired')
-    if (!selectedOfferingId) return t('classrooms.createDialog.validation.offeringRequired')
     return null
-  }, [selectedClassGroupId, selectedOfferingId, t, title])
+  }, [t, title])
 
   const canSubmit = !validationError && !isSubmitting && !isLoading
 
@@ -136,17 +87,6 @@ export function CreateClassroomDialog({
     const created = await handleSubmit()
     if (created) {
       onOpenChange(false)
-    }
-  }
-
-  const handleClassGroupSelect = (value: string | null) => {
-    if (!value) {
-      setSelectedClassGroupId('')
-      return
-    }
-    const id = classGroupIdByName.get(value)
-    if (id) {
-      setSelectedClassGroupId(id)
     }
   }
 
@@ -189,148 +129,6 @@ export function CreateClassroomDialog({
               placeholder={t('classrooms.createDialog.fields.titlePlaceholder')}
               required
             />
-
-            <div className="flex flex-wrap items-center gap-2">
-              <Text
-                as="span"
-                variant="small"
-                color="muted"
-              >
-                {t('classrooms.createDialog.suggestions.label')}
-              </Text>
-              {nameSuggestions.map((suggestion, index) => (
-                <Badge
-                  key={`${suggestion}-${index}`}
-                  variant={CREATE_CLASSROOM_DIALOG_BADGE_VARIANT}
-                  className="cursor-pointer"
-                  onClick={() => setTitle(suggestion)}
-                >
-                  {suggestion}
-                </Badge>
-              ))}
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                className="h-6 w-6"
-                onClick={refreshNameSuggestions}
-              >
-                <RefreshCw className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-
-            <div className="grid gap-2">
-              <Text
-                as="p"
-                variant="small"
-                className="font-medium"
-              >
-                {t('classrooms.createDialog.fields.classGroupLabel')}
-              </Text>
-              <Combobox
-                value={selectedClassGroupName || null}
-                onValueChange={handleClassGroupSelect}
-                items={classGroupNames}
-                itemToStringLabel={(item) => String(item)}
-                filter={(item, query) =>
-                  String(item).toLowerCase().includes(query.trim().toLowerCase())
-                }
-                autoHighlight
-              >
-                <ComboboxInput
-                  placeholder={t('classrooms.createDialog.fields.classGroupPlaceholder')}
-                  showClear
-                />
-                <ComboboxContent>
-                  <ComboboxEmpty>{t('classrooms.createDialog.classGroup.empty')}</ComboboxEmpty>
-                  <ComboboxList>
-                    {(item: string) => (
-                      <ComboboxItem
-                        key={item}
-                        value={item}
-                      >
-                        {item}
-                      </ComboboxItem>
-                    )}
-                  </ComboboxList>
-                </ComboboxContent>
-              </Combobox>
-            </div>
-
-            <div className="grid gap-2">
-              <Text
-                as="p"
-                variant="small"
-                className="font-medium"
-              >
-                {t('classrooms.createDialog.fields.offeringLabel')}
-              </Text>
-              <Popover
-                open={offeringPopoverOpen}
-                onOpenChange={(isOpen) => setOfferingPopoverOpen(isOpen)}
-              >
-                <PopoverTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="h-auto min-h-9 cursor-pointer justify-start truncate py-2 text-left"
-                    disabled={!selectedClassGroupId || offerings.length === 0}
-                  >
-                    {selectedOfferingLabel}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  align="start"
-                  className="w-[min(32rem,calc(100vw-4rem))] p-2"
-                >
-                  <ScrollArea className="h-56">
-                    <div className="grid gap-1">
-                      {offerings.map((offering) => {
-                        const isSelected = offering.id === selectedOfferingId
-                        const dateRange = formatOfferingDateRange(offering, i18n.language)
-                        return (
-                          <Button
-                            key={offering.id}
-                            type="button"
-                            variant={isSelected ? 'darkblue' : 'ghost'}
-                            className="h-auto cursor-pointer justify-start gap-2 py-2 text-left"
-                            onClick={() => {
-                              setSelectedOfferingId(offering.id)
-                              setOfferingPopoverOpen(false)
-                            }}
-                          >
-                            <div className="flex flex-col gap-1">
-                              <div className="flex items-center gap-2">
-                                <span className="truncate font-medium">
-                                  {selectedClassGroupName}
-                                </span>
-                                <Badge
-                                  variant={CREATE_CLASSROOM_DIALOG_BADGE_VARIANT}
-                                  size="sm"
-                                >
-                                  {offering.status}
-                                </Badge>
-                              </div>
-                              <span className="text-xs opacity-80">{dateRange}</span>
-                            </div>
-                          </Button>
-                        )
-                      })}
-                      {offerings.length === 0 && (
-                        <Text
-                          as="p"
-                          variant="small"
-                          color="muted"
-                          className="px-2 py-1"
-                        >
-                          {t('classrooms.createDialog.offering.empty')}
-                        </Text>
-                      )}
-                    </div>
-                  </ScrollArea>
-                </PopoverContent>
-              </Popover>
-            </div>
 
             <div className="grid gap-2">
               <Text

@@ -3,6 +3,17 @@ export type ClassroomSummary = {
   title: string
 }
 
+export type TeacherClassroomSummary = {
+  id: string
+  institution_id: string
+  primary_teacher_id: string
+  title: string
+  description: string | null
+  status: string
+  created_at: string
+  updated_at: string
+}
+
 /** Row for teacher dashboard / lists: scoped by RLS to classrooms the caller may teach. */
 export type TeacherClassroomListRow = {
   id: string
@@ -35,4 +46,16 @@ export type ClassroomStudent = {
   email: string
   description: string | null
   avatarUrl: string | null
+}
+
+export type ClassroomPendingInviteRow = {
+  id: string
+  email: string
+  expires_at: string
+}
+
+export type ClassroomPendingInvite = {
+  id: string
+  email: string
+  expiresAt: string
 }

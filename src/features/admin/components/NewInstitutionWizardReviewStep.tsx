@@ -1,8 +1,6 @@
-import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { NewInstitutionWizardValues } from '../types/institution.types'
 import { getCountryDisplayValue } from '../config/countryOptions'
-import { getInstitutionWizardStructureHintParts } from '../utils/institutionWizardStructureHint'
 
 type NewInstitutionWizardReviewStepProps = {
   values: NewInstitutionWizardValues
@@ -12,11 +10,6 @@ function NewInstitutionWizardReviewStep({ values }: NewInstitutionWizardReviewSt
   const { t, i18n } = useTranslation('features.admin')
 
   const countryDisplay = getCountryDisplayValue(values.country, i18n.language)
-
-  const structureHint = useMemo(
-    () => getInstitutionWizardStructureHintParts(values.name),
-    [values.name],
-  )
 
   return (
     <>
@@ -58,14 +51,6 @@ function NewInstitutionWizardReviewStep({ values }: NewInstitutionWizardReviewSt
           }
         />
       </dl>
-      {structureHint ? (
-        <p className="border-border mt-4 border-t pt-4 text-muted-foreground text-pretty text-sm leading-relaxed">
-          {t('wizard.review.structureHint', {
-            prefix: structureHint.prefix,
-            exampleCode: structureHint.exampleCode,
-          })}
-        </p>
-      ) : null}
     </>
   )
 }

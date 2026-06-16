@@ -3,10 +3,6 @@ import type { ClassroomRecord } from '../types/classroom.types'
 
 export type ClassroomListItem = {
   readonly classroom: ClassroomRecord
-  readonly classGroupName: string
-  readonly facultyName: string
-  readonly programmeName: string
-  readonly cohortName: string
 }
 
 type ClassroomCardListProps = {
@@ -17,14 +13,10 @@ type ClassroomCardListProps = {
 export function ClassroomCardList({ items, onOpenClassroom }: ClassroomCardListProps) {
   return (
     <div className="flex flex-wrap gap-6">
-      {items.map(({ classroom, classGroupName, facultyName, programmeName, cohortName }) => (
+      {items.map(({ classroom }) => (
         <ClassroomCard
           key={classroom.id}
           classroom={classroom}
-          classGroupName={classGroupName}
-          facultyName={facultyName}
-          programmeName={programmeName}
-          cohortName={cohortName}
           onOpen={() => onOpenClassroom?.(classroom.id)}
         />
       ))}

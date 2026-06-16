@@ -103,15 +103,6 @@ import {
   InstitutionAdminStudentsPage,
   InstitutionAdminUsersPage,
   InstitutionAdminInviteUsersPage,
-  InstitutionAdminFacultiesPage,
-  InstitutionAdminFacultiesCreatePage,
-  InstitutionAdminFacultiesProgrammesPage,
-  InstitutionAdminFacultyProgrammesPage,
-  InstitutionAdminProgrammeOfferingsPage,
-  InstitutionAdminFacultiesCohortsPage,
-  InstitutionAdminCohortOfferingsPage,
-  InstitutionAdminFacultiesClassGroupsPage,
-  InstitutionAdminClassGroupOfferingsPage,
   InstitutionAdminClassroomsPage,
   InstitutionAdminClassroomDetailPage,
   InstitutionAdminLicensesPage,
@@ -654,78 +645,6 @@ const App = () => {
                   element={
                     <RequireAuth>
                       <InstitutionAdminInviteUsersPage />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="faculties/create"
-                  element={
-                    <RequireAuth>
-                      <InstitutionAdminFacultiesCreatePage />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="faculties/:facultyId/programmes"
-                  element={
-                    <RequireAuth>
-                      <InstitutionAdminFacultyProgrammesPage />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="faculties/:facultyId/programmes/:programmeId"
-                  element={
-                    <RequireAuth>
-                      <InstitutionAdminProgrammeOfferingsPage />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="faculties/programmes"
-                  element={
-                    <RequireAuth>
-                      <InstitutionAdminFacultiesProgrammesPage />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="faculties/cohorts"
-                  element={
-                    <RequireAuth>
-                      <InstitutionAdminFacultiesCohortsPage />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="faculties/:facultyId/programmes/:programmeId/cohorts/:cohortId"
-                  element={
-                    <RequireAuth>
-                      <InstitutionAdminCohortOfferingsPage />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="faculties/class-groups"
-                  element={
-                    <RequireAuth>
-                      <InstitutionAdminFacultiesClassGroupsPage />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="faculties/:facultyId/programmes/:programmeId/cohorts/:cohortId/class-groups/:classGroupId"
-                  element={
-                    <RequireAuth>
-                      <InstitutionAdminClassGroupOfferingsPage />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="faculties"
-                  element={
-                    <RequireAuth>
-                      <InstitutionAdminFacultiesPage />
                     </RequireAuth>
                   }
                 />

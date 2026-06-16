@@ -4,6 +4,8 @@ export const OPEN_COMMAND_ADD_EVENT = 'wq:open-command-add' as const
 
 export type OpenCommandAddEventDetail = {
   initialType?: AddType
+  /** Required when initialType is 'inviteStudent' — invite is scoped to this classroom. */
+  classroomId?: string
 }
 
 export function requestOpenCommandAddDialog(detail?: OpenCommandAddEventDetail): void {

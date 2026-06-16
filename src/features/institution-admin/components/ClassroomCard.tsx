@@ -9,10 +9,6 @@ import type { ClassroomRecord } from '../types/classroom.types'
 
 type ClassroomCardProps = {
   classroom: ClassroomRecord
-  classGroupName: string | null | undefined
-  facultyName?: string | null | undefined
-  programmeName?: string | null | undefined
-  cohortName?: string | null | undefined
   onOpen?: () => void
 }
 
@@ -26,21 +22,9 @@ function formatDateTime(iso: string, locale: string): string {
   }
 }
 
-export function ClassroomCard({
-  classroom,
-  classGroupName,
-  facultyName,
-  programmeName,
-  cohortName,
-  onOpen,
-}: ClassroomCardProps) {
+export function ClassroomCard({ classroom, onOpen }: ClassroomCardProps) {
   const { t, i18n } = useTranslation('features.institution-admin')
 
-  const resolvedFaculty = facultyName?.trim() || t('faculties.pages.programmes.card.unknownFaculty')
-  const resolvedProgramme =
-    programmeName?.trim() || t('faculties.pages.cohorts.card.unknownProgramme')
-  const resolvedCohort = cohortName?.trim() || t('faculties.pages.classGroups.card.unknownCohort')
-  const resolvedGroup = classGroupName?.trim() || t('classrooms.card.unknownClassGroup')
   const resolvedTitle = classroom.title?.trim() || t('classrooms.card.untitledClassroom')
   const isActive = classroom.status === 'active'
   const statusLabel = isActive
@@ -63,34 +47,6 @@ export function ClassroomCard({
       <div className="flex flex-1 flex-col gap-3 p-6">
         <div className="flex min-w-0 flex-col items-start gap-2">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge
-              variant="indigo"
-              size="sm"
-              className="font-normal"
-            >
-              {resolvedFaculty}
-            </Badge>
-            <Badge
-              variant="indigo"
-              size="sm"
-              className="font-normal"
-            >
-              {resolvedProgramme}
-            </Badge>
-            <Badge
-              variant="blue"
-              size="sm"
-              className="font-normal"
-            >
-              {resolvedCohort}
-            </Badge>
-            <Badge
-              variant="indigo"
-              size="sm"
-              className="font-normal"
-            >
-              {resolvedGroup}
-            </Badge>
             <Badge
               variant={isActive ? 'green' : 'secondary'}
               size="sm"

@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { createCourse } from '@/features/course'
 import { createInstitution, getRoleRoutePrefix } from '@/features/auth'
 import { createGameForStudio } from '@/features/game-studio'
+import { createTeacherClassroom } from '@/features/classroom'
 import { createNote } from '@/features/notes'
 import { resolveNoteEditorRoute } from '@/features/notes/utils/noteRoutes'
 import { useUser } from '@/contexts/user'
@@ -66,6 +67,17 @@ export function useCommandAdd({
 
     setLoading(true)
     try {
+      if (selectedType === 'classroom') {
+        const classroom = await createTeacherClassroom({
+          title: title.trim(),
+          description: description.trim() || undefined,
+        })
+        reset()
+        onRequestClose?.()
+        navigate(`/teacher/dashboard/classroom/${classroom.id}`)
+        return
+      }
+
       if (selectedType === 'game') {
         const game = await createGameForStudio(profile.user_id, {
           title: title.trim() || t('addDialog.untitledGame'),

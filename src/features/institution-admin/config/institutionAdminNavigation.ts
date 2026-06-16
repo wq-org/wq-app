@@ -7,7 +7,6 @@ import {
   BadgeCheck,
   CreditCard,
   Gamepad2,
-  GraduationCap,
   Home,
   School,
   ShieldCheck,
@@ -43,29 +42,6 @@ const INSTITUTION_ADMIN_NAV_ITEMS: readonly InstitutionAdminNavItem[] = [
       {
         titleKey: 'nav.inviteUsers',
         url: '/invite-users',
-      },
-    ],
-  },
-  {
-    titleKey: 'nav.faculties',
-    url: '/faculties',
-    icon: GraduationCap,
-    items: [
-      {
-        titleKey: 'nav.facultyCreate',
-        url: '/create',
-      },
-      {
-        titleKey: 'nav.facultyProgrammes',
-        url: '/programmes',
-      },
-      {
-        titleKey: 'nav.facultyCohorts',
-        url: '/cohorts',
-      },
-      {
-        titleKey: 'nav.facultyClassGroups',
-        url: '/class-groups',
       },
     ],
   },

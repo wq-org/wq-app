@@ -11,19 +11,11 @@ import { Text } from '@/components/ui/text'
 import { useUser } from '@/contexts/user'
 import { useSearchFilter } from '@/hooks/useSearchFilter'
 
-import { listClassGroupsByInstitution } from '../api/classGroupsApi'
 import { listClassroomsByInstitution } from '../api/classroomsApi'
-import { listCohortsByInstitution } from '../api/cohortsApi'
-import { listFacultiesByInstitution } from '../api/facultiesApi'
-import { listProgrammesByInstitution } from '../api/programmesApi'
 import { ClassroomCardList } from '../components/ClassroomCardList'
 import { CreateClassroomDialog } from '../components/CreateClassroomDialog'
 import { InstitutionAdminWorkspaceShell } from '../components/InstitutionAdminWorkspaceShell'
-import type { ClassGroupRecord } from '../types/class-group.types'
 import type { ClassroomRecord } from '../types/classroom.types'
-import type { CohortRecord } from '../types/cohort.types'
-import type { FacultySummary } from '../types/faculty.types'
-import type { ProgrammeRecord } from '../types/programme.types'
 
 const contentEnter = 'animate-in fade-in-0 slide-in-from-bottom-2 motion-safe:duration-300' as const
 
@@ -34,99 +26,32 @@ export function InstitutionClassrooms() {
   const institutionId = getUserInstitutionId()
 
   const [classrooms, setClassrooms] = useState<readonly ClassroomRecord[]>([])
-  const [classGroups, setClassGroups] = useState<readonly ClassGroupRecord[]>([])
-  const [cohorts, setCohorts] = useState<readonly CohortRecord[]>([])
-  const [programmes, setProgrammes] = useState<readonly ProgrammeRecord[]>([])
-  const [faculties, setFaculties] = useState<readonly FacultySummary[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
 
-  const classGroupById = useMemo(() => {
-    const map = new Map<string, ClassGroupRecord>()
-    for (const row of classGroups) map.set(row.id, row)
-    return map
-  }, [classGroups])
-
-  const cohortById = useMemo(() => {
-    const map = new Map<string, CohortRecord>()
-    for (const c of cohorts) map.set(c.id, c)
-    return map
-  }, [cohorts])
-
-  const programmeById = useMemo(() => {
-    const map = new Map<string, ProgrammeRecord>()
-    for (const p of programmes) map.set(p.id, p)
-    return map
-  }, [programmes])
-
-  const facultyNameById = useMemo(() => {
-    const map = new Map<string, string>()
-    for (const f of faculties) {
-      map.set(f.id, f.name?.trim() || t('faculties.card.untitled'))
-    }
-    return map
-  }, [faculties, t])
-
-  const hierarchyForClassGroup = useMemo(() => {
-    const resolve = (classGroupId: string) => {
-      const cg = classGroupById.get(classGroupId)
-      const cohort = cg ? cohortById.get(cg.cohort_id) : undefined
-      const programme = cohort ? programmeById.get(cohort.programme_id) : undefined
-      const classGroupName = cg?.name?.trim() || t('classrooms.card.unknownClassGroup')
-      const cohortName = cohort?.name?.trim() || t('faculties.pages.classGroups.card.unknownCohort')
-      const programmeName =
-        programme?.name?.trim() || t('faculties.pages.cohorts.card.unknownProgramme')
-      const facultyName = programme
-        ? facultyNameById.get(programme.faculty_id) ||
-          t('faculties.pages.programmes.card.unknownFaculty')
-        : t('faculties.pages.programmes.card.unknownFaculty')
-      return { classGroupName, cohortName, programmeName, facultyName }
-    }
-    return resolve
-  }, [classGroupById, cohortById, facultyNameById, programmeById, t])
-
   const searchableItems = useMemo(
     () =>
       classrooms.map((classroom) => {
-        const { classGroupName, cohortName, programmeName, facultyName } = hierarchyForClassGroup(
-          classroom.class_group_id,
-        )
         const statusLabel =
           classroom.status === 'active'
             ? t('classrooms.card.statusActive')
             : t('classrooms.card.statusInactive')
         return {
           classroom,
-          classGroupName,
-          facultyName,
-          programmeName,
-          cohortName,
           searchTitle: classroom.title ?? '',
-          searchGroup: classGroupName,
-          searchFacultyName: facultyName,
-          searchProgrammeName: programmeName,
-          searchCohortName: cohortName,
           searchStatus: statusLabel,
         }
       }),
-    [classrooms, hierarchyForClassGroup, t],
+    [classrooms, t],
   )
 
   const filteredItems = useSearchFilter(searchableItems, searchQuery, [
     'searchTitle',
-    'searchGroup',
-    'searchFacultyName',
-    'searchProgrammeName',
-    'searchCohortName',
     'searchStatus',
-  ]).map(({ classroom, classGroupName, facultyName, programmeName, cohortName }) => ({
+  ]).map(({ classroom }) => ({
     classroom,
-    classGroupName,
-    facultyName,
-    programmeName,
-    cohortName,
   }))
 
   const handleAddClassroom = () => {
@@ -146,10 +71,6 @@ export function InstitutionClassrooms() {
   useEffect(() => {
     if (!institutionId) {
       setClassrooms([])
-      setClassGroups([])
-      setCohorts([])
-      setProgrammes([])
-      setFaculties([])
       return
     }
 
@@ -160,29 +81,14 @@ export function InstitutionClassrooms() {
       setLoadError(null)
 
       try {
-        const [classroomRows, classGroupRows, cohortRows, programmeRows, facultyRows] =
-          await Promise.all([
-            listClassroomsByInstitution(institutionId),
-            listClassGroupsByInstitution(institutionId),
-            listCohortsByInstitution(institutionId),
-            listProgrammesByInstitution(institutionId),
-            listFacultiesByInstitution(institutionId),
-          ])
+        const classroomRows = await listClassroomsByInstitution(institutionId)
 
         if (cancelled) return
 
         setClassrooms(classroomRows)
-        setClassGroups(classGroupRows)
-        setCohorts(cohortRows)
-        setProgrammes(programmeRows)
-        setFaculties(facultyRows)
       } catch (error) {
         if (!cancelled) {
           setClassrooms([])
-          setClassGroups([])
-          setCohorts([])
-          setProgrammes([])
-          setFaculties([])
           setLoadError(error instanceof Error ? error.message : t('classrooms.loadError'))
         }
       } finally {

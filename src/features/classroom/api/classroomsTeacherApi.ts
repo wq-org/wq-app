@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase'
 
-import type { TeacherClassroomListRow } from '../types/classroom.types'
+import type { TeacherClassroomListRow, TeacherClassroomSummary } from '../types/classroom.types'
 
 type ClassroomRow = {
   id: string
@@ -64,4 +64,22 @@ export async function listTeacherClassrooms(): Promise<TeacherClassroomListRow[]
     title: r.title,
     studentCount: counts.get(r.id) ?? 0,
   }))
+}
+
+export async function createTeacherClassroom(input: {
+  title: string
+  description?: string
+}): Promise<TeacherClassroomSummary> {
+  const { data, error } = await supabase.rpc('create_teacher_classroom', {
+    p_title: input.title.trim(),
+    p_description: input.description?.trim() ?? null,
+  })
+
+  if (error) {
+    console.error('createTeacherClassroom:', error)
+    throw error
+  }
+
+  const row = Array.isArray(data) ? data[0] : data
+  return row as TeacherClassroomSummary
 }

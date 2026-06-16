@@ -64,14 +64,24 @@
       "create": "{{type}} erstellen"
     },
     "types": {
+      "classroom": "Klassenraum",
       "course": "Kurs",
       "institution": "Institution",
       "game": "Spiel",
+      "inviteStudent": "Schüler-Einladung",
       "note": "Notiz",
       "task": "Aufgabe",
       "node": "Knoten"
     },
     "options": {
+      "classroom": {
+        "label": "Neuer Klassenraum",
+        "description": "Eine Lerngruppe erstellen und Schüler einladen"
+      },
+      "inviteStudent": {
+        "label": "Schüler einladen",
+        "description": "Eine E-Mail-Einladung mit Klassenraum-Verknüpfung senden"
+      },
       "course": {
         "label": "Kurs hinzufügen",
         "description": "Einen neuen Kurs erstellen"
@@ -96,6 +106,41 @@
     "toasts": {
       "noteEditorUnavailable": "Deine Notiz wurde erstellt, der Editor ist jedoch nur für Lehrkräfte und Lernende verfügbar.",
       "taskNotWired": "Aufgaben sind verfügbar, sobald die Aufgaben-API angebunden ist."
+    }
+  },
+  "inviteStudentDialog": {
+    "title": "Schüler einladen",
+    "subtitle": "Sende eine E-Mail-Einladung — der Schüler wird beim Annehmen automatisch in diesen Klassenraum aufgenommen.",
+    "steps": {
+      "pickClassroom": "Klassenraum",
+      "enterEmail": "E-Mail",
+      "result": "Status"
+    },
+    "classroomPicker": {
+      "label": "Klassenraum auswählen",
+      "empty": "Noch keine Klassenräume. Bitte zuerst einen erstellen."
+    },
+    "fields": {
+      "emailLabel": "E-Mail des Schülers",
+      "emailPlaceholder": "name@schule.de"
+    },
+    "actions": {
+      "cancel": "Abbrechen",
+      "next": "Weiter",
+      "send": "Einladung senden",
+      "inviteAnother": "Weitere einladen",
+      "done": "Fertig"
+    },
+    "success": {
+      "title": "Einladung an {{email}} gesendet",
+      "description": "Der Schüler erscheint im Klassenraum als ausstehend und wird nach Annahme der E-Mail-Einladung aufgenommen."
+    },
+    "error": {
+      "title": "Einladung konnte nicht gesendet werden",
+      "description": "{{message}}"
+    },
+    "errors": {
+      "classroomRequired": "Eine Einladung muss mit einem Klassenraum verknüpft sein — bitte aus der Klassenraum-Seite öffnen."
     }
   },
   "attendanceDialog": {
