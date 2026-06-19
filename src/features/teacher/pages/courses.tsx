@@ -133,6 +133,7 @@ export function TeacherCoursesPage() {
                 <CourseCardList
                   courses={courseCards}
                   onCourseView={handleCourseView}
+                  onCourseChanged={() => void fetchCourses()}
                 />
               )}
             </div>

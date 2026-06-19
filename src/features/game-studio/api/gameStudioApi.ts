@@ -353,6 +353,24 @@ export async function softDeleteGame(gameId: string): Promise<void> {
   if (error) throw new Error(error.message)
 }
 
+/** Hides live game deliveries from students by archiving published rows. */
+export async function takeGameDeliveriesOffline(gameId: string): Promise<number> {
+  const now = new Date().toISOString()
+  const { data, error } = await supabase
+    .from('game_deliveries')
+    .update({
+      status: 'archived',
+      archived_at: now,
+      updated_at: now,
+    })
+    .eq('game_id', gameId)
+    .eq('status', 'published')
+    .select('id')
+
+  if (error) throw new Error(error.message)
+  return data?.length ?? 0
+}
+
 /**
  * Published flow games delivered to a course via game_deliveries.
  * Reads immutable version snapshots — draft edits on games do not affect this list.

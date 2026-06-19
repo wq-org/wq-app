@@ -52,10 +52,13 @@ export interface GameProjectCardCompactProps {
   description?: string
   themeId?: ThemeId
   status?: 'draft' | 'published'
+  linkedCourseIds?: string[]
   className?: string
   onView?: (id: string) => void
-  /** When provided, shows the card menu with a "view analytics" action. */
+  /** When provided, shows analytics in the card menu. */
   onViewAnalytics?: (id: string) => void
+  /** Called after link/unlink/offline/delete actions. */
+  onCourseLinkChanged?: () => void
 }
 
 export interface GameCardProps {

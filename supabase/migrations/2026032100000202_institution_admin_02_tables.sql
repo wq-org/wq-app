@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: PARTIAL_SAFE_TO_DELETE_LATER | WQ-ORG-HIERARCHY | faculty→programme→cohort→class_group + programme/cohort/class_group_offerings + institution_staff_scopes — strip all hierarchy DDL/RLS/triggers/seeds; KEEP institution_memberships/classrooms/classroom_members/institution_invites/institution_settings/quotas + membership enums + core app/RPC helpers | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- INSTITUTION ADMIN — Tables & Column Additions
 -- Split from 20260321000002_institution_admin.sql

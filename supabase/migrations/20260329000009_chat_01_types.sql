@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: KEEP_CORE | WQ-MINIMAL-CORE | chat feature — required | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- CHAT — enums (core + conversation_context_type; runs after course_delivery)
 -- Requires: 20260329000008_course_delivery_08_attendance_functions.sql,

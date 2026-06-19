@@ -41,7 +41,6 @@ import { collectImagePinGalleryImages } from '../utils/collectImagePinGalleryIma
 import { resolveGameLinkedCourseIds } from '../utils/gameCourseLink.utils'
 import { saveGameStudioDraft } from '../utils/saveGameStudioDraft'
 import { GameEditorSettingsPanel } from '../components/GameEditorSettingsPanel'
-import { GameStudioAgentModeProvider } from '../context/GameStudioAgentModeContext'
 import { GameEditorSidebar } from './GameEditorSidebar'
 import { GameEditorToolbar } from './GameEditorToolbar'
 import { isGameNodeRegistryEntryEnabled } from '../utils/isInstitutionFeatureEnabledForKey'
@@ -738,8 +737,6 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
       } else if (detail?.actionId === 'select') {
         setInteractionMode('select')
         toast.success(t('canvas.toasts.selectModeActivated'))
-      } else if (detail?.actionId === 'agent') {
-        toast.success(t('canvas.toasts.agentModeActivated'))
       }
     }
     window.addEventListener('command-action', handler)
@@ -809,98 +806,96 @@ export function GameEditorCanvas({ projectId }: GameEditorCanvasProps) {
   }, [openDialogNodeId, nodes])
 
   return (
-    <GameStudioAgentModeProvider>
-      <div className="flex h-screen items-center justify-center">
-        <div className="w-full h-[80vh] relative">
-          {loadState === 'loading' && (
-            <LoadingPage
-              variant="embedded"
-              message="Loading..."
-              className="absolute inset-0 z-20 bg-background/80"
+    <div className="flex h-screen items-center justify-center">
+      <div className="w-full h-[80vh] relative">
+        {loadState === 'loading' && (
+          <LoadingPage
+            variant="embedded"
+            message="Loading..."
+            className="absolute inset-0 z-20 bg-background/80"
+          />
+        )}
+        <GameEditorSidebar features={institutionFeatures} />
+        <div
+          ref={containerRef}
+          className="w-full h-full rounded-4xl bg-gray-100 dark:bg-zinc-900 overflow-hidden relative"
+          onDragOver={onDragOver}
+          onDrop={onDrop}
+        >
+          <GameEditorToolbar
+            onSave={handleSave}
+            onPreview={handlePreview}
+            onLeave={handleLeave}
+            onOpenSettings={() => setIsSettingsPanelOpen(true)}
+          />
+
+          {dimensions.width > 0 && dimensions.height > 0 && (
+            <ReactFlow
+              deleteKeyCode={null}
+              nodes={nodesWithHandlers}
+              edges={edges}
+              nodeTypes={nodeTypes}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onPaneClick={onPaneClick}
+              onInit={onInit}
+              fitView={false}
+              style={{ width: '100%', height: '100%' }}
+              nodesDraggable={interactionMode === 'select'}
+              nodesConnectable={interactionMode === 'select'}
+              elementsSelectable={interactionMode === 'select'}
+              panOnDrag={interactionMode === 'pan'}
+              panOnScroll={interactionMode === 'pan'}
+              selectionOnDrag={interactionMode === 'select'}
+              selectionMode={SelectionMode.Full}
+              defaultEdgeOptions={{
+                type: 'smoothstep',
+                animated: false,
+                style: { strokeWidth: 2, stroke: '#374151' },
+              }}
             />
           )}
-          <GameEditorSidebar features={institutionFeatures} />
-          <div
-            ref={containerRef}
-            className="w-full h-full rounded-4xl bg-gray-100 dark:bg-zinc-900 overflow-hidden relative"
-            onDragOver={onDragOver}
-            onDrop={onDrop}
-          >
-            <GameEditorToolbar
-              onSave={handleSave}
-              onPreview={handlePreview}
-              onLeave={handleLeave}
-              onOpenSettings={() => setIsSettingsPanelOpen(true)}
-            />
-
-            {dimensions.width > 0 && dimensions.height > 0 && (
-              <ReactFlow
-                deleteKeyCode={null}
-                nodes={nodesWithHandlers}
-                edges={edges}
-                nodeTypes={nodeTypes}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
-                onPaneClick={onPaneClick}
-                onInit={onInit}
-                fitView={false}
-                style={{ width: '100%', height: '100%' }}
-                nodesDraggable={interactionMode === 'select'}
-                nodesConnectable={interactionMode === 'select'}
-                elementsSelectable={interactionMode === 'select'}
-                panOnDrag={interactionMode === 'pan'}
-                panOnScroll={interactionMode === 'pan'}
-                selectionOnDrag={interactionMode === 'select'}
-                selectionMode={SelectionMode.Full}
-                defaultEdgeOptions={{
-                  type: 'smoothstep',
-                  animated: false,
-                  style: { strokeWidth: 2, stroke: '#374151' },
-                }}
-              />
-            )}
-          </div>
         </div>
-
-        <GameEditorSettingsPanel
-          open={isSettingsPanelOpen}
-          onClose={() => setIsSettingsPanelOpen(false)}
-          projectId={projectId}
-          teacherId={getUserId() ?? undefined}
-          title={gameTitle}
-          description={
-            (
-              nodes.find((n) => n.type === GAME_START_TYPE)?.data as
-                | { description?: string }
-                | undefined
-            )?.description ?? ''
-          }
-          themeId={gameThemeId}
-          nodes={nodes}
-          edges={edges}
-          linkedCourseIds={linkedCourseIds}
-          onSave={handleSettingsSave}
-          onDelete={handleSettingsDelete}
-          onPublish={handlePublish}
-          onFocusNode={handlePublishFocusNode}
-        />
-
-        {openDialog ? (
-          <openDialog.Component
-            key={openDialog.nodeId}
-            nodeId={openDialog.nodeId}
-            nodeData={(openDialog.node.data as Record<string, unknown>) ?? {}}
-            onPatchNodeData={handlePatchOpenNodeData}
-            onClose={handleCloseOpenDialog}
-            onDelete={handleDeleteOpenNode}
-            onNavigateToNode={(id) => setOpenDialogNodeId(id)}
-            flowNodes={nodes}
-            flowEdges={edges}
-            projectImageGallery={projectImageGallery}
-          />
-        ) : null}
       </div>
-    </GameStudioAgentModeProvider>
+
+      <GameEditorSettingsPanel
+        open={isSettingsPanelOpen}
+        onClose={() => setIsSettingsPanelOpen(false)}
+        projectId={projectId}
+        teacherId={getUserId() ?? undefined}
+        title={gameTitle}
+        description={
+          (
+            nodes.find((n) => n.type === GAME_START_TYPE)?.data as
+              | { description?: string }
+              | undefined
+          )?.description ?? ''
+        }
+        themeId={gameThemeId}
+        nodes={nodes}
+        edges={edges}
+        linkedCourseIds={linkedCourseIds}
+        onSave={handleSettingsSave}
+        onDelete={handleSettingsDelete}
+        onPublish={handlePublish}
+        onFocusNode={handlePublishFocusNode}
+      />
+
+      {openDialog ? (
+        <openDialog.Component
+          key={openDialog.nodeId}
+          nodeId={openDialog.nodeId}
+          nodeData={(openDialog.node.data as Record<string, unknown>) ?? {}}
+          onPatchNodeData={handlePatchOpenNodeData}
+          onClose={handleCloseOpenDialog}
+          onDelete={handleDeleteOpenNode}
+          onNavigateToNode={(id) => setOpenDialogNodeId(id)}
+          flowNodes={nodes}
+          flowEdges={edges}
+          projectImageGallery={projectImageGallery}
+        />
+      ) : null}
+    </div>
   )
 }

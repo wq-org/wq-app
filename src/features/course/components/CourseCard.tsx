@@ -9,6 +9,7 @@ import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { getThemeBackgroundStyle } from '@/lib/themes'
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card'
+import { CourseCardActionsMenu } from './CourseCardActionsMenu'
 const RELEASE_BADGE_VARIANT: Record<CourseCardReleaseStatus, 'default' | 'secondary'> = {
   live: 'default',
   offline: 'secondary',
@@ -25,6 +26,7 @@ export function CourseCard({
   teacherAvatar,
   teacherInitials = 'U',
   onView = () => {},
+  onChanged,
 }: CourseCardProps) {
   const { t } = useTranslation('features.course')
   const { url: teacherAvatarUrl } = useAvatarUrl(teacherAvatar)
@@ -65,10 +67,15 @@ export function CourseCard({
         </AspectRatio>
         <Badge
           variant={RELEASE_BADGE_VARIANT[releaseStatus]}
-          className="absolute top-3 right-3"
+          className="absolute top-3 left-3 z-10"
         >
           {releaseBadgeLabel}
         </Badge>
+        <CourseCardActionsMenu
+          courseId={id}
+          releaseStatus={releaseStatus}
+          onChanged={onChanged}
+        />
       </CardHeader>
       <CardContent className="flex flex-1 flex-col p-6">
         <div className="flex items-start gap-3">

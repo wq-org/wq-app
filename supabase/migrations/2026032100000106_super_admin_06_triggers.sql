@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: PARTIAL_SAFE_TO_DELETE_LATER | WQ-ATTENDANCE+WQ-REWARDS | strip attendance + point_ledger/classroom_reward_settings audit trigger functions; KEEP other audit triggers | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- SUPER ADMIN — Triggers
 -- Split from 20260321000001_super_admin.sql

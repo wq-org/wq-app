@@ -225,9 +225,10 @@
   },
   "deleteDialog": {
     "title": "Delete this game?",
-    "description": "The game will be removed from view and can no longer be accessed by students. This action is permanent.",
+    "description": "The game will be removed from your lists. Published snapshots stay intact; this is a soft delete.",
     "confirm": "Delete game",
     "deleting": "Deleting…",
+    "cancel": "Cancel",
     "successToast": "Game deleted.",
     "errorToast": "Failed to delete the game. Please try again."
   },
@@ -438,6 +439,16 @@
       "triggerAriaLabel": "Project options",
       "linkToCourse": "Link to course",
       "unlinkFromCourse": "Unlink from course"
+    },
+    "menu": {
+      "takeOffline": "Take offline",
+      "deleteGame": "Delete game",
+      "toasts": {
+        "offlineSuccess": "Game taken offline",
+        "offlineSuccessDescription": "{{count}} delivery archived.",
+        "offlineFailed": "Could not take game offline.",
+        "offlineNothingToHide": "No live deliveries to take offline."
+      }
     }
   },
   "linkGameDialog": {

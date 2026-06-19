@@ -68,6 +68,8 @@ export interface CourseCardProps {
   teacherInitials?: string
   publishedVersionNo?: number
   onView?: (id: string) => void
+  /** Called after offline/delete actions from the card menu. */
+  onChanged?: () => void
   className?: string
 }
 

@@ -1,12 +1,17 @@
 'use client'
 
-import { EllipsisVertical, Link, Unlink } from 'lucide-react'
+import { ChartBar, EllipsisVertical, Link, PowerOff, Trash2, Unlink } from 'lucide-react'
+import { useState, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useDisclosure } from '@/hooks/use-disclosure'
+import { cn } from '@/lib/utils'
 
+import { takeGameDeliveriesOffline } from '../api/gameStudioApi'
+import { GameDeleteDialog } from './GameDeleteDialog'
 import { LinkGameDialog } from './LinkGameDialog'
 import { UnlinkGameDialog } from './UnlinkGameDialog'
 
@@ -15,6 +20,9 @@ type GameProjectCardCourseMenuProps = {
   linkedCourseIds?: string[]
   status?: 'draft' | 'published'
   onCourseLinkChanged?: () => void
+  onViewAnalytics?: (gameId: string) => void
+  compact?: boolean
+  className?: string
 }
 
 export function GameProjectCardCourseMenu({
@@ -22,24 +30,65 @@ export function GameProjectCardCourseMenu({
   linkedCourseIds = [],
   status = 'draft',
   onCourseLinkChanged,
+  onViewAnalytics,
+  compact = false,
+  className,
 }: GameProjectCardCourseMenuProps) {
   const { t } = useTranslation('features.gameStudio')
   const popover = useDisclosure()
   const linkDialog = useDisclosure()
   const unlinkDialog = useDisclosure()
+  const deleteDialog = useDisclosure()
+  const [isTakingOffline, setIsTakingOffline] = useState(false)
 
-  if (status !== 'published') {
-    return null
-  }
+  const isPublished = status === 'published'
 
-  const handleOpenLinkDialog = () => {
+  const handleOpenLinkDialog = (event: MouseEvent) => {
+    event.preventDefault()
+    event.stopPropagation()
     popover.onClose()
     linkDialog.onOpen()
   }
 
-  const handleOpenUnlinkDialog = () => {
+  const handleOpenUnlinkDialog = (event: MouseEvent) => {
+    event.preventDefault()
+    event.stopPropagation()
     popover.onClose()
     unlinkDialog.onOpen()
+  }
+
+  const handleOpenDelete = (event: MouseEvent) => {
+    event.preventDefault()
+    event.stopPropagation()
+    popover.onClose()
+    deleteDialog.onOpen()
+  }
+
+  const handleViewAnalytics = () => {
+    popover.onClose()
+    onViewAnalytics?.(gameId)
+  }
+
+  const handleTakeOffline = async () => {
+    popover.onClose()
+    setIsTakingOffline(true)
+    try {
+      const affectedCount = await takeGameDeliveriesOffline(gameId)
+      if (affectedCount === 0) {
+        toast.message(t('gameProjectCard.menu.toasts.offlineNothingToHide'))
+        return
+      }
+      toast.success(t('gameProjectCard.menu.toasts.offlineSuccess'), {
+        description: t('gameProjectCard.menu.toasts.offlineSuccessDescription', {
+          count: affectedCount,
+        }),
+      })
+      onCourseLinkChanged?.()
+    } catch {
+      toast.error(t('gameProjectCard.menu.toasts.offlineFailed'))
+    } finally {
+      setIsTakingOffline(false)
+    }
   }
 
   return (
@@ -53,11 +102,15 @@ export function GameProjectCardCourseMenu({
             type="button"
             size="icon"
             variant="ghost"
-            className="absolute top-3 right-3 z-10 size-8 rounded-full bg-background/80 shadow-sm backdrop-blur-sm hover:bg-background"
+            className={cn(
+              'absolute z-20 rounded-full bg-background/80 shadow-sm backdrop-blur-sm hover:bg-background',
+              compact ? 'top-2 right-2 size-6' : 'top-3 right-3 size-8',
+              className,
+            )}
             aria-label={t('gameProjectCard.courseMenu.triggerAriaLabel')}
-            onClick={(event) => event.stopPropagation()}
+            onPointerDown={(event) => event.stopPropagation()}
           >
-            <EllipsisVertical className="size-4" />
+            <EllipsisVertical className={compact ? 'size-3.5' : 'size-4'} />
           </Button>
         </PopoverTrigger>
         <PopoverContent
@@ -65,6 +118,7 @@ export function GameProjectCardCourseMenu({
           align="start"
           sideOffset={8}
           className="w-52 rounded-lg bg-popover/80 p-2 backdrop-blur-md dark:bg-zinc-900/80"
+          onClick={(event) => event.stopPropagation()}
         >
           <div className="flex flex-col gap-1">
             <Button
@@ -72,7 +126,19 @@ export function GameProjectCardCourseMenu({
               variant="ghost"
               size="sm"
               className="justify-start"
+              disabled={!isPublished || isTakingOffline}
+              onClick={() => void handleTakeOffline()}
+            >
+              <PowerOff className="size-4" />
+              {t('gameProjectCard.menu.takeOffline')}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="justify-start"
               onClick={handleOpenLinkDialog}
+              onPointerDown={(event) => event.preventDefault()}
             >
               <Link className="size-4" />
               {t('gameProjectCard.courseMenu.linkToCourse')}
@@ -84,9 +150,33 @@ export function GameProjectCardCourseMenu({
               className="justify-start"
               disabled={linkedCourseIds.length === 0}
               onClick={handleOpenUnlinkDialog}
+              onPointerDown={(event) => event.preventDefault()}
             >
               <Unlink className="size-4" />
               {t('gameProjectCard.courseMenu.unlinkFromCourse')}
+            </Button>
+            {onViewAnalytics ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="justify-start"
+                onClick={handleViewAnalytics}
+              >
+                <ChartBar className="size-4" />
+                {t('gameProjectCard.viewAnalytics')}
+              </Button>
+            ) : null}
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="justify-start text-destructive hover:text-destructive"
+              onClick={handleOpenDelete}
+              onPointerDown={(event) => event.preventDefault()}
+            >
+              <Trash2 className="size-4" />
+              {t('gameProjectCard.menu.deleteGame')}
             </Button>
           </div>
         </PopoverContent>
@@ -105,6 +195,12 @@ export function GameProjectCardCourseMenu({
         open={unlinkDialog.isOpen}
         onOpenChange={unlinkDialog.onToggle}
         onUnlinked={onCourseLinkChanged}
+      />
+      <GameDeleteDialog
+        gameId={gameId}
+        open={deleteDialog.isOpen}
+        onOpenChange={deleteDialog.onToggle}
+        onDeleted={onCourseLinkChanged}
       />
     </>
   )

@@ -6,7 +6,6 @@ import { SelectTabs } from '@/components/shared'
 import { TwoColumnDialogColumns } from '@/components/shared/TwoColumnDialog'
 import type { TabItem } from '@/components/shared'
 
-import { useGameStudioAgentMode } from '../hooks/useGameStudioAgentMode'
 import { GameAgentPage } from '../pages/GameAgentPage'
 
 export type GameLayoutMode = 'default' | 'dual'
@@ -32,7 +31,10 @@ interface GameLayoutProps {
   hiddenTabIds?: TabType[]
   /** Initial selected tab when the dialog opens. */
   initialTab?: TabType
-  /** `dual` shows the node editor left and agent PDF panel right. */
+  /**
+   * `dual` shows the node editor left and agent PDF panel right; `default` is a
+   * single column. Defaults to `dual` so the agent sidebar is always present.
+   */
   layoutMode?: GameLayoutMode
   /** Right column in dual mode; defaults to {@link GameAgentPage}. */
   agentPanel?: ReactNode
@@ -53,10 +55,10 @@ export function GameLayout({
   agentPanel,
 }: GameLayoutProps) {
   const { t } = useTranslation('features.gameStudio')
-  const { isAgentMode } = useGameStudioAgentMode()
   const [activeTab, setActiveTab] = useState<TabType>(initialTab)
 
-  const resolvedLayoutMode: GameLayoutMode = layoutMode ?? (isAgentMode ? 'dual' : 'default')
+  // Default to the two-column agent layout; callers can still force `default`.
+  const resolvedLayoutMode: GameLayoutMode = layoutMode ?? 'dual'
 
   if (previewOnly || playMode) {
     return <div className="flex w-full flex-col gap-6">{previewContent}</div>

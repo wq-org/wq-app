@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: PARTIAL_SAFE_TO_DELETE_LATER | WQ-LESSON-PROGRESS | strip lesson_progress RLS section | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- CLASSROOM / COURSE LINKS / LESSON PROGRESS — RLS policies
 -- Split from 20260323000002_classroom_course_links_lesson_progress.sql
@@ -133,6 +134,7 @@ CREATE POLICY courses_select_member ON public.courses FOR SELECT TO authenticate
 
 -- =============================================================================
 -- lesson_progress
+-- HETZNER_TEARDOWN (WQ-LESSON-PROGRESS): safe to omit on fresh DB — table dropped in 20260619000001.
 -- =============================================================================
 ALTER TABLE public.lesson_progress ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.lesson_progress FORCE ROW LEVEL SECURITY;

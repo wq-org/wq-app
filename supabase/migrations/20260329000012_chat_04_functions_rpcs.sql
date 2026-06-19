@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: KEEP_CORE | WQ-MINIMAL-CORE | chat feature — required | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- CHAT — access helpers (membership + contextual eligibility)
 -- Requires: 20260329000006_course_delivery_06_functions_rpcs.sql (student_can_access_course_delivery)

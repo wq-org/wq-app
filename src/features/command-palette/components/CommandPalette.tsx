@@ -18,6 +18,7 @@ import type {
   CommandBarGroup,
   ActionId,
   AddType,
+  CommandBarContext,
   CommandPaletteProps,
   CommandRoleContext,
 } from '../types/command-bar.types'
@@ -40,16 +41,24 @@ import {
   type OpenCommandAddEventDetail,
 } from '../constants/commandPaletteEvents'
 import { isCommandPaletteHiddenPath } from '../utils/isCommandPaletteHiddenPath'
-import { GAME_AGENT_MODE_CHANGED_EVENT } from '@/features/game-studio/context/gameAgentModeEvents'
 
 function matchesRoute(item: CommandBarItem, pathname: string) {
   if (!item.to) return false
   return pathname === item.to || pathname.startsWith(`${item.to}/`)
 }
 
-function getDefaultSelectedCommandId(items: CommandBarItem[], pathname: string) {
+function getDefaultSelectedCommandId(
+  items: CommandBarItem[],
+  pathname: string,
+  context?: CommandBarContext,
+) {
   const matchedItem = items.find((item) => matchesRoute(item, pathname))
-  return matchedItem?.id ?? items[0]?.id ?? ''
+  if (matchedItem) return matchedItem.id
+  if (context === 'game-studio') {
+    const selectItem = items.find((item) => item.id === 'select')
+    if (selectItem) return selectItem.id
+  }
+  return items[0]?.id ?? ''
 }
 
 export function CommandPalette({
@@ -169,8 +178,8 @@ export function CommandPalette({
     return chunks
   }, [primaryItems])
   const defaultSelectedId = useMemo(
-    () => getDefaultSelectedCommandId(primaryItems, location.pathname),
-    [primaryItems, location.pathname],
+    () => getDefaultSelectedCommandId(primaryItems, location.pathname, commandBarContext),
+    [primaryItems, location.pathname, commandBarContext],
   )
   const [selectedId, setSelectedId] = useState<string>(defaultSelectedId)
   const activeId = selectedId
@@ -188,20 +197,6 @@ export function CommandPalette({
     }
     showPalette()
   }, [isGamePreview, showPalette])
-
-  useEffect(() => {
-    if (commandBarContext !== 'game-studio') return
-
-    const onAgentModeChanged = (event: Event) => {
-      const enabled = (event as CustomEvent<{ enabled?: boolean }>).detail?.enabled === true
-      if (enabled) {
-        setSelectedId('agent')
-      }
-    }
-
-    window.addEventListener(GAME_AGENT_MODE_CHANGED_EVENT, onAgentModeChanged)
-    return () => window.removeEventListener(GAME_AGENT_MODE_CHANGED_EVENT, onAgentModeChanged)
-  }, [commandBarContext])
 
   useEffect(() => {
     const onOpenAdd = (event: Event) => {

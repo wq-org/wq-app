@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: SAFE_TO_DELETE_LATER | WQ-ATTENDANCE | attendance_recurrence suite | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- ATTENDANCE RECURRING SCHEDULES — functions & RPCs
 -- Requires: 20260326000005_attendance_recurrence_02_indexes_constraints

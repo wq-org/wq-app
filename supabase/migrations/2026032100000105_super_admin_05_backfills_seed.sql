@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: PARTIAL_SAFE_TO_DELETE_LATER | WQ-REWARDS | strip reward_system feature-flag seed row; KEEP other seeds | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- SUPER ADMIN — Backfills and seed data
 -- Split from 20260321000001_super_admin.sql

@@ -20,6 +20,7 @@ type UseTeacherGameProjectsResult = {
   projects: TeacherGameProject[]
   loading: boolean
   error: string | null
+  refetch: () => Promise<void>
 }
 
 export function useTeacherGameProjects(teacherId?: string): UseTeacherGameProjectsResult {
@@ -63,5 +64,5 @@ export function useTeacherGameProjects(teacherId?: string): UseTeacherGameProjec
     void fetchProjects()
   }, [fetchProjects])
 
-  return { projects, loading, error }
+  return { projects, loading, error, refetch: fetchProjects }
 }

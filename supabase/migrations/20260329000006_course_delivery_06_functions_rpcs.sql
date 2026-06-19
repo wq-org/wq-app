@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: PARTIAL_SAFE_TO_DELETE_LATER | WQ-ORG-HIERARCHY | strip summarize_staff_scope_delivery() (institution_staff_scopes); KEEP delivery access helpers | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- COURSE DELIVERY — access helpers (delivery-scoped entitlements)
 -- Requires: 20260329000005_course_delivery_05_lesson_progress_learning_events.sql

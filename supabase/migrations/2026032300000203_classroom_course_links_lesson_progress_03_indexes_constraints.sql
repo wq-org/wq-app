@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: PARTIAL_SAFE_TO_DELETE_LATER | WQ-LESSON-PROGRESS | strip lesson_progress indexes section | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- CLASSROOM / COURSE LINKS / LESSON PROGRESS — Indexes & constraints
 -- Split from 20260323000002_classroom_course_links_lesson_progress.sql
@@ -13,6 +14,7 @@ CREATE INDEX idx_classroom_course_links_institution_id ON public.classroom_cours
 CREATE INDEX idx_classroom_course_links_course_id ON public.classroom_course_links (course_id) WHERE deleted_at IS NULL;
 CREATE INDEX idx_classroom_course_links_classroom_id ON public.classroom_course_links (classroom_id) WHERE deleted_at IS NULL;
 
+-- HETZNER_TEARDOWN (WQ-LESSON-PROGRESS): safe to omit on fresh DB
 -- lesson_progress
 CREATE UNIQUE INDEX idx_lesson_progress_user_id_lesson_id
   ON public.lesson_progress (user_id, lesson_id);

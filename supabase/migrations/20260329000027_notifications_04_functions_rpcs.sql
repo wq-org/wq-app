@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: PARTIAL_SAFE_TO_DELETE_LATER | WQ-REWARDS | strip 'reward' from notification category validation; KEEP notifications | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- NOTIFICATIONS — helpers, fan-out RPC, audit trigger bodies for new tables
 -- Requires: 20260329000026_notifications_03_indexes_constraints.sql

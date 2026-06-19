@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: PARTIAL_SAFE_TO_DELETE_LATER | WQ-REWARDS | strip point_ledger FK block; KEEP course_delivery constraints | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- COURSE DELIVERY — indexes (naming: idx_*)
 -- Requires: 20260329000002_course_delivery_02_tables.sql

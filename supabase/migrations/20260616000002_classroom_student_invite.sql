@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: KEEP_CORE | WQ-MINIMAL-CORE | classroom-scoped student invite RPC + redeem enrollment | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- Classroom-scoped student invites
 --

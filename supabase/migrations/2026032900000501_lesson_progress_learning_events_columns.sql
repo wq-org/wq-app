@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: PARTIAL_SAFE_TO_DELETE_LATER | WQ-LESSON-PROGRESS | strip lesson_progress course_delivery_id column + index drop | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- COURSE DELIVERY — lesson_progress + learning_events: add course_delivery_id
 -- Schema-only step (nullable column add + drop old uniqueness index).
@@ -5,6 +6,7 @@
 -- Requires: 20260329000004_course_delivery_04_backfill_versions_deliveries.sql
 -- =============================================================================
 
+-- HETZNER_TEARDOWN (WQ-LESSON-PROGRESS): safe to omit on fresh DB
 ALTER TABLE public.lesson_progress
   ADD COLUMN IF NOT EXISTS course_delivery_id uuid;
 
@@ -19,4 +21,5 @@ COMMENT ON COLUMN public.learning_events.course_delivery_id IS
 
 -- The (user_id, lesson_id) uniqueness must go before backfill expands rows
 -- into (user_id, lesson_id, course_delivery_id) tuples.
+-- HETZNER_TEARDOWN (WQ-LESSON-PROGRESS): omit with lesson_progress suite
 DROP INDEX IF EXISTS public.idx_lesson_progress_user_id_lesson_id;

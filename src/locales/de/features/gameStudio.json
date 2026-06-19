@@ -85,6 +85,15 @@
     "deletingIn": "L\u00f6schen in {{seconds}}s",
     "deleting": "Wird gel\u00f6scht\u2026"
   },
+  "deleteDialog": {
+    "title": "Dieses Spiel l\u00f6schen?",
+    "description": "Das Spiel wird aus deinen Listen entfernt. Ver\u00f6ffentlichte Snapshots bleiben erhalten \u2014 dies ist ein Soft-Delete.",
+    "confirm": "Spiel l\u00f6schen",
+    "deleting": "Wird gel\u00f6scht\u2026",
+    "cancel": "Abbrechen",
+    "successToast": "Spiel gel\u00f6scht.",
+    "errorToast": "Spiel konnte nicht gel\u00f6scht werden. Bitte erneut versuchen."
+  },
   "nodeBeta": {
     "badge": "Beta",
     "title": "Der {{node}}-Knoten ist in der Beta",
@@ -348,6 +357,16 @@
       "triggerAriaLabel": "Projektoptionen",
       "linkToCourse": "Mit Kurs verkn\u00fcpfen",
       "unlinkFromCourse": "Von Kurs trennen"
+    },
+    "menu": {
+      "takeOffline": "Offline nehmen",
+      "deleteGame": "Spiel l\u00f6schen",
+      "toasts": {
+        "offlineSuccess": "Spiel offline genommen",
+        "offlineSuccessDescription": "{{count}} Auslieferung archiviert.",
+        "offlineFailed": "Spiel konnte nicht offline genommen werden.",
+        "offlineNothingToHide": "Keine aktiven Auslieferungen zum Offline-Nehmen."
+      }
     }
   },
   "linkGameDialog": {

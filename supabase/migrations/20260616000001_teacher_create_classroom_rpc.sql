@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: KEEP_CORE | WQ-MINIMAL-CORE | decouple classrooms from class_groups + create_teacher_classroom RPC | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- Classroom: teacher-facing create RPC + prerequisite schema decoupling
 --

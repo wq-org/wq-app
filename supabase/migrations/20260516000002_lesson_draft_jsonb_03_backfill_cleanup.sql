@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: PARTIAL_SAFE_TO_DELETE_LATER | WQ-BLOCK-ANALYTICS | strip §3 legacy lesson_block_events → learning_events copy (table retired) | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- LESSON DRAFT JSONB — 03_backfill (data only)
 -- Deterministic data migration: reconstruct lessons.content, seed v1 versions,
@@ -93,6 +94,8 @@ ON CONFLICT (institution_id, lesson_id, version_major, version_patch) DO NOTHING
 
 -- =============================================================================
 -- 3. Preserve legacy block analytics inside learning_events as interactions
+-- HETZNER_TEARDOWN (WQ-BLOCK-ANALYTICS): safe to delete this section on fresh DB
+-- when 2026050812010001/0002 are omitted — requires lesson_block_events to exist.
 -- =============================================================================
 
 INSERT INTO public.learning_events (

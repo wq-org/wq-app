@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: KEEP_CORE | WQ-MINIMAL-CORE | task_deliveries/tasks feature — required | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- TASKS & NOTES — Types & enums
 -- Split from 20260323000004_tasks_notes.sql

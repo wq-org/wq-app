@@ -8,6 +8,7 @@ import { useAccentClasses } from '@/hooks/useAccentClasses'
 import { lineClampClassName } from '@/lib/text-clamp'
 import { cn } from '@/lib/utils'
 import type { CourseCardProps } from '../types/course.types'
+import { CourseCardActionsMenu } from './CourseCardActionsMenu'
 
 const THEME_ICON_SURFACE: Record<ThemeId, string> = {
   violet: 'border-violet-500/20 bg-violet-500/10',
@@ -40,8 +41,10 @@ export function CourseCardCompact({
   title,
   description,
   themeId,
+  releaseStatus = 'draft',
   className,
   onView = () => {},
+  onChanged,
 }: CourseCardProps) {
   const resolvedTheme: ThemeId = themeId && isThemeId(themeId) ? themeId : 'blue'
   const accentClasses = useAccentClasses()
@@ -60,41 +63,56 @@ export function CourseCardCompact({
 
   return (
     <Card
-      onClick={handleClick}
       className={cn(
         className,
-        'w-53 h-35 rounded-3xl duration-200 ease-in-out cursor animate-in fade-in-0 slide-in-from-left-4',
+        'relative gap-3 py-4 w-53 h-35 rounded-3xl duration-200 ease-in-out animate-in fade-in-0 slide-in-from-left-4',
         accentClasses.hoverBorder,
       )}
     >
-      <CardHeader className="flex flex-row items-center gap-2 space-y-0">
-        <div
-          className={cn('rounded-lg border p-2', iconSurfaceClass)}
-          aria-label={themeLabel}
-        >
-          <BookOpen
-            className={cn('h-5 w-5', iconFgClass)}
-            strokeWidth={1.5}
-            aria-hidden
-          />
-        </div>
-        <CardTitle
-          clampLines={2}
-          title={title}
-          className="font-semibold"
-        >
-          {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex min-w-0 justify-between">
-        <Text
-          variant="small"
-          muted
-          className={lineClampClassName(2, { flex: true })}
-        >
-          {description}
-        </Text>
-      </CardContent>
+      <CourseCardActionsMenu
+        courseId={id}
+        releaseStatus={releaseStatus}
+        onChanged={onChanged}
+        compact
+      />
+
+      <button
+        type="button"
+        onClick={handleClick}
+        aria-label={title}
+        className="absolute inset-0 z-0 rounded-[inherit] cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      />
+
+      <div className="relative z-0 flex min-h-0 flex-1 flex-col gap-6 pointer-events-none">
+        <CardHeader className="flex flex-row items-center gap-2 space-y-0 pr-8 pt-1">
+          <div
+            className={cn('rounded-lg border p-2', iconSurfaceClass)}
+            aria-label={themeLabel}
+          >
+            <BookOpen
+              className={cn('h-5 w-5', iconFgClass)}
+              strokeWidth={1.5}
+              aria-hidden
+            />
+          </div>
+          <CardTitle
+            clampLines={2}
+            title={title}
+            className="font-semibold"
+          >
+            {title}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex min-w-0 justify-between pt-0">
+          <Text
+            variant="small"
+            muted
+            className={lineClampClassName(2, { flex: true })}
+          >
+            {description}
+          </Text>
+        </CardContent>
+      </div>
     </Card>
   )
 }

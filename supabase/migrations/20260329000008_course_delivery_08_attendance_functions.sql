@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: SAFE_TO_DELETE_LATER | WQ-ATTENDANCE | course_delivery attendance RPCs/helpers | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- COURSE DELIVERY — attendance + schedules validate against course_deliveries
 -- Requires: 20260329000004_course_delivery_04_backfill_versions_deliveries.sql

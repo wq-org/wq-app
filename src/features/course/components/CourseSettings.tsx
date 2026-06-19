@@ -8,12 +8,12 @@ import {
   MoreHorizontal,
   Power,
   PowerOff,
+  Trash2,
   Upload,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { ColorPicker } from '@/components/shared'
-import { HoldToDeleteButton } from '@/components/ui/HoldToDeleteButton'
 import { Button } from '@/components/ui/button'
 import { FieldCard } from '@/components/ui/field-card'
 import { FieldInput } from '@/components/ui/field-input'
@@ -23,7 +23,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import {
-  deleteCourse,
   getCourseById,
   restoreCourseDeliveriesOnline,
   takeCourseDeliveriesOffline,
@@ -36,6 +35,7 @@ import { useCoursePublishFlow } from '../hooks/useCoursePublishFlow'
 import { useCourseReleaseStatus } from '../hooks/useCourseReleaseStatus'
 import { buildCourseReleaseReviewRoute } from '../utils/courseRelease.utils'
 import { CourseArchiveDialog } from './archive/CourseArchiveDialog'
+import { CourseDeleteDialog } from './CourseDeleteDialog'
 import { CourseLiveSnapshotCard } from './release/CourseLiveSnapshotCard'
 import { CoursePublishFlowDialogs } from './release/CoursePublishFlowDialogs'
 import { CourseReleasePanel } from './release/CourseReleasePanel'
@@ -51,7 +51,6 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
   const { profile } = useUser()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [deleting, setDeleting] = useState(false)
   const [deliveryVisibilityChanging, setDeliveryVisibilityChanging] = useState(false)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -61,6 +60,7 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
   const [originalThemeId, setOriginalThemeId] = useState<ThemeId>('blue')
   const [hasChanges, setHasChanges] = useState(false)
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [moreMenuOpen, setMoreMenuOpen] = useState(false)
 
   const {
@@ -142,17 +142,9 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
     }
   }
 
-  async function handleDeleteCourse() {
-    try {
-      setDeleting(true)
-      await deleteCourse(courseId)
-      const role = profile?.role || 'teacher'
-      navigate(`/${role}/dashboard`)
-    } catch (error) {
-      console.error('Error deleting course:', error)
-      toast.error(t('settings.toasts.deleteFailed'))
-      setDeleting(false)
-    }
+  const handleDeleted = () => {
+    const role = profile?.role || 'teacher'
+    navigate(`/${role}/dashboard`)
   }
 
   const handlePublished = () => {
@@ -356,14 +348,21 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
                   {t('settings.archiveAction')}
                 </Button>
                 <div className="my-1 h-px bg-border" />
-                <HoldToDeleteButton
-                  loading={deleting}
-                  onDelete={handleDeleteCourse}
+                <Button
+                  type="button"
                   variant="ghost"
-                  className="h-9 w-full justify-start px-2 text-destructive hover:text-destructive"
+                  className="h-9 w-full justify-start gap-2 px-2 text-destructive hover:text-destructive"
+                  onClick={() => {
+                    setMoreMenuOpen(false)
+                    setDeleteDialogOpen(true)
+                  }}
                 >
+                  <Trash2
+                    className="size-4"
+                    aria-hidden
+                  />
                   {t('settings.deleteAction')}
-                </HoldToDeleteButton>
+                </Button>
               </PopoverContent>
             </Popover>
             <Button
@@ -423,6 +422,12 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
         open={archiveDialogOpen}
         onOpenChange={setArchiveDialogOpen}
         onArchived={handleArchived}
+      />
+      <CourseDeleteDialog
+        courseId={courseId}
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onDeleted={handleDeleted}
       />
     </div>
   )

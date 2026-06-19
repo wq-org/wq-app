@@ -9,6 +9,7 @@ type CourseCardListVariant = 'default' | 'compact'
 export type CourseCardListProps = {
   courses: readonly CourseCardProps[]
   onCourseView?: (id: string) => void
+  onCourseChanged?: () => void
   variant?: CourseCardListVariant
   className?: string
   scrollAreaClassName?: string
@@ -17,6 +18,7 @@ export type CourseCardListProps = {
 export function CourseCardList({
   courses,
   onCourseView,
+  onCourseChanged,
   variant = 'default',
   className,
   scrollAreaClassName,
@@ -37,6 +39,7 @@ export function CourseCardList({
               key={course.id}
               {...course}
               onView={handleView}
+              onChanged={onCourseChanged}
             />
           ))}
         </div>
@@ -59,6 +62,7 @@ export function CourseCardList({
           <CourseCard
             {...course}
             onView={handleView}
+            onChanged={onCourseChanged}
           />
         </div>
       ))}

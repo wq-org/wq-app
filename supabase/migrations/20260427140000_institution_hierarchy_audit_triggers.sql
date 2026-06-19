@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: SAFE_TO_DELETE_LATER | WQ-ORG-HIERARCHY | audit triggers for faculties/programmes/cohorts/class_groups/*_offerings | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- INSTITUTION AUDIT COVERAGE — hierarchy/classroom/offering triggers
 -- =============================================================================

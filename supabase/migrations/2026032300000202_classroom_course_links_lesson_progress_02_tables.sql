@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: PARTIAL_SAFE_TO_DELETE_LATER | WQ-LESSON-PROGRESS | strip §2 lesson_progress CREATE TABLE (current-state only; use learning_events for history) | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- CLASSROOM / COURSE LINKS / LESSON PROGRESS — Tables & columns
 -- Split from 20260323000002_classroom_course_links_lesson_progress.sql
@@ -25,6 +26,7 @@ COMMENT ON COLUMN public.classroom_course_links.published_at IS 'When the link w
 
 -- =============================================================================
 -- 2. LESSON_PROGRESS — student progress per lesson (doc 07 MVP)
+-- HETZNER_TEARDOWN (WQ-LESSON-PROGRESS): safe to omit on fresh DB — dropped in 20260619000001.
 -- =============================================================================
 CREATE TABLE public.lesson_progress (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -37,7 +39,8 @@ CREATE TABLE public.lesson_progress (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
-COMMENT ON TABLE public.lesson_progress IS 'Per-student lesson progress and completion tracking (doc 07).';
+COMMENT ON TABLE public.lesson_progress IS
+  'RETIRED — current-state snapshot only (no history). HETZNER_TEARDOWN: SAFE_TO_DELETE (WQ-LESSON-PROGRESS). Dropped in 20260619000001. Use learning_events for analytics.';
 COMMENT ON COLUMN public.lesson_progress.institution_id IS 'Tenant boundary.';
 COMMENT ON COLUMN public.lesson_progress.last_position IS 'Last slide/page position for resume (e.g. {"page_index": 2}).';
 COMMENT ON COLUMN public.lesson_progress.completed_at IS 'Set when student finishes all slides; NULL = in-progress.';

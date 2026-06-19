@@ -31,7 +31,9 @@ export function GameProjectCardList({
               description={project.description}
               themeId={project.themeId}
               status={project.status}
+              linkedCourseIds={project.linkedCourseIds}
               onView={handleOpen}
+              onCourseLinkChanged={onCourseLinkChanged}
             />
           ))}
         </div>

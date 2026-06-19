@@ -161,6 +161,7 @@ const Dashboard = () => {
     projects: gameProjects,
     loading: gameProjectsLoading,
     error: gameProjectsError,
+    refetch: refetchGameProjects,
   } = useTeacherGameProjects(profile?.user_id)
 
   const gamesByFilterTab = useMemo(() => {
@@ -297,6 +298,7 @@ const Dashboard = () => {
                             variant="compact"
                             courses={tabCourses}
                             onCourseView={handleCourseView}
+                            onCourseChanged={() => void fetchCourses()}
                             className="gap-2"
                           />
                         )}
@@ -356,6 +358,7 @@ const Dashboard = () => {
                             variant="compact"
                             projects={games}
                             onOpen={handleGameOpen}
+                            onCourseLinkChanged={() => void refetchGameProjects()}
                             className="gap-2"
                           />
                         )}

@@ -122,12 +122,6 @@ export const VIEW_COMMAND_ITEMS: Record<CommandBarView, readonly CommandBarItem[
       actionId: 'select',
     },
     {
-      id: 'agent',
-      labelKey: 'actions.agent',
-      icon: ComputerIcon,
-      actionId: 'agent',
-    },
-    {
       id: 'upload',
       labelKey: 'actions.upload',
       icon: Upload,

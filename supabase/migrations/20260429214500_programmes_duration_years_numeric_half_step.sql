@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: SAFE_TO_DELETE_LATER | WQ-ORG-HIERARCHY | programmes.duration_years — programmes table removed with hierarchy | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- INSTITUTION ADMIN — Programmes duration_years numeric half-step support
 -- =============================================================================

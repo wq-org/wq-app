@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: PARTIAL_SAFE_TO_DELETE_LATER | WQ-LESSON-PROGRESS | strip lesson_progress indexes section | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- LESSON VERSIONS — 03_indexes_constraints
 -- Indexes for performance, RLS filtering, and resolution lookups
@@ -39,6 +40,7 @@ CREATE INDEX IF NOT EXISTS idx_course_version_lessons_resolution_lookup
 
 -- =============================================================================
 -- lesson_progress indexes
+-- HETZNER_TEARDOWN (WQ-LESSON-PROGRESS): safe to omit on fresh DB — table dropped in 20260619000001.
 -- =============================================================================
 
 CREATE INDEX IF NOT EXISTS idx_lesson_progress_version_id

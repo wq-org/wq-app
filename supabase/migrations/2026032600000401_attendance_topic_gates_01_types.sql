@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: SAFE_TO_DELETE_LATER | WQ-ATTENDANCE | attendance_topic_gates suite | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- ATTENDANCE + TOPIC GATES — types
 -- Requires: 20260321000002_institution_admin (all parts),

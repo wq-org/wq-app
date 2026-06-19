@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: PARTIAL_SAFE_TO_DELETE_LATER | WQ-LESSON-PROGRESS | strip §1 lesson_progress delivery backfill | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- COURSE DELIVERY — lesson_progress + learning_events: data backfill
 -- Expands each existing progress / learning event row to one row per
@@ -8,6 +9,7 @@
 
 -- -----------------------------------------------------------------------------
 -- 1) lesson_progress — expand one row per entitled course_delivery
+-- HETZNER_TEARDOWN (WQ-LESSON-PROGRESS): safe to omit on fresh DB
 -- -----------------------------------------------------------------------------
 CREATE TEMP TABLE _tmp_lesson_progress_course_delivery ON COMMIT DROP AS
 SELECT * FROM public.lesson_progress;

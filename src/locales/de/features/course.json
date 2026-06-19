@@ -324,6 +324,22 @@
     "open": "\u00d6ffnen",
     "imageAlt": "Kurs"
   },
+  "cardMenu": {
+    "triggerAriaLabel": "Kursoptionen",
+    "takeOffline": "Offline nehmen",
+    "deleteCourse": "Kurs l\u00f6schen",
+    "deleteDialog": {
+      "title": "Diesen Kurs l\u00f6schen?",
+      "description": "Der Kurs wird aus deinen Listen entfernt. Ver\u00f6ffentlichte Snapshots bleiben erhalten \u2014 dies ist ein Soft-Delete.",
+      "confirm": "Kurs l\u00f6schen",
+      "deleting": "Wird gel\u00f6scht\u2026",
+      "cancel": "Abbrechen"
+    },
+    "toasts": {
+      "deleteSuccess": "Kurs gel\u00f6scht.",
+      "offlineNothingToHide": "Keine aktiven Auslieferungen zum Offline-Nehmen."
+    }
+  },
   "published": {
     "readOnlyBanner": "Ver\u00f6ffentlicht \u00b7 schreibgesch\u00fctzt",
     "readOnlyVersionBadge": "Ver\u00f6ffentlicht v{{version}} \u00b7 schreibgesch\u00fctzt",

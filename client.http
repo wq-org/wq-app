@@ -17,7 +17,7 @@
 #   POST http://localhost:5173/api/scoring/  →  http://127.0.0.1:8000/auto-score/
 
 @host = 127.0.0.1
-@port = 8000
+@port = 8001
 @baseUrl = http://{{host}}:{{port}}
 @scoringPrefix = /auto-score
 @json = application/json

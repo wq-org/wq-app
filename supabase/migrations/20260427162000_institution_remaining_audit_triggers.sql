@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: PARTIAL_SAFE_TO_DELETE_LATER | WQ-ORG-HIERARCHY | strip institution_staff_scopes audit triggers; KEEP classroom/membership audit | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- INSTITUTION AUDIT COVERAGE — remaining lifecycle tables
 -- =============================================================================

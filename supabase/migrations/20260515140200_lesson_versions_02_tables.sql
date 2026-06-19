@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: PARTIAL_SAFE_TO_DELETE_LATER | WQ-LESSON-PROGRESS | strip §4 lesson_progress.lesson_version_id | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- LESSON VERSIONS — 02_tables
 -- Create lesson_versions table; add columns to course_versions, course_version_lessons,
@@ -92,6 +93,7 @@ COMMENT ON COLUMN public.course_version_lessons.allow_auto_patch IS
 
 -- =============================================================================
 -- 4. Modify lesson_progress: add lesson_version_id tracking
+-- HETZNER_TEARDOWN (WQ-LESSON-PROGRESS): safe to omit on fresh DB — table dropped in 20260619000001.
 -- =============================================================================
 
 ALTER TABLE public.lesson_progress
@@ -100,7 +102,7 @@ ALTER TABLE public.lesson_progress
     REFERENCES public.lesson_versions(id) ON DELETE RESTRICT;
 
 COMMENT ON COLUMN public.lesson_progress.lesson_version_id IS
-  'The exact lesson_version_id completed by student. Enables audit trail and patch effectiveness tracking.';
+  'RETIRED with lesson_progress table (WQ-LESSON-PROGRESS). Use learning_events.lesson_version_id for audit trail.';
 
 -- =============================================================================
 -- 5. Modify learning_events: add lesson_version_id tracking

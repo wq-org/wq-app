@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: KEEP_CORE | WQ-MINIMAL-CORE | chat feature — required | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- CHAT — indexes (core + conversation_contexts)
 -- Requires: 20260329000010_chat_02_tables.sql

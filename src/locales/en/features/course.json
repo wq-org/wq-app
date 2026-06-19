@@ -323,6 +323,22 @@
     "open": "Open",
     "imageAlt": "Course"
   },
+  "cardMenu": {
+    "triggerAriaLabel": "Course options",
+    "takeOffline": "Take offline",
+    "deleteCourse": "Delete course",
+    "deleteDialog": {
+      "title": "Delete this course?",
+      "description": "The course will be removed from your lists. Published snapshots stay intact; this is a soft delete.",
+      "confirm": "Delete course",
+      "deleting": "Deleting…",
+      "cancel": "Cancel"
+    },
+    "toasts": {
+      "deleteSuccess": "Course deleted.",
+      "offlineNothingToHide": "No live deliveries to take offline."
+    }
+  },
   "published": {
     "readOnlyBanner": "Published · read-only",
     "readOnlyVersionBadge": "Published v{{version}} · read-only",

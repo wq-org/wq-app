@@ -1,3 +1,4 @@
+import { resolveScoringWorkerFetchBaseUrl } from '@/lib/scoringWorkerEnv'
 import type { ScoringBranch, ScoringRequest, ScoringResponse } from '../types/scoring.types'
 
 type ScoringResponseRow = {
@@ -23,33 +24,14 @@ type ScoringRequestBody = {
   session_participant_id: string
 }
 
-const LOCAL_WORKER_HOST_PATTERN = /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?/i
-
-/** Ensures POST targets `/auto-score/` whether the env URL is the host root or full prefix. */
-function normalizeConfiguredWorkerBaseUrl(raw: string): string {
-  const trimmed = raw.trim().replace(/\/$/, '')
-  if (trimmed.endsWith('/auto-score')) return trimmed
-  return `${trimmed}/auto-score`
-}
-
-/**
- * In dev, route local worker calls through the Vite proxy (`/api/scoring` → `/auto-score`)
- * so the browser avoids CORS failures from direct `127.0.0.1:8000` requests.
- */
 function resolveScoringWorkerBaseUrl(): string {
-  const configured =
-    import.meta.env.VITE_SCORING_WORKER_URL?.trim() ||
-    import.meta.env.VITE_GRADING_WORKER_URL?.trim()
-
-  if (configured) {
-    const normalized = normalizeConfiguredWorkerBaseUrl(configured)
-    if (import.meta.env.DEV && LOCAL_WORKER_HOST_PATTERN.test(normalized)) {
-      return '/api/scoring'
-    }
-    return normalized
-  }
-
-  return '/api/scoring'
+  return resolveScoringWorkerFetchBaseUrl({
+    VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
+    VITE_SCORING_WORKER_URL: import.meta.env.VITE_SCORING_WORKER_URL,
+    VITE_GRADING_WORKER_URL: import.meta.env.VITE_GRADING_WORKER_URL,
+    VITE_SCORING_WORKER_PORT: import.meta.env.VITE_SCORING_WORKER_PORT,
+    DEV: import.meta.env.DEV,
+  })
 }
 
 /** Worker schema: `total_points: int` with `gt=0` — UI may show one-decimal splits (e.g. 3.3). */

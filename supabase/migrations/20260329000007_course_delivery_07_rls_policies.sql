@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: PARTIAL_SAFE_TO_DELETE_LATER | WQ-LESSON-PROGRESS | strip lesson_progress delivery RLS section | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- Canonical student course-access path: classroom_members + course_deliveries.
 -- Legacy course_enrollments/classroom_course_links remain compatibility surfaces only.
 -- =============================================================================
@@ -313,6 +314,7 @@ CREATE POLICY course_deliveries_select_classroom_member ON public.course_deliver
 
 -- -----------------------------------------------------------------------------
 -- lesson_progress — delivery + snapshot membership
+-- HETZNER_TEARDOWN (WQ-LESSON-PROGRESS): safe to omit on fresh DB — table dropped in 20260619000001.
 -- -----------------------------------------------------------------------------
 DROP POLICY IF EXISTS lesson_progress_all_own_student ON public.lesson_progress;
 CREATE POLICY lesson_progress_all_own_student ON public.lesson_progress

@@ -6,6 +6,56 @@
 
 ---
 
+## Migration tagging (`supabase/migrations/`)
+
+Obsolete or partially obsolete migrations are tagged on **line 1** for a later Hetzner fresh-DB cleanup (Strategie 2):
+
+| Tag                                              | Meaning                                                                                 |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| `HETZNER_TEARDOWN: SAFE_TO_DELETE_LATER`         | Whole file can be dropped from the apply chain once downstream FKs/policies are cleaned |
+| `HETZNER_TEARDOWN: PARTIAL_SAFE_TO_DELETE_LATER` | File stays, but named sections (tables/RPCs/RLS/seeds) should be stripped               |
+| `HETZNER_TEARDOWN: KEEP_CORE`                    | Required for minimal core — **do not delete** (chat + task suites)                      |
+
+Ticket prefix: `WQ-ATTENDANCE`, `WQ-REWARDS`, `WQ-ORG-HIERARCHY`, `WQ-ANNOUNCEMENTS`, `WQ-BLOCK-ANALYTICS`, `WQ-LESSON-PROGRESS`, or `WQ-MINIMAL-CORE`.
+
+**Faculty → class_group hierarchy suite** (split from `20260321000002_institution_admin.sql` — all tagged `PARTIAL_SAFE_TO_DELETE_LATER`):
+
+- `2026032100000201` … `2026032100000207` — `institution_admin_*` (creates hierarchy **and** core institution/classroom tables; strip hierarchy only)
+
+**Hierarchy-only follow-ups** (tagged `SAFE_TO_DELETE_LATER`):
+
+- `20260427140000_institution_hierarchy_audit_triggers.sql`
+- `20260429214500_programmes_duration_years_numeric_half_step.sql`
+
+**Block-level analytics (`lesson_block_events`) — retired, not in minimal core** (tagged `SAFE_TO_DELETE_LATER` / `PARTIAL_…`):
+
+- `2026050812010001` — `lesson_block_events_01_tables` (creates `lesson_block_events` + `lesson_block_event_type`; never used in app)
+- `2026050812010002` — `lesson_block_events_02_rls`
+- `20260516000002` … `03_backfill` — **strip §3** only (one-time copy `lesson_block_events` → `learning_events`; omit on fresh Hetzner DB)
+- `20260516000003` … `04_retire` — **partial**: `DROP lesson_block_events` / `DROP TYPE lesson_block_event_type` are no-ops if suite skipped; file still drops legacy `lesson_blocks` unless that suite is removed too
+
+Live schema uses `learning_events` (`block_index`, `block_type`, `interaction_recorded`) — see `docs/domain/17_lesson_authoring.md`.
+
+**Lesson progress snapshot (`lesson_progress`) — not in minimal core** (current-state only, no history; never used in app):
+
+- `2026032300000202` … `02_tables` — **strip §2** `CREATE TABLE lesson_progress`
+- `2026032300000203` … `03_indexes` — **strip** lesson_progress indexes
+- `2026032300000206` … `06_triggers` — **strip** `trg_lesson_progress_set_updated_at`
+- `2026032300000207` … `07_rls` — **strip** lesson_progress RLS block
+- `2026032900000501` … `0501` — **strip** lesson_progress `course_delivery_id` column + index drop
+- `2026032900000502` … `0502` — **strip §1** lesson_progress delivery backfill
+- `2026032900000503` … `0503` — **strip** lesson_progress constraints/indexes (keep `learning_events`)
+- `20260329000007` … `07_rls` — **strip** lesson_progress delivery RLS section
+- `20260515140200` … `lesson_versions_02` — **strip §4** `lesson_progress.lesson_version_id`
+- `20260515140300` … `lesson_versions_03` — **strip** lesson_progress indexes
+- `20260619000001_drop_lesson_progress.sql` — **Strategy 1**: `DROP TABLE lesson_progress` on existing DBs
+
+Use **`learning_events`** for completion, navigation, and time-on-page history (`lesson_completed`, `page_viewed`, `page_time_spent`, etc.).
+
+Search: `rg -l 'HETZNER_TEARDOWN' supabase/migrations/`
+
+---
+
 ## Master-Reihenfolge (wichtig — FK-Abhängigkeiten)
 
 Reihenfolge ist **nicht** beliebig. `point_ledger` referenziert Deliveries + Classroom, Attendance referenziert Classroom + Course, die Org-Hierarchie hängt unter `classrooms`. Darum:

@@ -1,3 +1,10 @@
+-- HETZNER_TEARDOWN: SAFE_TO_DELETE_LATER | WQ-BLOCK-ANALYTICS | lesson_block_events RLS (retired; table dropped in 20260516000003) | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
+-- =============================================================================
+-- ⚠️ RETIRED TABLE — DO NOT USE. RLS for lesson_block_events, which is DROPPED
+-- by 20260516000003_lesson_draft_jsonb_04_retire_legacy_blocks.sql. The table
+-- no longer exists in the live schema; block-level analytics moved to
+-- learning_events. Kept only as immutable migration history — do NOT delete
+-- this file and do NOT add new references to this table.
 -- =============================================================================
 -- LESSON BLOCK EVENTS — RLS policies
 -- Requires: 20260508120100_lesson_block_events_01_tables.sql

@@ -1,3 +1,4 @@
+-- HETZNER_TEARDOWN: PARTIAL_SAFE_TO_DELETE_LATER | WQ-REWARDS | strip notification category value 'reward' from CHECK constraints; KEEP notifications | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
 -- =============================================================================
 -- NOTIFICATIONS — notification_events, notification_deliveries, notification_preferences
 -- Requires: 20260329000024_notifications_01_types.sql,

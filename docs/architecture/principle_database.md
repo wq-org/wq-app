@@ -51,6 +51,33 @@ All schema changes must be applied via SQL migrations committed to version contr
 - Supabase migrations are SQL statements to create/update/delete schemas and are the canonical way to track database changes over time.
 - Local development should capture schema changes into migration files (so what you test is what you deploy).
 
+#### Hetzner teardown tags (migration line 1)
+
+Obsolete or superseded migration files are tagged on **line 1** for a later fresh-DB cleanup on Hetzner (see `docs/perplexity/WQ_TEARDOWN_minimal_core.md`):
+
+| Tag                                              | Meaning                                        |
+| ------------------------------------------------ | ---------------------------------------------- |
+| `HETZNER_TEARDOWN: SAFE_TO_DELETE_LATER`         | Whole file can be dropped from the apply chain |
+| `HETZNER_TEARDOWN: PARTIAL_SAFE_TO_DELETE_LATER` | File stays; named sections should be stripped  |
+| `HETZNER_TEARDOWN: KEEP_CORE`                    | Required for minimal core — do not delete      |
+
+Search: `rg -l 'HETZNER_TEARDOWN' supabase/migrations/`
+
+#### Block-level lesson analytics (do not add `lesson_block_events`)
+
+The separate `lesson_block_events` table and `lesson_block_event_type` enum were **retired** (dropped in `20260516000003_lesson_draft_jsonb_04_retire_legacy_blocks.sql`). They were never wired in application code and are tagged `WQ-BLOCK-ANALYTICS` / `SAFE_TO_DELETE_LATER` for Hetzner migration-chain cleanup.
+
+Use **`learning_events`** instead: optional `block_index`, `block_type`, and `event_type = 'interaction_recorded'` with detail in `metadata` JSONB. See `docs/domain/17_lesson_authoring.md`.
+
+#### Lesson progress snapshot (do not add `lesson_progress`)
+
+The `lesson_progress` table stores **current state only** (`last_position`, `completed_at`) — not an event history. It was never wired in application code and is tagged `WQ-LESSON-PROGRESS` for Hetzner cleanup.
+
+- **Strategy 1 (existing DB):** `20260619000001_drop_lesson_progress.sql` drops the table.
+- **Strategy 2 (fresh Hetzner DB):** omit all `lesson_progress` CREATE/RLS/index sections tagged `PARTIAL_SAFE_TO_DELETE_LATER`.
+
+Use **`learning_events`** for resume/completion history (`page_viewed`, `page_time_spent`, `lesson_completed`, etc.) scoped by `course_delivery_id`.
+
 #### SQL tooling (migrations)
 
 - **`npm run lint:sql`** runs **`scripts/check_sql_naming.py`** only: naming from [db_naming_convention.md](db_naming_convention.md) (triggers, indexes, functions, policies, `fk_` / `uq_` / `chk_` constraints, banned abbreviations). It does **not** validate RLS semantics, tenant columns, or GDPR-related design; those stay in review and runtime checks.
@@ -65,7 +92,7 @@ You will store two kinds of "structured content" that change often:
 
 "Versioned JSONB + immutable publish" is a project guideline; it aligns with auditability and reduces accidental cross-tenant leakage because you can treat published content as read-only and cacheable.
 
-**LMS course delivery** follows the same idea: published course structure is copied into `course_versions` and snapshot tables (`course_version_topics`, `course_version_lessons`); classroom rollout uses `course_deliveries`, and student progress/events are scoped by `course_delivery_id`. See [course_delivery.md](course_delivery.md).
+**LMS course delivery** follows the same idea: published course structure is copied into `course_versions` and snapshot tables (`course_version_topics`, `course_version_lessons`); classroom rollout uses `course_deliveries`, and student `learning_events` are scoped by `course_delivery_id` (not `lesson_progress` — see above). See [course_delivery.md](course_delivery.md).
 
 ## Multi-tenancy and authorization with RLS
 

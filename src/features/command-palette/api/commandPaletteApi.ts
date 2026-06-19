@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { getUserInstitutionId, type UserRole } from '@/features/auth'
+import { softDeleteGame } from '@/features/game-studio/api/gameStudioApi'
 import type { Game, UpdateGameData } from '../types/command-bar.types'
 
 export interface SearchableProfile {
@@ -63,15 +64,10 @@ export async function updateGame(gameId: string, updates: UpdateGameData): Promi
 }
 
 /**
- * Delete a game
+ * Soft-delete a game (sets deleted_at).
  */
 export async function deleteGame(gameId: string): Promise<void> {
-  const { error } = await supabase.from('games').delete().eq('id', gameId)
-
-  if (error) {
-    console.error('Error deleting game:', error)
-    throw error
-  }
+  await softDeleteGame(gameId)
 }
 
 /**

@@ -1,3 +1,17 @@
+-- HETZNER_TEARDOWN: SAFE_TO_DELETE_LATER | WQ-BLOCK-ANALYTICS | lesson_block_events + lesson_block_event_type (retired; never used in app; dropped in 20260516000003) | see docs/perplexity/WQ_TEARDOWN_minimal_core.md
+-- =============================================================================
+-- ⚠️ RETIRED TABLE — DO NOT USE. lesson_block_events no longer exists in the
+-- live schema. It is created here, then DROPPED by:
+--   20260516000003_lesson_draft_jsonb_04_retire_legacy_blocks.sql
+-- (after a one-time data copy into learning_events in
+--   20260516000002_lesson_draft_jsonb_03_backfill_cleanup.sql).
+-- Block-level analytics now live as optional columns / metadata on
+-- learning_events (event_type 'interaction_recorded'). No app code reads this.
+--
+-- This file is kept ONLY as immutable migration history so fresh databases can
+-- replay the create→backfill→drop sequence in order. Do NOT delete this file
+-- (the backfill in …03 reads FROM lesson_block_events during replay), and do
+-- NOT add new references to this table.
 -- =============================================================================
 -- LESSON BLOCK EVENTS — type, table, indexes
 -- Append-only block-level analytics. RLS lives in sibling _02 file.
@@ -15,7 +29,7 @@ CREATE TYPE public.lesson_block_event_type AS ENUM (
 );
 
 COMMENT ON TYPE public.lesson_block_event_type IS
-  'Granular user interaction events at individual Lexical block level.';
+  'RETIRED — dropped in 20260516000003. HETZNER_TEARDOWN: SAFE_TO_DELETE_LATER (WQ-BLOCK-ANALYTICS). Use learning_events.block_index/block_type instead.';
 
 CREATE TABLE IF NOT EXISTS public.lesson_block_events (
   id UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -37,7 +51,7 @@ CREATE TABLE IF NOT EXISTS public.lesson_block_events (
 );
 
 COMMENT ON TABLE public.lesson_block_events IS
-  'Append-only analytics at block granularity; never UPDATE or DELETE rows (except GDPR tooling).';
+  'RETIRED — append-only block analytics; dropped in 20260516000003. HETZNER_TEARDOWN: SAFE_TO_DELETE_LATER (WQ-BLOCK-ANALYTICS). Never used in app; use learning_events instead.';
 
 COMMENT ON COLUMN public.lesson_block_events.institution_id IS 'Tenant boundary.';
 COMMENT ON COLUMN public.lesson_block_events.lesson_id IS 'Lesson containing the block.';
