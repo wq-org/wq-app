@@ -8,7 +8,23 @@
 
 ## Migration tagging (`supabase/migrations/`)
 
-Obsolete or partially obsolete migrations are tagged on **line 1** for a later Hetzner fresh-DB cleanup (Strategie 2):
+This document is now primarily a **historical teardown log**. The current fresh baseline already applied the cleanup and globally renumbered the remaining migration chain to:
+
+- `20260000000001_baseline_schema.sql`
+- …
+- `20260000000136_classroom_student_invite.sql`
+
+Removed from the active chain:
+
+- announcements
+- attendance
+- legacy `lesson_blocks` / `lesson_block_events`
+- legacy `lesson_progress`
+- one-off `fix_*`, `backfill_*`, and no-op seed migrations whose live logic was folded into canonical owners
+
+Older notes below still mention pre-renumber filenames because they document how the teardown was reasoned about.
+
+Obsolete or partially obsolete migrations were tagged on **line 1** during the cleanup pass:
 
 | Tag                                              | Meaning                                                                                 |
 | ------------------------------------------------ | --------------------------------------------------------------------------------------- |
@@ -20,37 +36,20 @@ Ticket prefix: `WQ-ATTENDANCE`, `WQ-REWARDS`, `WQ-ORG-HIERARCHY`, `WQ-ANNOUNCEME
 
 **Faculty → class_group hierarchy suite** (split from `20260321000002_institution_admin.sql` — all tagged `PARTIAL_SAFE_TO_DELETE_LATER`):
 
-- `2026032100000201` … `2026032100000207` — `institution_admin_*` (creates hierarchy **and** core institution/classroom tables; strip hierarchy only)
+- `20260000000009` … `20260000000014` — `institution_admin_*` (creates hierarchy **and** core institution/classroom tables; strip hierarchy only)
 
 **Hierarchy-only follow-ups** (tagged `SAFE_TO_DELETE_LATER`):
 
 - `20260427140000_institution_hierarchy_audit_triggers.sql`
 - `20260429214500_programmes_duration_years_numeric_half_step.sql`
 
-**Block-level analytics (`lesson_block_events`) — retired, not in minimal core** (tagged `SAFE_TO_DELETE_LATER` / `PARTIAL_…`):
+**Block-level analytics (`lesson_block_events`) — retired, not in minimal core**
 
-- `2026050812010001` — `lesson_block_events_01_tables` (creates `lesson_block_events` + `lesson_block_event_type`; never used in app)
-- `2026050812010002` — `lesson_block_events_02_rls`
-- `20260516000002` … `03_backfill` — **strip §3** only (one-time copy `lesson_block_events` → `learning_events`; omit on fresh Hetzner DB)
-- `20260516000003` … `04_retire` — **partial**: `DROP lesson_block_events` / `DROP TYPE lesson_block_event_type` are no-ops if suite skipped; file still drops legacy `lesson_blocks` unless that suite is removed too
+Legacy block-level tables/functions were removed from the fresh baseline. Live schema uses `learning_events` (`block_index`, `block_type`, `interaction_recorded`) — see `docs/domain/17_lesson_authoring.md`.
 
-Live schema uses `learning_events` (`block_index`, `block_type`, `interaction_recorded`) — see `docs/domain/17_lesson_authoring.md`.
+**Lesson progress snapshot (`lesson_progress`) — not in minimal core**
 
-**Lesson progress snapshot (`lesson_progress`) — not in minimal core** (current-state only, no history; never used in app):
-
-- `2026032300000202` … `02_tables` — **strip §2** `CREATE TABLE lesson_progress`
-- `2026032300000203` … `03_indexes` — **strip** lesson_progress indexes
-- `2026032300000206` … `06_triggers` — **strip** `trg_lesson_progress_set_updated_at`
-- `2026032300000207` … `07_rls` — **strip** lesson_progress RLS block
-- `2026032900000501` … `0501` — **strip** lesson_progress `course_delivery_id` column + index drop
-- `2026032900000502` … `0502` — **strip §1** lesson_progress delivery backfill
-- `2026032900000503` … `0503` — **strip** lesson_progress constraints/indexes (keep `learning_events`)
-- `20260329000007` … `07_rls` — **strip** lesson_progress delivery RLS section
-- `20260515140200` … `lesson_versions_02` — **strip §4** `lesson_progress.lesson_version_id`
-- `20260515140300` … `lesson_versions_03` — **strip** lesson_progress indexes
-- `20260619000001_drop_lesson_progress.sql` — **Strategy 1**: `DROP TABLE lesson_progress` on existing DBs
-
-Use **`learning_events`** for completion, navigation, and time-on-page history (`lesson_completed`, `page_viewed`, `page_time_spent`, etc.).
+Legacy `lesson_progress` sections were removed from the fresh baseline. Use **`learning_events`** for completion, navigation, and time-on-page history (`lesson_completed`, `page_viewed`, `page_time_spent`, etc.).
 
 Search: `rg -l 'HETZNER_TEARDOWN' supabase/migrations/`
 
@@ -99,7 +98,7 @@ Entfernt das komplette Reward-System aus DB, RLS, API und UI. Lehrkräfte und Co
 | `public.point_ledger`                                      | Tabelle | `2026032300000702_rewards_mvp_02_tables.sql`                               |
 | `public.classroom_reward_settings`                         | Tabelle | `2026032300000702_rewards_mvp_02_tables.sql`                               |
 | `point_ledger.task_delivery_id` FK → `task_deliveries`     | FK      | gleiche Datei                                                              |
-| `point_ledger.course_delivery_id` FK → `course_deliveries` | FK      | nachgezogen in `20260329000003_course_delivery_03_indexes_constraints.sql` |
+| `point_ledger.course_delivery_id` FK → `course_deliveries` | FK      | nachgezogen in `20260000000049_course_delivery_03_indexes_constraints.sql` |
 | Policies `pl_*`, `crs_*`                                   | RLS     | `15_platform_roles_schema_map.md` (Z. 152–153, 175, 197)                   |
 
 ### Files
@@ -179,7 +178,7 @@ Entfernt die Schulverwaltungs-Hierarchie über dem Classroom. `classrooms` und `
 
 ### Checkpoint List
 
-- [x] Migrate: `class_group_id` / `class_group_offering_id` auf `classrooms` → nullable machen (Schritt 1, non-breaking) — `20260616000001_teacher_create_classroom_rpc.sql`
+- [x] Migrate: `class_group_id` / `class_group_offering_id` auf `classrooms` → nullable machen (Schritt 1, non-breaking) — `20260000000135_teacher_create_classroom_rpc.sql`
 - [ ] Migrate: `DROP TABLE` Offerings (`programme_offerings`, `cohort_offerings`, `class_group_offerings`)
 - [ ] Migrate: `DROP TABLE` Hierarchie (`class_groups`, `cohorts`, `programmes`, `faculties`) in Reverse-FK-Reihenfolge
 - [ ] Migrate: `DROP TABLE` `institution_staff_scopes`
@@ -188,7 +187,7 @@ Entfernt die Schulverwaltungs-Hierarchie über dem Classroom. `classrooms` und `
 - [x] Frontend: remove Routes/Guards/Sidebar: Faculties, Programmes, Cohorts, Class Groups, Academic Year, Offerings — done in `institution-admin`, `App.tsx`, nav config
 - [x] Frontend: delete zugehörige Screens, Hooks, Types, Forms — 74 files removed in 2026-06-16 sweep
 - [x] Admin-UX: Institution-Admin nur noch Teacher-Invite/Suspend/Remove + Tenant-Settings — popover actions reduced to withdraw + remove
-- [ ] Onboarding neu: „Institution → Teacher einladen → Classroom anlegen → Studenten einladen → Inhalte freigeben“ — classroom create RPC + teacher-scoped student invite done (`20260616000002_classroom_student_invite.sql`); onboarding wizard refresh pending ⚠ tree.txt
+- [ ] Onboarding neu: „Institution → Teacher einladen → Classroom anlegen → Studenten einladen → Inhalte freigeben“ — classroom create RPC + teacher-scoped student invite done (`20260000000136_classroom_student_invite.sql`); onboarding wizard refresh pending ⚠ tree.txt
 
 ### DB — exakt zu löschen / ändern
 

@@ -6,20 +6,24 @@ export const settingsCapabilitiesByRole: Readonly<Record<UserRole, SettingsCapab
     canEditLinkedIn: true,
     canEditAvatar: true,
     showRoleHint: true,
+    canChangeInstitutionEmail: false,
   },
   [USER_ROLES.STUDENT]: {
     canEditLinkedIn: true,
     canEditAvatar: true,
     showRoleHint: true,
+    canChangeInstitutionEmail: false,
   },
   [USER_ROLES.INSTITUTION_ADMIN]: {
     canEditLinkedIn: true,
     canEditAvatar: true,
     showRoleHint: false,
+    canChangeInstitutionEmail: true,
   },
   [USER_ROLES.SUPER_ADMIN]: {
     canEditLinkedIn: true,
     canEditAvatar: true,
     showRoleHint: false,
+    canChangeInstitutionEmail: false,
   },
 } as const

@@ -66,7 +66,7 @@ flowchart TD
 
 - Table: `lessons`
 - Input: topic_id, title, description, content (Lexical JSONB — default `app.empty_lesson_lexical_state()`), pages (slide JSONB where used by player), order_index, content_schema_version
-- Teacher CRUD may use bounded RPCs (`create_teacher_lesson`, `update_teacher_lesson`, …) to avoid RLS recursion — see `20260517090000_lessons_rls_break_recursion.sql`
+- Teacher CRUD may use bounded RPCs (`create_teacher_lesson`, `update_teacher_lesson`, …) to avoid RLS recursion — see `20260000000108_lessons_rls_break_recursion.sql`
 - Lesson body authoring details: [17_lesson_authoring.md](17_lesson_authoring.md)
 
 **Reorder topics / lessons**
@@ -285,15 +285,15 @@ RLS / access helpers:
 
 | Migration                                               | Purpose                                                    |
 | ------------------------------------------------------- | ---------------------------------------------------------- |
-| `20260329000001_course_delivery_01_types.sql`           | `course_version_status`, `course_delivery_status` enums    |
-| `20260329000002_course_delivery_02_tables.sql`          | `course_versions`, `course_version_*`, `course_deliveries` |
-| `20260329000006_course_delivery_06_functions_rpcs.sql`  | Delivery access helpers                                    |
-| `2026032900000501–0503_*`                               | `course_delivery_id` on progress/events + uniqueness       |
+| `20260000000047_course_delivery_01_types.sql`           | `course_version_status`, `course_delivery_status` enums    |
+| `20260000000048_course_delivery_02_tables.sql`          | `course_versions`, `course_version_*`, `course_deliveries` |
+| `20260000000053_course_delivery_06_functions_rpcs.sql`  | Delivery access helpers                                    |
+| `20260000000050–0503_*`                               | `course_delivery_id` on progress/events + uniqueness       |
 | `2026032600000402_attendance_topic_gates_02_tables.sql` | `topic_availability_rules` (authoring gates)               |
-| `20260515140000_topic_versions_01_types_tables.sql`     | `topic_versions`, pin columns on `course_version_topics`   |
-| `20260515140002_topic_versions_03_functions.sql`        | Topic resolution + updated access helpers                  |
-| `20260515140100–15140700_lesson_versions_*`             | `lesson_versions`, publish/resolve RPCs, RLS               |
-| `20260516000000–00003_lesson_draft_jsonb_*`             | `lessons.content` canonical; retire `lesson_blocks`        |
-| `20260517090000_lessons_rls_break_recursion.sql`        | Teacher lesson RPCs                                        |
+| `20260000000097_topic_versions_01_types_tables.sql`     | `topic_versions`, pin columns on `course_version_topics`   |
+| `20260000000098_topic_versions_03_functions.sql`        | Topic resolution + updated access helpers                  |
+| `20260000000100–15140700_lesson_versions_*`             | `lesson_versions`, publish/resolve RPCs, RLS               |
+| `20260000000106–00003_lesson_draft_jsonb_*`             | `lessons.content` canonical; retire `lesson_blocks`        |
+| `20260000000108_lessons_rls_break_recursion.sql`        | Teacher lesson RPCs                                        |
 
 Lexical editor and draft persistence: [17_lesson_authoring.md](17_lesson_authoring.md)

@@ -20,7 +20,7 @@ import type {
 const PLAN_LIST_COLUMNS =
   'id, code, name, description, billing_interval, is_active, deleted_at' as const
 const PLAN_EDITOR_COLUMNS =
-  'id, code, name, description, seat_cap_default, storage_bytes_cap_default, metadata, updated_at, deleted_at, price_amount, currency, billing_interval, is_active' as const
+  'id, code, name, description, storage_bytes_cap_default, metadata, updated_at, deleted_at, price_amount, currency, billing_interval, is_active' as const
 const ENTITLEMENT_COLUMNS =
   'id, plan_id, feature_id, boolean_value, integer_value, bigint_value, text_value' as const
 
@@ -49,7 +49,6 @@ function mapPlanEditorRow(row: PlanCatalogEditorRow): PlanCatalogEditorPlan {
     code: row.code,
     name: row.name,
     description: row.description,
-    seatCapDefault: row.seat_cap_default,
     storageBytesCapDefault: storage === null || storage === undefined ? null : String(storage),
     metadata: row.metadata,
     updatedAt: row.updated_at,
@@ -131,7 +130,6 @@ export async function updatePlanCatalogSettings(
   const { data, error } = await supabase
     .from('plan_catalog')
     .update({
-      seat_cap_default: patch.seat_cap_default,
       storage_bytes_cap_default: patch.storage_bytes_cap_default,
       metadata: patch.metadata,
       price_amount: patch.price_amount,

@@ -83,5 +83,31 @@
       "userIdMissing": "User ID not found.",
       "profileNotAvailable": "Profile data is currently unavailable."
     }
+  },
+  "emailChange": {
+    "adminOnlyBadge": "Institution admin",
+    "title": "Institution email",
+    "hint": "Send a confirmation link to change the login email for this institution account.",
+    "currentEmailLabel": "Current email",
+    "targetEmailLabel": "New email address",
+    "targetEmailPlaceholder": "name@example.com",
+    "emptyValue": "—",
+    "sameAsCurrentError": "The new email must be different from the current email.",
+    "submit": "Send Confirmation Link",
+    "submitting": "Sending...",
+    "successBadge": "Link sent",
+    "successTitle": "Confirmation link sent",
+    "successBody": "We sent a confirmation link to {{email}}. It expires in 10 minutes.",
+    "successExpires": "Request expires at {{expiresAt}}.",
+    "securityNote": "The raw token is never stored. This request is only valid for active institution admins and is audited on both request and redemption.",
+    "requestError": "Failed to send confirmation link.",
+    "redeemLoading": "Confirming your email change...",
+    "redeemSuccessTitle": "Email change confirmed",
+    "redeemSuccessBody": "Your account has been updated. You are being signed out so you can log back in with the new email.",
+    "redeemSuccessCta": "Go to login",
+    "redeemErrorTitle": "Email change could not be confirmed",
+    "redeemErrorCta": "Back to login",
+    "redeemInvalidLink": "Invalid confirmation link.",
+    "redeemFailed": "This confirmation link is invalid, expired, or already used."
   }
 }

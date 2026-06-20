@@ -327,8 +327,11 @@
       },
       "settings": {
         "codeLabel": "Plan code",
-        "deletedBadge": "Deleted",
-        "seatCapDefault": "Seat cap (default)",
+        "status": {
+          "published": "Published",
+          "draft": "Draft",
+          "archived": "Archived"
+        },
         "storageBytesCapDefault": "Storage cap (bytes, default)",
         "metadata": "Metadata (JSON)",
         "priceAmount": "Price amount",
@@ -339,7 +342,6 @@
         "updatedAt": "Updated at",
         "deletedAt": "Deleted at",
         "placeholders": {
-          "seatCap": "e.g. 50 (empty = no cap)",
           "storageBytes": "Bytes (digits only)",
           "metadata": "{ }",
           "priceAmount": "e.g. 99.00"
@@ -350,7 +352,6 @@
           "yearly": "Yearly"
         },
         "errors": {
-          "seatCap": "Enter a valid non-negative seat cap or leave empty.",
           "metadataJson": "Metadata must be valid JSON.",
           "priceAmount": "Enter a valid price or leave empty.",
           "billingInterval": "Choose a billing interval."

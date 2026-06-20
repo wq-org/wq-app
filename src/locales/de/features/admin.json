@@ -327,8 +327,11 @@
       },
       "settings": {
         "codeLabel": "Plan-Code",
-        "deletedBadge": "Gelöscht",
-        "seatCapDefault": "Sitzplatzlimit (Standard)",
+        "status": {
+          "published": "Veröffentlicht",
+          "draft": "Entwurf",
+          "archived": "Archiviert"
+        },
         "storageBytesCapDefault": "Speicherlimit in Bytes (Standard)",
         "metadata": "Metadaten (JSON)",
         "priceAmount": "Preis",
@@ -339,7 +342,6 @@
         "updatedAt": "Aktualisiert am",
         "deletedAt": "Gelöscht am",
         "placeholders": {
-          "seatCap": "z. B. 50 (leer = kein Limit)",
           "storageBytes": "Bytes (nur Ziffern)",
           "metadata": "{ }",
           "priceAmount": "z. B. 99,00"
@@ -350,7 +352,6 @@
           "yearly": "Jährlich"
         },
         "errors": {
-          "seatCap": "Gültiges nicht negatives Limit oder leer lassen.",
           "metadataJson": "Metadaten müssen gültiges JSON sein.",
           "priceAmount": "Gültigen Preis eingeben oder leer lassen.",
           "billingInterval": "Abrechnungsintervall wählen."

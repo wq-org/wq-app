@@ -28,6 +28,7 @@ import type { PricingColumn, PricingSection } from '@/components/shared/PricingC
 import type { PlanCatalog } from '../types/planEntitlements.types'
 import type { PlanEntitlementEditorGroup } from '../types/planEntitlements.types'
 import { usePlanPreview } from '../hooks/usePlanPreview'
+import { PlanCatalogStatusBadge } from './PlanCatalogStatusBadge'
 
 type PlanCatalogPreviewDrawerProps = {
   plan: PlanCatalog | null
@@ -106,7 +107,15 @@ function PlanCatalogPreviewDrawer({ plan, open, onOpenChange }: PlanCatalogPrevi
       <DrawerContent>
         <div className="flex items-center justify-between px-4 pt-4">
           <DrawerHeader className="flex-1 p-0">
-            <DrawerTitle>{plan?.name ?? t('planCatalog.preview.title')}</DrawerTitle>
+            <div className="flex flex-wrap items-center gap-2">
+              <DrawerTitle>{plan?.name ?? t('planCatalog.preview.title')}</DrawerTitle>
+              {plan ? (
+                <PlanCatalogStatusBadge
+                  isActive={plan.isActive}
+                  t={t}
+                />
+              ) : null}
+            </div>
             <DrawerDescription className="sr-only">
               {t('planCatalog.preview.title')}
             </DrawerDescription>

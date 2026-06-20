@@ -1,4 +1,0 @@
--- =============================================================================
--- NOTIFICATIONS — data migrations (greenfield: none; legacy rows dropped in 02)
--- Requires: 20260329000027_notifications_04_functions_rpcs.sql
--- =============================================================================

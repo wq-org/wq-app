@@ -2,6 +2,7 @@ import { Routes, Route, Navigate, Outlet, useParams } from 'react-router-dom'
 import {
   AuthInvitePage,
   LoginPage,
+  ChangeEmailPage,
   SignUpPage,
   VerifyEmailPage,
   ForgotPasswordPage,
@@ -218,6 +219,10 @@ const App = () => {
                 <Route
                   path="invite"
                   element={<AuthInvitePage />}
+                />
+                <Route
+                  path="change-email"
+                  element={<ChangeEmailPage />}
                 />
                 <Route
                   path="signup"

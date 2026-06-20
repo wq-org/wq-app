@@ -468,7 +468,7 @@ AND institution_id = [mandant];
 
 ### 6.4 Canonical `audit.log_event` Signature — DO NOT CHANGE
 
-Source of truth: `supabase/migrations/2026032100000104_super_admin_04_functions_rpcs.sql`.
+Source of truth: `supabase/migrations/20260000000006_super_admin_04_functions_rpcs.sql`.
 
 ```sql
 audit.log_event(
@@ -490,7 +490,7 @@ SET search_path = ''                        -- empty: every reference must be sc
 - `search_path = ''` (empty) forces fully-qualified schema references inside the function body — prevents object-masking attacks (`principle_database.md` §"Security-definer functions and safe SQL").
 - `RETURNS uuid` (the inserted `audit.events.id`), not `void`. Callers may chain on the returned id.
 - Direct `INSERT/UPDATE/DELETE` on `audit.events` is `REVOKE`d from `authenticated` and `anon` roles
-  (`supabase/migrations/2026032100000107_super_admin_07_rls_policies.sql`). The function is the only write path.
+  (`supabase/migrations/20260000000008_super_admin_07_rls_policies.sql`). The function is the only write path.
 
 **Forbidden parameter names — `audit.log_event` does NOT accept these:**
 

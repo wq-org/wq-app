@@ -24,7 +24,6 @@ export type PlanCatalogEditorRow = {
   code: string
   name: string
   description: string | null
-  seat_cap_default: number | null
   storage_bytes_cap_default: string | number | null
   metadata: unknown | null
   updated_at: string
@@ -40,7 +39,6 @@ export type PlanCatalogEditorPlan = {
   code: string
   name: string
   description: string | null
-  seatCapDefault: number | null
   storageBytesCapDefault: string | null
   metadata: unknown | null
   updatedAt: string
@@ -52,7 +50,6 @@ export type PlanCatalogEditorPlan = {
 }
 
 export type PlanCatalogSettingsPatch = {
-  seat_cap_default: number | null
   storage_bytes_cap_default: string | null
   metadata: unknown | null
   price_amount: number | null

@@ -15,7 +15,7 @@ The gap-fix sprint was scoped to "fix broken infrastructure only — no new audi
 
 2. `file_name` is a free-text field. Per DSGVO §2.3, free-text fields are **forbidden** in `audit.events` (data minimisation, Art. 5 Abs. 1 lit. c DSGVO). A `cloud_files` trigger that naively logs `file_name` would introduce a §2.3 violation into the audit log on day one.
 
-3. The existing `20260329000021_cloud_assets_06_triggers.sql` contains only structural triggers (`normalize_cloud_file_from_folder`, `validate_cloud_folder_tree`, `validate_cloud_files_institution_coherence`) — zero audit event emission. There is no existing pattern to accidentally break.
+3. The existing `20260000000065_cloud_assets_06_triggers.sql` contains only structural triggers (`normalize_cloud_file_from_folder`, `validate_cloud_folder_tree`, `validate_cloud_files_institution_coherence`) — zero audit event emission. There is no existing pattern to accidentally break.
 
 ---
 
@@ -69,7 +69,7 @@ Hard-delete: kein Trigger möglich — muss via RPC-Wrapper sichergestellt werde
 
 ## Step 2 — Understand the Existing `cloud_files` Table
 
-From `20260329000017_cloud_assets_02_tables.sql`, the relevant columns on `public.cloud_files` are:
+From `20260000000062_cloud_assets_02_tables.sql`, the relevant columns on `public.cloud_files` are:
 
 | Column           | Type                | Notes                                                            |
 | ---------------- | ------------------- | ---------------------------------------------------------------- |
@@ -99,7 +99,7 @@ The `scope` is populated by the existing `normalize_cloud_file_from_folder` trig
 
 Use `20260522` as the date prefix + a 6-digit sequential suffix greater than the last migration of the day (`20260522090000_auto_membership_on_institution_create.sql`).
 
-Suggested filename: **`20260522120000_cloud_files_audit_trigger.sql`**
+Suggested filename: **`20260000000110_cloud_files_audit_trigger.sql`**
 
 ### Full migration SQL
 
@@ -116,7 +116,7 @@ Suggested filename: **`20260522120000_cloud_files_audit_trigger.sql`**
 -- Prerequisites
 --   - audit.log_event(...) with p_subject_type / p_subject_id signature
 --     (see audit-logevent-holistic-fix.md Step 2)
---   - public.cloud_files table (20260329000017_cloud_assets_02_tables.sql)
+--   - public.cloud_files table (20260000000062_cloud_assets_02_tables.sql)
 --   - public.normalize_cloud_file_from_folder trigger fires BEFORE INSERT
 --     so NEW.scope is already populated when this AFTER trigger fires
 --
@@ -249,7 +249,7 @@ PERFORM audit.log_event(
 DELETE FROM public.cloud_files WHERE id = p_cloud_file_id;
 ```
 
-Check `20260329000019_cloud_assets_04_functions_rpcs.sql` for all RPCs that hard-delete `cloud_files` rows and add the pre-delete emit to each.
+Check `20260000000064_cloud_assets_04_functions_rpcs.sql` for all RPCs that hard-delete `cloud_files` rows and add the pre-delete emit to each.
 
 ---
 
@@ -309,7 +309,7 @@ ROLLBACK;
 ## Definition of Done
 
 - [ ] `principle_dsgvo_audit_datendefinition.md §4.9` added, reviewed, and committed
-- [ ] Migration `20260522120000_cloud_files_audit_trigger.sql` applied cleanly
+- [ ] Migration `20260000000110_cloud_files_audit_trigger.sql` applied cleanly
 - [ ] `audit_cloud_files` trigger bound to `public.cloud_files` (INSERT + UPDATE)
 - [ ] Smoke test: `cloud_file.created` event emitted on INSERT
 - [ ] Smoke test: `cloud_file.deleted` event emitted on soft-delete UPDATE

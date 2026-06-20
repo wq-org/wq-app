@@ -54,9 +54,9 @@ https://certbot.eff.org/?utm_source=perplexity
 | `billing_providers`           | PSP linkage (one row per institution × provider)                                          | `provider` = `'stripe'`, `external_customer_id`, `external_subscription_id`, `external_price_id` — unique `(institution_id, provider)`                                                                                      |
 | `institution_invoice_records` | Invoice history for admins                                                                | `external_id` (Stripe invoice id), `amount_cents`, `status`, `paid_at`, `metadata`                                                                                                                                          |
 
-**`billing_status` enum** (`2026032100000101_super_admin_01_types.sql`): `active`, `trialing`, `past_due`, `grace`, `suspended`, `expired`, `cancelled` (UK spelling in DB).
+**`billing_status` enum** (`20260000000003_super_admin_01_types.sql`): `active`, `trialing`, `past_due`, `grace`, `suspended`, `expired`, `cancelled` (UK spelling in DB).
 
-**Onboarding without Stripe:** New institutions created via invite/admin RPCs get `institution_subscriptions` with `billing_status = 'trialing'` and `plan_catalog.code = 'trial'` (`2026051012000002_institution_invite_workflow_02_functions.sql`) — no `billing_providers` row until checkout.
+**Onboarding without Stripe:** New institutions created via invite/admin RPCs get `institution_subscriptions` with `billing_status = 'trialing'` and `plan_catalog.code = 'trial'` (`20260000000091_institution_invite_workflow_02_functions.sql`) — no `billing_providers` row until checkout.
 
 **Not in repo yet:** No `supabase/functions/stripe-webhook` (only invite email edge functions exist). Webhook handler is the integration gap — must use **service role** (or SECURITY DEFINER RPC) to upsert `billing_providers` / `institution_subscriptions` / `institution_invoice_records`; RLS blocks anon/authenticated direct writes (`billing_providers_super_admin`, `inst_subs_super_admin`).
 
@@ -548,7 +548,7 @@ Für den **Start mit 1 Schule (z.B. 200 Azubis)** kannst du mit **€32/Monat ne
 | `customer.subscription.deleted`           | `billing_status='cancelled'`, preserve data per domain doc                                                                                                                                                                                                  |
 | `invoice.paid` / `invoice.payment_failed` | Insert/update `institution_invoice_records`; on failure set `past_due` + optional `grace_ends_at`                                                                                                                                                           |
 
-**App enforcement already uses subscription state:** e.g. `register_cloud_file_record` allows upload when `billing_status IN ('active','trialing','past_due')` (`20260329000019_cloud_assets_04_functions_rpcs.sql`). Feature flags: `list_my_institution_feature_flags()` (`20260503140000_list_my_institution_feature_flags.sql`).
+**App enforcement already uses subscription state:** e.g. `register_cloud_file_record` allows upload when `billing_status IN ('active','trialing','past_due')` (`20260000000064_cloud_assets_04_functions_rpcs.sql`). Feature flags: `list_my_institution_feature_flags()` (`20260000000086_list_my_institution_feature_flags.sql`).
 
 ## Warum so günstig?
 

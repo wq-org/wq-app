@@ -1,0 +1,187 @@
+-- =============================================================================
+-- INSTITUTION ADMIN — Tables & Column Additions
+-- Core tenant tables: memberships, classrooms, classroom_members, settings,
+-- quotas, invites, invoice records, data-subject requests. The faculty→
+-- programme→cohort→class_group hierarchy (+ offerings + staff scopes) was
+-- removed for the Hetzner minimal core; access is delivery-based.
+-- Requires: 20260000000002_super_admin, 20260321000001_super_admin (all 8 parts)
+-- =============================================================================
+
+-- =============================================================================
+-- 1. profiles.active_institution_id — "active tenant" context
+--    Used by app.get_current_institution_id(); RLS always verifies membership.
+-- =============================================================================
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS active_institution_id uuid
+    REFERENCES public.institutions (id) ON DELETE SET NULL;
+
+COMMENT ON COLUMN public.profiles.active_institution_id IS
+  'Currently selected tenant. Convenience column; RLS validates membership independently.';
+
+-- =============================================================================
+-- 2. INSTITUTION MEMBERSHIPS — authoritative user-to-tenant mapping
+-- =============================================================================
+CREATE TABLE public.institution_memberships (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES public.profiles (user_id) ON DELETE CASCADE,
+  institution_id uuid NOT NULL REFERENCES public.institutions (id) ON DELETE CASCADE,
+  membership_role membership_role NOT NULL DEFAULT 'student',
+  status membership_status NOT NULL DEFAULT 'active',
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  deleted_at timestamptz,
+  left_institution_at timestamptz,
+  leave_reason text
+);
+
+COMMENT ON TABLE public.institution_memberships IS 'Authoritative user-to-tenant mapping with role and lifecycle status.';
+COMMENT ON COLUMN public.institution_memberships.institution_id IS 'Tenant boundary.';
+COMMENT ON COLUMN public.institution_memberships.membership_role IS 'Tenant-scoped role (institution_admin | teacher | student).';
+COMMENT ON COLUMN public.institution_memberships.status IS 'Lifecycle: invited → active → suspended. Default active; set invited for email invite flows.';
+COMMENT ON COLUMN public.institution_memberships.deleted_at IS 'Soft-delete; allows re-invitation.';
+COMMENT ON COLUMN public.institution_memberships.left_institution_at IS 'When set, user no longer has tenant access (graduation, transfer, expulsion). Excluded from app.member_institution_ids().';
+COMMENT ON COLUMN public.institution_memberships.leave_reason IS 'Optional: year_end, graduated, transfer, expelled, manual, etc.';
+
+-- =============================================================================
+-- 3. CLASSROOMS — minimal governance shell (pedagogy fields in doc 05)
+-- =============================================================================
+CREATE TABLE public.classrooms (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id uuid NOT NULL REFERENCES public.institutions (id) ON DELETE CASCADE,
+  primary_teacher_id uuid REFERENCES public.profiles (user_id) ON DELETE SET NULL,
+  title text NOT NULL,
+  status text NOT NULL DEFAULT 'active'
+    CHECK (status IN ('active', 'inactive')),
+  deactivated_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  CONSTRAINT uq_classrooms_id_institution_id UNIQUE (id, institution_id)
+);
+
+COMMENT ON TABLE public.classrooms IS 'Operational classroom; governance managed here, pedagogy in doc 05.';
+COMMENT ON COLUMN public.classrooms.institution_id IS 'Tenant boundary.';
+COMMENT ON COLUMN public.classrooms.primary_teacher_id IS
+  'Ownership; can be reassigned by institution admin. Application must also insert this user into classroom_members with an active row (withdrawn_at NULL) so membership-scoped helpers such as app.list_active_classroom_ids() include the lead teacher; management helpers may still use this column directly.';
+
+-- =============================================================================
+-- 4. CLASSROOM_MEMBERS — student/co-teacher assignment + year rollover (doc 05)
+-- =============================================================================
+CREATE TABLE public.classroom_members (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id uuid NOT NULL REFERENCES public.institutions (id) ON DELETE CASCADE,
+  classroom_id uuid NOT NULL,
+  user_id uuid NOT NULL REFERENCES public.profiles (user_id) ON DELETE CASCADE,
+  membership_role classroom_member_role NOT NULL DEFAULT 'student',
+  enrolled_at timestamptz NOT NULL DEFAULT now(),
+  withdrawn_at timestamptz,
+  leave_reason text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  CONSTRAINT uq_classroom_members_id_institution_id UNIQUE (id, institution_id),
+  CONSTRAINT fk_classroom_members_classrooms FOREIGN KEY (classroom_id, institution_id)
+    REFERENCES public.classrooms (id, institution_id) ON DELETE CASCADE
+);
+
+COMMENT ON TABLE public.classroom_members IS
+  'Assigns students and co-teachers to classrooms; withdrawn_at ends assignment without deleting history (year rollover). Primary teacher should also have a membership row so RLS and app.list_active_classroom_ids() stay aligned with classrooms.primary_teacher_id.';
+COMMENT ON COLUMN public.classroom_members.institution_id IS 'Tenant boundary; must match classroom.';
+COMMENT ON COLUMN public.classroom_members.withdrawn_at IS 'NULL = active in classroom; set at year-end or transfer to close assignment.';
+COMMENT ON COLUMN public.classroom_members.leave_reason IS 'Optional: year_end, transfer, graduated, course_change, manual.';
+
+-- =============================================================================
+-- 5. INSTITUTION SETTINGS — one row per institution
+-- =============================================================================
+CREATE TABLE public.institution_settings (
+  institution_id uuid PRIMARY KEY REFERENCES public.institutions (id) ON DELETE CASCADE,
+  default_locale text NOT NULL DEFAULT 'de',
+  timezone text NOT NULL DEFAULT 'Europe/Berlin',
+  retention_policy_code text,
+  notification_defaults jsonb,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+COMMENT ON TABLE public.institution_settings IS 'Per-institution configuration (locale, retention, notifications).';
+COMMENT ON COLUMN public.institution_settings.retention_policy_code IS 'References a retention policy; drives deletion pipeline timing.';
+COMMENT ON COLUMN public.institution_settings.notification_defaults IS 'Default notification preferences for new users in this institution.';
+
+-- =============================================================================
+-- 6. INSTITUTION QUOTAS USAGE — counters maintained by app / triggers
+-- =============================================================================
+CREATE TABLE public.institution_quotas_usage (
+  institution_id uuid PRIMARY KEY REFERENCES public.institutions (id) ON DELETE CASCADE,
+  seats_used integer NOT NULL DEFAULT 0,
+  storage_used_bytes bigint NOT NULL DEFAULT 0,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+COMMENT ON TABLE public.institution_quotas_usage IS 'Live seat and storage usage counters per institution.';
+COMMENT ON COLUMN public.institution_quotas_usage.seats_used IS 'Count of active membership rows.';
+COMMENT ON COLUMN public.institution_quotas_usage.storage_used_bytes IS 'Aggregate storage consumed (bytes).';
+
+-- =============================================================================
+-- 7. Email-first invites (no auth user yet) — token link + redemption after signup
+-- =============================================================================
+CREATE TABLE public.institution_invites (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id uuid NOT NULL REFERENCES public.institutions (id) ON DELETE CASCADE,
+  email text NOT NULL,
+  membership_role public.membership_role NOT NULL,
+  token uuid NOT NULL DEFAULT gen_random_uuid(),
+  expires_at timestamptz NOT NULL,
+  invited_by uuid REFERENCES public.profiles (user_id) ON DELETE SET NULL,
+  accepted_at timestamptz,
+  accepted_user_id uuid REFERENCES public.profiles (user_id) ON DELETE SET NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  CONSTRAINT uq_institution_invites_token UNIQUE (token),
+  CONSTRAINT chk_institution_invites_membership_role CHECK (
+    membership_role IN ('teacher'::public.membership_role, 'student'::public.membership_role)
+  )
+);
+
+COMMENT ON TABLE public.institution_invites IS
+  'Pending email invites when user_id is unknown; app sends token in URL and calls redeem_institution_invite after Auth signup.';
+COMMENT ON COLUMN public.institution_invites.token IS 'Secret embedded in invite URL; treat like a magic link.';
+
+GRANT SELECT ON TABLE public.institution_invites TO anon;
+
+-- =============================================================================
+-- 8. INSTITUTION INVOICE RECORDS — billing visibility
+-- =============================================================================
+CREATE TABLE public.institution_invoice_records (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id uuid NOT NULL REFERENCES public.institutions (id) ON DELETE CASCADE,
+  external_id text,
+  amount_cents integer NOT NULL,
+  currency text NOT NULL DEFAULT 'EUR',
+  issued_at timestamptz NOT NULL,
+  due_at timestamptz,
+  paid_at timestamptz,
+  status text NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending', 'paid', 'overdue', 'cancelled', 'refunded')),
+  metadata jsonb,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+COMMENT ON TABLE public.institution_invoice_records IS 'Invoice history for billing transparency (external payment processor).';
+
+-- =============================================================================
+-- 9. DATA SUBJECT REQUESTS — GDPR export / erasure tracking
+-- =============================================================================
+CREATE TABLE public.data_subject_requests (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  institution_id uuid NOT NULL REFERENCES public.institutions (id) ON DELETE CASCADE,
+  subject_user_id uuid NOT NULL REFERENCES public.profiles (user_id) ON DELETE CASCADE,
+  request_type text NOT NULL
+    CHECK (request_type IN ('access', 'erasure', 'portability', 'rectification')),
+  status text NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending', 'processing', 'completed', 'rejected')),
+  notes text,
+  completed_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+COMMENT ON TABLE public.data_subject_requests IS
+  'GDPR data-subject request tracker. Institution admin initiates; super admin approves.';

@@ -65,10 +65,11 @@ Naming checks (no Python deps beyond the stdlib):
 
 ```bash
 npm run lint:sql
-# same as: python3 scripts/check_sql_naming.py
+# same as: python3 -m sqlfluff lint supabase/migrations --dialect postgres
+#          && python3 scripts/check_sql_naming.py
 ```
 
-Optional SQL formatting ([SQLFluff](https://docs.sqlfluff.com/en/stable/)): `pip install -r requirements-dev.txt`, then `npm run format:sql`. See [docs/architecture/principle_database.md](docs/architecture/principle_database.md).
+SQL linting/formatting uses [SQLFluff](https://docs.sqlfluff.com/en/stable/): `pip install -r requirements-dev.txt`, then `npm run lint:sql` or `npm run format:sql`. See [docs/architecture/principle_database.md](docs/architecture/principle_database.md).
 
 # Docs
 

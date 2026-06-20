@@ -1,12 +1,15 @@
-# Used by npm run format:sql (sqlfluff fix), not by npm run lint:sql.
+# Used by npm run lint:sql (sqlfluff lint) and npm run format:sql (sqlfluff fix).
 # Baseline migrations excluded from SQLFluff: see .sqlfluffignore (security-sensitive files must not be auto-touched).
 # Tooling split (see docs/architecture/principle_database.md — migrations tooling):
-# - SQLFluff fix: optional layout/spacing/capitalisation when you choose to format migrations.
-# - npm run lint:sql: scripts/check_sql_naming.py only (trg_/idx_/fk_/uq_/chk_/policies, banned abbreviations).
+# - SQLFluff lint/fix: layout/spacing/capitalisation for migrations.
+# - SQL naming check: scripts/check_sql_naming.py (trg_/idx_/fk_/uq_/chk_/policies, banned abbreviations).
 # - Manual / review: RLS correctness, tenant columns, FORCE ROW LEVEL SECURITY, GDPR/data lifecycle, migration order.
 #
-# Supabase migrations often mix PL/pgSQL ($$ blocks), triggers, and storage policies; SQLFluff’s Postgres
-# dialect can be strict on indentation and aliasing inside function bodies — excluded rules below keep CI stable.
+# Supabase migrations often mix PL/pgSQL ($$ blocks), triggers, quoted policy
+# names, and storage policies; SQLFluff's Postgres dialect can be strict on
+# indentation, aliasing, and historical case style inside function bodies. The
+# excluded rules below keep CI focused on parse/layout issues instead of fighting
+# valid Supabase migration SQL.
 # ST06 (SELECT *) is disabled for migrations because NEW/OLD and compact triggers commonly use SELECT *.
 # LT01: allow column-aligned CREATE TABLE / seed layout (single-space reflow would churn migrations).
 # CP02: PL/pgSQL uses uppercase NEW/OLD; identifier lower-case rule fights that.
@@ -18,7 +21,7 @@
 large_file_skip_byte_limit = 50000
 dialect = postgres
 max_line_length = 100
-exclude_rules = LT05, LT02, LT01, AL01, RF03, ST06, CP01, CP02, CP04
+exclude_rules = LT05, LT02, LT01, LT08, LT14, AL01, AM05, RF02, RF03, RF04, RF05, RF06, ST06, ST09, CP01, CP02, CP03, CP04, CP05
 sql_file_exts = .sql
 
 [sqlfluff:indentation]

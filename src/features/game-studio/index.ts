@@ -133,7 +133,6 @@ export {
   softDeleteGame,
   getTeacherFlowGames,
   getPublishedGamesForCourse,
-  getPublishedGamesFromFollowedTeachers,
   linkGameToCourse,
   unlinkGameFromCourse,
   getGameLinkedCourseIds,

@@ -14,10 +14,16 @@ export type SettingsCapabilities = {
   canEditLinkedIn: boolean
   canEditAvatar: boolean
   showRoleHint: boolean
+  canChangeInstitutionEmail: boolean
 }
 
 export type SettingsProfileSectionProps = {
   role: UserRole
   /** Omit standalone page chrome (min-h-screen + nested container). Use inside admin workspace shell. */
   embedded?: boolean
+}
+
+export type InstitutionEmailChangeRequestState = {
+  targetEmail: string
+  expiresAt: string
 }

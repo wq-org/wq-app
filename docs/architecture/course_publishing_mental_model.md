@@ -1,8 +1,8 @@
 # Course Publishing, Patch & Delivery — Ganzheitliches Implementierungsmodell
 
 > Referenz für Implementierung. Quelle: `docs/domain/07_course.md` + Migrations
-> (`20260329000001/02/06_course_delivery_*`, `20260515140100..140400_lesson_versions_*`,
-> `20260515140002_topic_versions_03_functions.sql`).
+> (`20260000000047/02/06_course_delivery_*`, `20260000000100..140400_lesson_versions_*`,
+> `20260000000098_topic_versions_03_functions.sql`).
 
 ## Kernidee: Drei getrennte Ebenen
 

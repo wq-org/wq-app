@@ -1,10 +1,12 @@
 import { useTranslation } from 'react-i18next'
 import { Eye, Settings2 } from 'lucide-react'
 
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
 import type { PlanCatalog } from '../types/planEntitlements.types'
+import { PlanCatalogStatusBadge } from './PlanCatalogStatusBadge'
 
 type PlanCatalogCardProps = {
   plan: PlanCatalog
@@ -21,7 +23,16 @@ function PlanCatalogCard({ plan, onEdit, onPreview }: PlanCatalogCardProps) {
   return (
     <Card className="gap-0 py-3">
       <CardHeader className="flex flex-row items-start justify-between px-4 pb-2 pt-0">
-        <CardTitle className="min-w-0 flex-1 text-base font-semibold">{plan.name}</CardTitle>
+        <div className="min-w-0 flex-1 space-y-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <CardTitle className="min-w-0 text-base font-semibold">{plan.name}</CardTitle>
+            <PlanCatalogStatusBadge
+              isActive={plan.isActive}
+              t={t}
+            />
+          </div>
+          <Badge variant="secondary">{plan.code}</Badge>
+        </div>
         <Button
           type="button"
           variant="ghost"

@@ -42,7 +42,7 @@ Super admin logs in
 │   ├── institution_entitlement_overrides — FOR ALL (inst_entitlement_overrides_super_admin)
 │   └── billing_providers — FOR ALL (billing_providers_super_admin)
 │
-├── USER LIFECYCLE (20260209000002_super_admin.sql)
+├── USER LIFECYCLE (20260000000002_super_admin.sql)
 │   ├── list_admin_users()
 │   ├── admin_delete_user()
 │   └── admin_set_user_active_status()
@@ -115,7 +115,7 @@ Institution admin logs in (active membership, left_institution_at IS NULL)
 │
 ├── CLOUD ASSETS (DB + bucket)
 │   ├── cloud_folders, cloud_files, cloud_file_links, cloud_file_shares — FOR ALL (*_all_institution_admin)
-│   └── storage.objects (cloud prefix) — institution path policies (20260329000023_storage_cloud_objects_rls)
+│   └── storage.objects (cloud prefix) — institution path policies (20260000000067_storage_cloud_objects_rls)
 │
 └── STORAGE (legacy / avatars)
       └── cloud bucket — member_institution_ids() + path rules (same family as Phase A baseline)
@@ -186,7 +186,7 @@ Teacher logs in (active institution membership)
 │   ├── teacher_followers — SELECT self as teacher (tf_own_read)
 │   ├── notification_deliveries — own read/update (notification_deliveries_select_own, notification_deliveries_update_own)
 │   ├── cloud_folders / cloud_files / links / shares — manage via user_can_manage_* when primary/co_teacher scope applies
-│   └── storage.objects — cloud path policies (20260329000023)
+│   └── storage.objects — cloud path policies (20260000000067)
 │
 └── Teacher creates a classroom-scoped task (flow)
       │
@@ -353,7 +353,7 @@ Chat (20260329)
   Helpers: app.user_in_active_conversation, app.caller_eligible_for_conversation_context
   RLS: participant read/send + contextual eligibility; institution_admin / super_admin paths; safeguarding matrix in docs/domain/11_chat.md mostly app-layer
 
-Notifications (20260329000024–030)
+Notifications (20260000000068–030)
   notification_events + notification_deliveries — fan-out via create_notification_event_with_deliveries; user read/update own deliveries; institution_admin read monitor
   notification_preferences — scoped base + overrides; user manages own
 
@@ -453,25 +453,25 @@ storage.objects (cloud bucket)
 
 | Area                                                                 | Files (split `_01`…`_08` in repo)                                                                            |
 | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Baseline LMS                                                         | `20260209000001_baseline_schema.sql`, `20260209000002_super_admin.sql`                                       |
+| Baseline LMS                                                         | `20260000000001_baseline_schema.sql`, `20260000000002_super_admin.sql`                                       |
 | Platform billing                                                     | `20260321000001_super_admin_*`                                                                               |
 | Tenant org, memberships, classrooms                                  | `20260321000002_institution_admin_*`                                                                         |
 | LMS RLS, games `institution_id` / `course_id`                        | `20260323000001_baseline_lms_rls_memberships_*`                                                              |
 | Classroom links, progress, learning_events                           | `20260323000002_classroom_course_links_lesson_progress_*`                                                    |
-| Course versions + deliveries + delivery-scoped progress/events       | `20260329000001_course_delivery_01_types.sql` … `20260329000008_course_delivery_08_attendance_functions.sql` |
+| Course versions + deliveries + delivery-scoped progress/events       | `20260000000047_course_delivery_01_types.sql` … `20260329000008_course_delivery_08_attendance_functions.sql` |
 | Game runtime                                                         | `20260323000003_game_runtime_*`                                                                              |
 | Tasks / notes                                                        | `20260323000004_tasks_notes_*`                                                                               |
-| Chat                                                                 | `20260329000009_chat_*` … `20260329000015_chat_*` (types, tables, indexes, helpers, backfill, triggers, RLS) |
-| Notifications                                                        | `20260329000024_notifications_*` … `030`                                                                     |
+| Chat                                                                 | `20260000000055_chat_*` … `20260000000060_chat_*` (types, tables, indexes, helpers, backfill, triggers, RLS) |
+| Notifications                                                        | `20260000000068_notifications_*` … `030`                                                                     |
 | Rewards                                                              | `20260323000007_rewards_mvp_*`                                                                               |
 | Announcements                                                        | `20260325000001_announcements_*`                                                                             |
-| `games` JSON flexibility (optional)                                  | `20260326000002_games_schema_flex.sql`                                                                       |
-| Lexical / content columns (tables)                                   | `20260326000001_lexical_content_*`                                                                           |
+| `games` JSON flexibility (optional)                                  | `20260000000040_games_schema_flex.sql`                                                                       |
+| Lexical / content columns (tables)                                   | `20260000000039_lexical_content_*`                                                                           |
 | Attendance topic gates + `topic_availability_rules`, `topics` policy | `20260326000004_attendance_topic_gates_*`                                                                    |
 | Attendance recurrence (schedules, exceptions, materialization)       | `20260326000005_attendance_recurrence_*`                                                                     |
 | Game versions + `games.current_published_version_id`                 | `20260326000003_game_versions_*`                                                                             |
-| Cloud assets (folders, files, links, shares)                         | `20260329000016_cloud_assets_*` … `022`                                                                      |
-| Storage `storage.objects` RLS for cloud                              | `20260329000023_storage_cloud_objects_rls_01_policies.sql`                                                   |
+| Cloud assets (folders, files, links, shares)                         | `20260000000061_cloud_assets_*` … `022`                                                                      |
+| Storage `storage.objects` RLS for cloud                              | `20260000000067_storage_cloud_objects_rls_01_policies.sql`                                                   |
 
 # Institution admin onboarding (DB / migrations)
 

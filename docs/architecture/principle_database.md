@@ -65,23 +65,23 @@ Search: `rg -l 'HETZNER_TEARDOWN' supabase/migrations/`
 
 #### Block-level lesson analytics (do not add `lesson_block_events`)
 
-The separate `lesson_block_events` table and `lesson_block_event_type` enum were **retired** (dropped in `20260516000003_lesson_draft_jsonb_04_retire_legacy_blocks.sql`). They were never wired in application code and are tagged `WQ-BLOCK-ANALYTICS` / `SAFE_TO_DELETE_LATER` for Hetzner migration-chain cleanup.
+Legacy `lesson_block_events`, `lesson_block_event_type`, `lesson_blocks`, and `lesson_block_type_registry` are **not part of the fresh baseline**. They were never wired into application code and were removed during the Hetzner migration-chain cleanup.
 
 Use **`learning_events`** instead: optional `block_index`, `block_type`, and `event_type = 'interaction_recorded'` with detail in `metadata` JSONB. See `docs/domain/17_lesson_authoring.md`.
 
 #### Lesson progress snapshot (do not add `lesson_progress`)
 
-The `lesson_progress` table stores **current state only** (`last_position`, `completed_at`) — not an event history. It was never wired in application code and is tagged `WQ-LESSON-PROGRESS` for Hetzner cleanup.
-
-- **Strategy 1 (existing DB):** `20260619000001_drop_lesson_progress.sql` drops the table.
-- **Strategy 2 (fresh Hetzner DB):** omit all `lesson_progress` CREATE/RLS/index sections tagged `PARTIAL_SAFE_TO_DELETE_LATER`.
+`lesson_progress` stored **current state only** (`last_position`, `completed_at`) — not an event history. It was never wired in application code and is **not part of the fresh baseline**.
 
 Use **`learning_events`** for resume/completion history (`page_viewed`, `page_time_spent`, `lesson_completed`, etc.) scoped by `course_delivery_id`.
 
 #### SQL tooling (migrations)
 
-- **`npm run lint:sql`** runs **`scripts/check_sql_naming.py`** only: naming from [db_naming_convention.md](db_naming_convention.md) (triggers, indexes, functions, policies, `fk_` / `uq_` / `chk_` constraints, banned abbreviations). It does **not** validate RLS semantics, tenant columns, or GDPR-related design; those stay in review and runtime checks.
-- **Optional formatting:** [SQLFluff](https://docs.sqlfluff.com/en/stable/) (`pip install -r requirements-dev.txt`, then `npm run format:sql` or `python3 -m sqlfluff fix supabase/migrations --dialect postgres`). [.sqlfluff](.sqlfluff) tunes rules for Supabase/PL/pgSQL; review diffs before committing.
+- After every database change in `supabase/migrations` or any DB-related SQL file, run the repo scripts in [`package.json`](/Users/godfredamoahsefa/Documents/wq-app/package.json):
+  - `npm run lint:sql`
+  - `npm run format:sql` when you intentionally want SQLFluff to reformat a migration
+- `npm run lint:sql` runs SQLFluff lint first, then `scripts/check_sql_naming.py` for naming from [db_naming_convention.md](db_naming_convention.md) (triggers, indexes, functions, policies, `fk_` / `uq_` / `chk_` constraints, banned abbreviations). It does **not** validate RLS semantics, tenant columns, or GDPR-related design; those stay in review and runtime checks.
+- SQL formatting uses SQLFluff. Install it with `pip install -r requirements-dev.txt`, then run `npm run format:sql` (`python3 -m sqlfluff fix supabase/migrations --dialect postgres` plus the naming check). [.sqlfluff](../../.sqlfluff) tunes rules for Supabase/PL/pgSQL; review diffs before committing.
 
 ### Content payloads for "Game Studio" and rich text
 

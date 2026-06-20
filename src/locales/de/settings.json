@@ -83,5 +83,31 @@
       "userIdMissing": "Benutzer-ID wurde nicht gefunden.",
       "profileNotAvailable": "Profildaten sind aktuell nicht verfügbar."
     }
+  },
+  "emailChange": {
+    "adminOnlyBadge": "Institutions-Admin",
+    "title": "E-Mail der Institution",
+    "hint": "Sende einen Bestätigungslink, um die Login-E-Mail für dieses Institutionskonto zu ändern.",
+    "currentEmailLabel": "Aktuelle E-Mail",
+    "targetEmailLabel": "Neue E-Mail-Adresse",
+    "targetEmailPlaceholder": "name@example.com",
+    "emptyValue": "—",
+    "sameAsCurrentError": "Die neue E-Mail muss sich von der aktuellen E-Mail unterscheiden.",
+    "submit": "Bestätigungslink senden",
+    "submitting": "Wird gesendet...",
+    "successBadge": "Link gesendet",
+    "successTitle": "Bestätigungslink gesendet",
+    "successBody": "Wir haben einen Bestätigungslink an {{email}} gesendet. Er läuft in 10 Minuten ab.",
+    "successExpires": "Anfrage läuft um {{expiresAt}} ab.",
+    "securityNote": "Das rohe Token wird nie gespeichert. Diese Anfrage ist nur für aktive Institutions-Admins gültig und wird beim Anfordern und Einlösen protokolliert.",
+    "requestError": "Bestätigungslink konnte nicht gesendet werden.",
+    "redeemLoading": "E-Mail-Änderung wird bestätigt...",
+    "redeemSuccessTitle": "E-Mail-Änderung bestätigt",
+    "redeemSuccessBody": "Dein Konto wurde aktualisiert. Du wirst abgemeldet, damit du dich mit der neuen E-Mail wieder anmelden kannst.",
+    "redeemSuccessCta": "Zur Anmeldung",
+    "redeemErrorTitle": "E-Mail-Änderung konnte nicht bestätigt werden",
+    "redeemErrorCta": "Zur Anmeldung",
+    "redeemInvalidLink": "Ungültiger Bestätigungslink.",
+    "redeemFailed": "Dieser Bestätigungslink ist ungültig, abgelaufen oder bereits verwendet."
   }
 }

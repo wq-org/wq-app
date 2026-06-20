@@ -6,7 +6,7 @@ Scope: institution-scoped tenant rows (`institution_id`); the **canonical draft*
 
 ## Mission and context
 
-Lessons are authored with the Lexical editor (`src/features/lexical-editor/`). The persisted draft is **serialized Lexical JSON** on `lessons.content` (default from `app.empty_lesson_lexical_state()`). Version snapshots for publish/delivery live in `lesson_versions` (see migrations `20260515140200_lesson_versions_02_tables.sql` and follow-ons).
+Lessons are authored with the Lexical editor (`src/features/lexical-editor/`). The persisted draft is **serialized Lexical JSON** on `lessons.content` (default from `app.empty_lesson_lexical_state()`). Version snapshots for publish/delivery live in `lesson_versions` (see migrations `20260000000101_lesson_versions_02_tables.sql` and follow-ons).
 
 Cross-links:
 
@@ -70,7 +70,7 @@ Historical rows were backfilled into `learning_events` as `interaction_recorded`
 
 **Not available:** stable UUID per block (`lesson_blocks.id` was dropped).
 
-Indexes: `idx_learning_events_lesson_block_type`, `idx_learning_events_lesson_block_index` (`20260516000000_lesson_draft_jsonb_01_tables.sql`).
+Indexes: `idx_learning_events_lesson_block_type`, `idx_learning_events_lesson_block_index` (`20260000000106_lesson_draft_jsonb_01_tables.sql`).
 
 ## CRUD surface by role
 
@@ -94,7 +94,7 @@ Indexes: `idx_learning_events_lesson_block_type`, `idx_learning_events_lesson_bl
 | --------------------------------------------------------------- | ------------------------------------------------------- |
 | `2026050812000001_lesson_blocks_01_tables.sql`                  | Legacy normalized blocks (superseded)                   |
 | `2026050812010001_lesson_block_events_01_tables.sql`            | Legacy block events (superseded)                        |
-| `20260516000000_lesson_draft_jsonb_01_tables.sql`               | `lessons.content` canonical + `learning_events.block_*` |
+| `20260000000106_lesson_draft_jsonb_01_tables.sql`               | `lessons.content` canonical + `learning_events.block_*` |
 | `20260516000002_lesson_draft_jsonb_03_backfill_cleanup.sql`     | Backfill block events → `learning_events`               |
 | `20260516000003_lesson_draft_jsonb_04_retire_legacy_blocks.sql` | Drop `lesson_blocks` / `lesson_block_events`            |
-| `20260515140200_lesson_versions_02_tables.sql`                  | Lesson version snapshots                                |
+| `20260000000101_lesson_versions_02_tables.sql`                  | Lesson version snapshots                                |

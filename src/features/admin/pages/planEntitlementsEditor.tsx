@@ -14,9 +14,11 @@ import { Text } from '@/components/ui/text'
 import { CompactSettingsTableSwitches } from '@/components/shared/CompactSettingsTableSwitches'
 import { getFeatureDefinitionIcon } from '../config/featureDefinitionIcons'
 import { SelectTabs } from '@/components/shared/tabs/SelectTabs'
+import { Badge } from '@/components/ui/badge'
 import { updatePlanCatalogSettings } from '../api/planEntitlementsApi'
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 import { PlanCatalogSettingsForm } from '../components/PlanCatalogSettingsForm'
+import { PlanCatalogStatusBadge } from '../components/PlanCatalogStatusBadge'
 import {
   parseSettingsDraftToPatch,
   planToSettingsDraft,
@@ -157,13 +159,25 @@ const AdminPlanEntitlementsEditor = () => {
         </Button>
 
         <div className="flex flex-col gap-1">
-          <Text
-            as="h1"
-            variant="h3"
-            className="font-semibold tracking-tight text-foreground"
-          >
-            {t('planCatalog.editor.pageTitle', { plan: plan?.name ?? '—' })}
-          </Text>
+          <div className="flex flex-wrap items-center gap-2">
+            <Text
+              as="h1"
+              variant="h3"
+              className="font-semibold tracking-tight text-foreground"
+            >
+              {t('planCatalog.editor.pageTitle', { plan: plan?.name ?? '—' })}
+            </Text>
+            {plan ? (
+              <>
+                <Badge variant="secondary">{plan.code}</Badge>
+                <PlanCatalogStatusBadge
+                  isActive={plan.isActive}
+                  deletedAt={plan.deletedAt}
+                  t={t}
+                />
+              </>
+            ) : null}
+          </div>
           <Text
             as="p"
             variant="small"

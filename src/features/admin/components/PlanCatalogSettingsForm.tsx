@@ -17,6 +17,7 @@ import {
 } from '../config/planCatalogBilling'
 import type { PlanCatalogEditorPlan } from '../types/planEntitlements.types'
 import type { PlanSettingsDraft } from '../utils/planCatalogSettingsDraft'
+import { PlanCatalogStatusBadge } from './PlanCatalogStatusBadge'
 
 function formatDateTime(iso: string | null, locale: string): string {
   if (!iso) return '—'
@@ -78,29 +79,21 @@ function PlanCatalogSettingsForm({
           {t('planCatalog.editor.settings.codeLabel')}
         </Text>
         <Badge variant="secondary">{plan.code}</Badge>
-        {plan.deletedAt ? (
-          <Badge variant="destructive">{t('planCatalog.editor.settings.deletedBadge')}</Badge>
-        ) : null}
+        <PlanCatalogStatusBadge
+          isActive={plan.isActive}
+          deletedAt={plan.deletedAt}
+          t={t}
+        />
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <FieldInput
-          label={t('planCatalog.editor.settings.seatCapDefault')}
-          value={draft.seatCap}
-          onValueChange={(v) => updateDraft({ seatCap: v })}
-          placeholder={t('planCatalog.editor.settings.placeholders.seatCap')}
-          type="number"
-          disabled={disabled}
-        />
-        <FieldInput
-          label={t('planCatalog.editor.settings.storageBytesCapDefault')}
-          value={draft.storageBytes}
-          onValueChange={(v) => updateDraft({ storageBytes: v.replace(/[^\d]/g, '') })}
-          placeholder={t('planCatalog.editor.settings.placeholders.storageBytes')}
-          type="text"
-          disabled={disabled}
-        />
-      </div>
+      <FieldInput
+        label={t('planCatalog.editor.settings.storageBytesCapDefault')}
+        value={draft.storageBytes}
+        onValueChange={(v) => updateDraft({ storageBytes: v.replace(/[^\d]/g, '') })}
+        placeholder={t('planCatalog.editor.settings.placeholders.storageBytes')}
+        type="text"
+        disabled={disabled}
+      />
 
       <FieldTextarea
         label={t('planCatalog.editor.settings.metadata')}

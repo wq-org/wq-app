@@ -9,7 +9,6 @@ import type {
 } from '../types/planEntitlements.types'
 
 export type PlanSettingsDraft = {
-  seatCap: string
   storageBytes: string
   metadataJson: string
   priceAmount: string
@@ -29,7 +28,6 @@ function stringifyMetadata(metadata: unknown | null): string {
 
 export function planToSettingsDraft(plan: PlanCatalogEditorPlan): PlanSettingsDraft {
   return {
-    seatCap: plan.seatCapDefault == null ? '' : String(plan.seatCapDefault),
     storageBytes: plan.storageBytesCapDefault ?? '',
     metadataJson: stringifyMetadata(plan.metadata),
     priceAmount: plan.priceAmount ?? '',
@@ -44,7 +42,6 @@ export function settingsDraftEqualsPlan(
 ): boolean {
   const baseline = planToSettingsDraft(plan)
   return (
-    draft.seatCap === baseline.seatCap &&
     draft.storageBytes === baseline.storageBytes &&
     draft.metadataJson === baseline.metadataJson &&
     draft.priceAmount === baseline.priceAmount &&
@@ -56,16 +53,6 @@ export function settingsDraftEqualsPlan(
 export function parseSettingsDraftToPatch(
   draft: PlanSettingsDraft,
 ): { ok: true; patch: PlanCatalogSettingsPatch } | { ok: false; messageKey: string } {
-  const seatTrim = draft.seatCap.trim()
-  let seat_cap_default: number | null = null
-  if (seatTrim.length > 0) {
-    const n = Number.parseInt(seatTrim, 10)
-    if (!Number.isFinite(n) || n < 0) {
-      return { ok: false, messageKey: 'planCatalog.editor.settings.errors.seatCap' }
-    }
-    seat_cap_default = n
-  }
-
   const storageTrim = draft.storageBytes.trim().replace(/[^\d]/g, '')
   const storage_bytes_cap_default = storageTrim.length > 0 ? storageTrim : null
 
@@ -101,7 +88,6 @@ export function parseSettingsDraftToPatch(
   return {
     ok: true,
     patch: {
-      seat_cap_default,
       storage_bytes_cap_default,
       metadata,
       price_amount,
