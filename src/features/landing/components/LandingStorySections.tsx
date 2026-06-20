@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { landingNavigationGroups } from '@/features/landing/components/navigation/navigation-content'
+import { landingNavigationGroups } from './navigation/navigation-content'
 
 export function LandingStorySections() {
   const { t } = useTranslation('navigation')

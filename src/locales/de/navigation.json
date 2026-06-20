@@ -188,9 +188,119 @@
       "bookDemo": "Demo buchen",
       "contact": "Kontakt"
     },
+    "contact": {
+      "hero": {
+        "title": "Kontakt aufnehmen",
+        "description": "Interesse an WQ für Ihre Einrichtung? Beschreiben Sie Ihr Setup — wir melden uns mit den nächsten Schritten."
+      },
+      "channels": {
+        "email": {
+          "title": "E-Mail senden",
+          "value": "service@wq-app.de"
+        }
+      },
+      "form": {
+        "heading": "Nachricht senden",
+        "lead": "Füllen Sie das Formular aus, damit wir Ihr Anliegen einordnen und gezielt zurückmelden können.",
+        "previous": "Zurück",
+        "next": "Weiter",
+        "submit": "Anfrage absenden",
+        "submitting": "Wird gesendet…",
+        "steps": {
+          "institution": { "title": "Institution" },
+          "contact": { "title": "Ansprechpartner" },
+          "scope": { "title": "Umfang & Start" },
+          "systems": { "title": "Bestehende Systeme" }
+        },
+        "toast": {
+          "success": "Vielen Dank — Ihre Anfrage ist eingegangen. Wir melden uns in Kürze.",
+          "error": "Ihre Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es erneut oder schreiben Sie direkt an service@wq-app.de."
+        },
+        "dialog": {
+          "close": "Schließen",
+          "success": {
+            "title": "Anfrage gesendet",
+            "description": "Vielen Dank — Ihre Anfrage ist eingegangen. Wir melden uns in Kürze."
+          },
+          "error": {
+            "title": "Anfrage konnte nicht gesendet werden",
+            "description": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut oder schreiben Sie direkt an service@wq-app.de."
+          }
+        },
+        "yesNo": {
+          "yes": "Ja",
+          "no": "Nein"
+        },
+        "sections": {
+          "institution": "Institution",
+          "contactPerson": "Ansprechpartner",
+          "scope": "Umfang & Start",
+          "existingSystems": "Bestehende Systeme",
+          "compliance": "Compliance"
+        },
+        "fields": {
+          "institutionName": "Name der Institution",
+          "cityState": "Ort / Bundesland",
+          "institutionType": "Institutionstyp",
+          "contactName": "Name",
+          "contactRole": "Funktion",
+          "contactEmail": "E-Mail",
+          "contactPhone": "Telefon",
+          "estimatedLearners": "Geschätzte Anzahl Lernende / Schüler / Azubis",
+          "estimatedTeachers": "Geschätzte Anzahl Lehrkräfte / Praxisanleiter",
+          "desiredStartDate": "Gewünschter Startzeitpunkt",
+          "useCaseDescription": "Kurzbeschreibung des Einsatzfalls",
+          "publicInstitution": "Öffentliche Einrichtung",
+          "privateInstitution": "Private Einrichtung",
+          "existingSystemsOther": "Andere Systeme"
+        },
+        "placeholders": {
+          "institutionName": "z. B. Kreiskliniken Reutlingen",
+          "cityState": "z. B. Reutlingen, Baden-Württemberg",
+          "institutionType": "Institutionstyp wählen",
+          "contactName": "Vor- und Nachname",
+          "contactRole": "z. B. Leitung Pflegeausbildung",
+          "contactEmail": "name@institution.de",
+          "contactPhone": "+49 …",
+          "useCaseDescription": "z. B. Unterricht, Pflegeausbildung, Serious Games, kollaboratives Lernen",
+          "desiredStartDate": "01.06.2026",
+          "otherSystem": "Weitere Software, z. B. spezielle Tools oder Plattformen"
+        },
+        "useCaseHint": "Mindestens {{minimum}} Zeichen (aktuell {{current}})",
+        "institutionTypes": {
+          "vocationalSchool": "Berufsschule",
+          "nursingSchool": "Pflegeschule",
+          "clinic": "Klinik / Krankenhaus",
+          "educationCenter": "Bildungszentrum",
+          "university": "Hochschule / Universität",
+          "companyTraining": "Unternehmens-Ausbildung",
+          "other": "Sonstige"
+        },
+        "systemGroups": {
+          "collaboration": "Kollaborationstools",
+          "identity": "Microsoft 365, Google, Apple",
+          "lms": "Lernplattformen (LMS)"
+        },
+        "existingSystems": {
+          "taskCards": "TaskCards",
+          "padlet": "Padlet",
+          "edumaps": "Edumaps",
+          "microsoft365Education": "Microsoft 365 Education",
+          "googleWorkspaceEducation": "Google Workspace for Education",
+          "appleSchoolManager": "Apple School Manager",
+          "moodle": "Moodle",
+          "mebis": "mebis",
+          "logineo": "LOGINEO LMS",
+          "itslearning": "itslearning",
+          "hpiSchulcloudLandescloud": "HPI Schulcloud / Landescloud",
+          "ilias": "ILIAS",
+          "other": "Sonstige"
+        }
+      }
+    },
     "hero": {
-      "title": "Interaktives Lernen für echte Kompetenz",
-      "description": "Eine Lernplattform für Lehrkräfte und Lernende, die Wissen in anwendbare Fähigkeiten übersetzt."
+      "title": "Bildung ist ein Spiel in dem jeder gewinnt",
+      "description": "Wo Serious Games auf echtes Lernen treffen. Von Lehrkräften entwickelt und für Lernende gemacht."
     },
     "home": {
       "gameStudio": {

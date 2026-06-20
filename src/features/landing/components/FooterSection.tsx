@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Logo } from '@/components/ui/logo'
 import { landingFooterGroups } from './navigation/navigation-content'
-import { PublicThemeDialog } from './PublicThemeDialog'
 
 export function FooterSection() {
   const { t } = useTranslation('navigation')
@@ -49,7 +48,6 @@ export function FooterSection() {
           </div>
 
           <div className="order-first flex flex-wrap items-center justify-center gap-6 text-sm md:order-last">
-            <PublicThemeDialog />
             <a
               href="#"
               target="_blank"

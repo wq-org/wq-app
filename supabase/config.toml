@@ -377,6 +377,10 @@ verify_jwt = false
 # Same as admin invite: verify_jwt disabled; handler validates Bearer + institution admin or super_admin.
 verify_jwt = false
 
+[functions.send-contact-inquiry-email]
+# Public contact form: verify_jwt disabled; handler validates payload and sends via Brevo.
+verify_jwt = false
+
 [analytics]
 enabled = true
 port = 54327

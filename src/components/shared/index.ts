@@ -20,7 +20,13 @@ export {
 } from './card-instant-preview'
 export { CARD_INSTANT_PREVIEW_ANIMATION_DURATION_MS } from './card-instant-preview'
 export type { CardInstantPreviewMediaVariant } from './card-instant-preview'
-export { BasicPdfViewer, configurePdfJsWorker, PdfCard, PdfCardList, PdfPanelPreview } from './pdf-viewer'
+export {
+  BasicPdfViewer,
+  configurePdfJsWorker,
+  PdfCard,
+  PdfCardList,
+  PdfPanelPreview,
+} from './pdf-viewer'
 export type {
   BasicPdfViewerProps,
   PdfCardFile,
@@ -92,6 +98,7 @@ export {
 export { LoadingPage } from './LoadingPage'
 export type { LoadingPageProps } from './LoadingPage'
 export { LanguageSwitcher } from './LanguageSwitcher'
+export { PublicPageFloatingControls } from './PublicPageFloatingControls'
 export { ImageCarousel, VideoPreview } from './media'
 export type { ImageCarouselImage, ImageCarouselItem, ImageCarouselProps } from './media'
 export { SidebarAccountMenu, SidebarPrimaryNav, SidebarWorkspaceSwitcher } from './sidebar'
@@ -274,7 +281,8 @@ export type {
   UploadedFile,
 } from './upload-files'
 
-export { DateTimePicker, TimePickerWithIcon } from './date-time'
+export { DateTimePicker, DatePickerInput, TimePickerWithIcon } from './date-time'
+export type { DatePickerInputProps } from './date-time'
 export {
   Ai01,
   Ai02,

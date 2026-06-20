@@ -5,9 +5,10 @@ import { useTheme } from '@/hooks/useTheme'
 
 interface LandingPageShellProps {
   title: string
+  children?: React.ReactNode
 }
 
-export function LandingPageShell({ title }: LandingPageShellProps) {
+export function LandingPageShell({ title, children }: LandingPageShellProps) {
   const { applyPublicTheme } = useTheme()
 
   useLayoutEffect(() => {
@@ -19,7 +20,10 @@ export function LandingPageShell({ title }: LandingPageShellProps) {
       <Navigation />
       <main className="mx-auto flex min-h-[calc(100vh-12rem)] w-full max-w-6xl items-start px-6 pt-28 pb-16">
         <section className="w-full rounded-3xl border bg-background p-10 md:p-14">
-          <h1 className="text-4xl font-semibold text-foreground md:text-5xl">{title}</h1>
+          <div className="space-y-8">
+            <h1 className="text-4xl font-semibold text-foreground md:text-5xl">{title}</h1>
+            {children}
+          </div>
         </section>
       </main>
       <FooterSection />

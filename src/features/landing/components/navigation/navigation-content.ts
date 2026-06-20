@@ -1,35 +1,25 @@
-export interface NavigationSubItemConfig {
+export type NavigationSubItemConfig = {
   key: string
   href: string
 }
 
-export interface NavigationGroupConfig {
+export type NavigationGroupConfig = {
   key: string
   sectionId: string
   items: NavigationSubItemConfig[]
 }
 
-export interface LandingPageConfig {
+export type LandingPageConfig = {
   key: string
   path: string
 }
 
-export const landingStandalonePages: LandingPageConfig[] = [
-  {
-    key: 'contact',
-    path: '/contact',
-  },
-]
+export const landingContactPath = '/contact'
+export const landingLoginPath = '/auth/login'
+
+export const landingStandalonePages: LandingPageConfig[] = []
 
 export const landingNavigationGroups: NavigationGroupConfig[] = [
-  {
-    key: 'success',
-    sectionId: 'success',
-    items: [
-      { key: 'endLearningApathy', href: '/success/end-learning-apathy' },
-      { key: 'intuitiveGaming', href: '/success/intuitive-gaming' },
-    ],
-  },
   {
     key: 'solutions',
     sectionId: 'solutions',
@@ -37,23 +27,6 @@ export const landingNavigationGroups: NavigationGroupConfig[] = [
       { key: 'teachers', href: '/solutions/teachers' },
       { key: 'learners', href: '/solutions/learners' },
       { key: 'institutions', href: '/solutions/institutions' },
-    ],
-  },
-  {
-    key: 'platform',
-    sectionId: 'platform',
-    items: [
-      { key: 'workspace', href: '/platform/workspace' },
-      { key: 'gameStudio', href: '/platform/game-studio' },
-      { key: 'analytics', href: '/platform/analytics' },
-    ],
-  },
-  {
-    key: 'science',
-    sectionId: 'science',
-    items: [
-      { key: 'wqConcept', href: '/science/wq-concept' },
-      { key: 'evidence', href: '/science/evidence' },
     ],
   },
   {
@@ -76,45 +49,12 @@ export const landingFooterGroups: NavigationGroupConfig[] = [
     ],
   },
   {
-    key: 'platform',
-    sectionId: 'platform',
-    items: [
-      { key: 'workspace', href: '/platform/workspace' },
-      { key: 'gameStudio', href: '/platform/game-studio' },
-      { key: 'analytics', href: '/platform/analytics' },
-      { key: 'collaboration', href: '/platform/collaboration' },
-      { key: 'pricing', href: '/platform/pricing' },
-    ],
-  },
-  {
-    key: 'success',
-    sectionId: 'success',
-    items: [
-      { key: 'institutions', href: '/solutions/institutions' },
-      { key: 'teachers', href: '/solutions/teachers' },
-      { key: 'learners', href: '/solutions/learners' },
-      { key: 'woundCare', href: '/success/wound-care' },
-    ],
-  },
-  {
-    key: 'science',
-    sectionId: 'science',
-    items: [
-      { key: 'wqConcept', href: '/science/wq-concept' },
-      { key: 'evidence', href: '/science/evidence' },
-      { key: 'vision', href: '/mission/vision' },
-      { key: 'blog', href: '/science/blog' },
-      { key: 'helpCenter', href: '/science/help-center' },
-    ],
-  },
-  {
     key: 'trust',
     sectionId: 'trust',
     items: [
       { key: 'security', href: '/trust/security' },
       { key: 'privacy', href: '/trust/privacy' },
       { key: 'compliance', href: '/trust/compliance' },
-      { key: 'licenses', href: '/trust/licenses' },
     ],
   },
 ]

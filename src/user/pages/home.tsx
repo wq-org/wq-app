@@ -1,6 +1,6 @@
 import { useLayoutEffect } from 'react'
 import { HeroSection, FooterSection, Feature6, Navigation } from '@/features/landing'
-import { LanguageSwitcher, ThemeModeToggle } from '@/components/shared'
+import { PublicPageFloatingControls } from '@/components/shared'
 import { useTheme } from '@/hooks/useTheme'
 import { Brush, ChartSpline, Microscope, SplinePointer } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -18,10 +18,7 @@ export default function Home() {
       <div className="fixed inset-x-0 top-0 z-50">
         <Navigation />
       </div>
-      <div className="fixed right-4 bottom-4 z-50 flex items-center gap-2 rounded-full border border-border bg-card/90 p-2 text-foreground shadow-sm backdrop-blur supports-backdrop-filter:bg-card/75 sm:right-6 sm:bottom-6">
-        <ThemeModeToggle />
-        <LanguageSwitcher />
-      </div>
+      <PublicPageFloatingControls />
 
       <HeroSection />
 

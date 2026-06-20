@@ -188,9 +188,119 @@
       "bookDemo": "Book Demo",
       "contact": "Contact"
     },
+    "contact": {
+      "hero": {
+        "title": "Get in touch",
+        "description": "Interested in WQ for your institution? Tell us about your setup — we will get back to you with next steps."
+      },
+      "channels": {
+        "email": {
+          "title": "Send an email",
+          "value": "service@wq-app.de"
+        }
+      },
+      "form": {
+        "heading": "Send a message",
+        "lead": "Fill out the form below so we can qualify your inquiry and prepare a tailored follow-up.",
+        "previous": "Previous",
+        "next": "Next",
+        "submit": "Submit inquiry",
+        "submitting": "Submitting…",
+        "steps": {
+          "institution": { "title": "Institution" },
+          "contact": { "title": "Contact person" },
+          "scope": { "title": "Scope & timeline" },
+          "systems": { "title": "Existing systems" }
+        },
+        "toast": {
+          "success": "Thank you — your inquiry was received. We will contact you shortly.",
+          "error": "Could not send your inquiry. Please try again or email service@wq-app.de directly."
+        },
+        "dialog": {
+          "close": "Close",
+          "success": {
+            "title": "Inquiry sent",
+            "description": "Thank you — your inquiry was received. We will contact you shortly."
+          },
+          "error": {
+            "title": "Could not send inquiry",
+            "description": "Something went wrong. Please try again or email service@wq-app.de directly."
+          }
+        },
+        "yesNo": {
+          "yes": "Yes",
+          "no": "No"
+        },
+        "sections": {
+          "institution": "Institution",
+          "contactPerson": "Contact person",
+          "scope": "Scope & timeline",
+          "existingSystems": "Existing systems",
+          "compliance": "Compliance"
+        },
+        "fields": {
+          "institutionName": "Institution name",
+          "cityState": "City / state",
+          "institutionType": "Institution type",
+          "contactName": "Contact name",
+          "contactRole": "Role / function",
+          "contactEmail": "Email",
+          "contactPhone": "Phone",
+          "estimatedLearners": "Estimated learners / students / apprentices",
+          "estimatedTeachers": "Estimated teachers / practice instructors",
+          "desiredStartDate": "Desired start date",
+          "useCaseDescription": "Brief use case",
+          "publicInstitution": "Public institution",
+          "privateInstitution": "Private institution",
+          "existingSystemsOther": "Other systems"
+        },
+        "placeholders": {
+          "institutionName": "e.g. Kreiskliniken Reutlingen",
+          "cityState": "e.g. Reutlingen, Baden-Württemberg",
+          "institutionType": "Select institution type",
+          "contactName": "First and last name",
+          "contactRole": "e.g. Head of nursing education",
+          "contactEmail": "name@institution.de",
+          "contactPhone": "+49 …",
+          "useCaseDescription": "e.g. classroom teaching, nursing education, serious games, collaborative learning",
+          "desiredStartDate": "01.06.2026",
+          "otherSystem": "Additional software you use, e.g. special LMS or tools"
+        },
+        "useCaseHint": "{{current}} / {{minimum}} characters minimum",
+        "institutionTypes": {
+          "vocationalSchool": "Vocational school (Berufsschule)",
+          "nursingSchool": "Nursing school (Pflegeschule)",
+          "clinic": "Clinic / hospital",
+          "educationCenter": "Education center (Bildungszentrum)",
+          "university": "University / college",
+          "companyTraining": "Company training department",
+          "other": "Other"
+        },
+        "systemGroups": {
+          "collaboration": "Collaboration tools",
+          "identity": "Microsoft 365, Google, Apple",
+          "lms": "Learning platforms (LMS)"
+        },
+        "existingSystems": {
+          "taskCards": "TaskCards",
+          "padlet": "Padlet",
+          "edumaps": "Edumaps",
+          "microsoft365Education": "Microsoft 365 Education",
+          "googleWorkspaceEducation": "Google Workspace for Education",
+          "appleSchoolManager": "Apple School Manager",
+          "moodle": "Moodle",
+          "mebis": "mebis",
+          "logineo": "LOGINEO LMS",
+          "itslearning": "itslearning",
+          "hpiSchulcloudLandescloud": "HPI Schulcloud / state cloud",
+          "ilias": "ILIAS",
+          "other": "Other"
+        }
+      }
+    },
     "hero": {
-      "title": "Interactive learning built for real competence",
-      "description": "A serious learning platform that helps teachers design better experiences and helps learners build usable skills."
+      "title": "Education is a game where everyone wins",
+      "description": "Where serious games meet real learning. Built by teachers and made for students."
     },
     "home": {
       "gameStudio": {

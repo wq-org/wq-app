@@ -44,6 +44,15 @@ export type StepperIconsBadgesItem = {
   icon: React.ReactNode
 }
 
+export type StepperIconsBadgesFooterState = {
+  currentStep: number
+  totalSteps: number
+  goToPrevious: () => void
+  goToNext: () => void | Promise<void>
+  isFirst: boolean
+  isLast: boolean
+}
+
 export type StepperIconsBadgesProps = {
   steps?: readonly StepperIconsBadgesItem[]
   value?: number
@@ -52,6 +61,8 @@ export type StepperIconsBadgesProps = {
   className?: string
   colorVariant?: StepperColorVariant
   renderContent?: (step: StepperIconsBadgesItem, index: number) => React.ReactNode
+  onBeforeStepChange?: (fromStep: number, toStep: number) => boolean | Promise<boolean>
+  renderFooter?: (state: StepperIconsBadgesFooterState) => React.ReactNode
 }
 
 export function StepperIconsBadges({
@@ -62,16 +73,29 @@ export function StepperIconsBadges({
   className,
   colorVariant = 'default',
   renderContent = (step) => `${step.title} content`,
+  onBeforeStepChange,
+  renderFooter,
 }: StepperIconsBadgesProps) {
   const [internalStep, setInternalStep] = useState(defaultValue)
   const currentStep = value ?? internalStep
 
-  const handleStepChange = (nextStep: number) => {
+  const handleStepChange = async (nextStep: number) => {
+    if (nextStep !== currentStep && onBeforeStepChange) {
+      const allowed = await onBeforeStepChange(currentStep, nextStep)
+      if (!allowed) return
+    }
+
     if (value === undefined) {
       setInternalStep(nextStep)
     }
     onValueChange?.(nextStep)
   }
+
+  const goToPrevious = () => {
+    void handleStepChange(currentStep - 1)
+  }
+
+  const goToNext = () => handleStepChange(currentStep + 1)
 
   return (
     <Stepper
@@ -162,22 +186,33 @@ export function StepperIconsBadges({
         ))}
       </StepperPanel>
 
-      <div className="flex items-center justify-between gap-2.5">
-        <Button
-          variant="outline"
-          onClick={() => handleStepChange(currentStep - 1)}
-          disabled={currentStep === 1}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => handleStepChange(currentStep + 1)}
-          disabled={currentStep === steps.length}
-        >
-          Next
-        </Button>
-      </div>
+      {renderFooter ? (
+        renderFooter({
+          currentStep,
+          totalSteps: steps.length,
+          goToPrevious,
+          goToNext,
+          isFirst: currentStep === 1,
+          isLast: currentStep === steps.length,
+        })
+      ) : (
+        <div className="flex items-center justify-between gap-2.5">
+          <Button
+            variant="outline"
+            onClick={goToPrevious}
+            disabled={currentStep === 1}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => void goToNext()}
+            disabled={currentStep === steps.length}
+          >
+            Next
+          </Button>
+        </div>
+      )}
     </Stepper>
   )
 }

@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
@@ -13,20 +12,30 @@ import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/ui/logo'
 import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { landingNavigationGroups } from '@/features/landing/components/navigation/navigation-content'
+import { useDisclosure } from '@/hooks/use-disclosure'
+import { landingContactPath, landingLoginPath, landingNavigationGroups } from './navigation-content'
 
 const linkClass =
   'block w-full rounded-sm px-3 py-2.5 text-left text-sm text-foreground no-underline outline-none transition-colors hover:bg-muted/80'
 
-interface NavigationProps {
+type NavigationProps = {
   showCtaButton?: boolean
   ctaLabel?: string
   className?: string
 }
 
 export function Navigation({ showCtaButton = true, ctaLabel, className }: NavigationProps) {
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const mobileMenu = useDisclosure()
   const { t } = useTranslation('navigation')
+
+  const resolvedCtaLabel = ctaLabel ?? t('landing.cta.startFree')
+  const mobileMenuAriaLabel = mobileMenu.isOpen
+    ? t('landing.mobile.close')
+    : t('landing.mobile.open')
+
+  const handleCloseMobileMenu = () => {
+    mobileMenu.onClose()
+  }
 
   return (
     <header
@@ -81,57 +90,57 @@ export function Navigation({ showCtaButton = true, ctaLabel, className }: Naviga
         </NavigationMenu>
 
         <div className="flex shrink-0 items-center gap-2">
-          {showCtaButton && (
+          {showCtaButton ? (
             <>
               <Button
                 asChild
                 size="sm"
                 variant="ghost"
               >
-                <Link to="/auth/login">{t('pages.login')}</Link>
+                <Link to={landingLoginPath}>{t('pages.login')}</Link>
               </Button>
               <Button
                 asChild
                 size="sm"
               >
-                <Link to="/auth/signup">{ctaLabel ?? t('landing.cta.startFree')}</Link>
+                <Link to={landingContactPath}>{resolvedCtaLabel}</Link>
               </Button>
             </>
-          )}
+          ) : null}
           <button
             type="button"
-            aria-label={mobileOpen ? t('landing.mobile.close') : t('landing.mobile.open')}
-            onClick={() => setMobileOpen((open) => !open)}
+            aria-label={mobileMenuAriaLabel}
+            onClick={mobileMenu.onToggle}
             className="-mr-2 flex p-2 lg:hidden"
           >
-            {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+            {mobileMenu.isOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
         </div>
       </div>
 
-      {mobileOpen && (
+      {mobileMenu.isOpen ? (
         <nav className="border-t bg-background/80 backdrop-blur-md lg:hidden">
           <div className="max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain">
             <ul className="flex flex-col gap-0.5 p-4">
-              {showCtaButton && (
+              {showCtaButton ? (
                 <li className="mb-3 flex flex-col gap-2">
                   <Button
                     asChild
                     size="sm"
                     variant="ghost"
-                    onClick={() => setMobileOpen(false)}
+                    onClick={handleCloseMobileMenu}
                   >
-                    <Link to="/auth/login">{t('pages.login')}</Link>
+                    <Link to={landingLoginPath}>{t('pages.login')}</Link>
                   </Button>
                   <Button
                     asChild
                     size="sm"
-                    onClick={() => setMobileOpen(false)}
+                    onClick={handleCloseMobileMenu}
                   >
-                    <Link to="/auth/signup">{ctaLabel ?? t('landing.cta.startFree')}</Link>
+                    <Link to={landingContactPath}>{resolvedCtaLabel}</Link>
                   </Button>
                 </li>
-              )}
+              ) : null}
               {landingNavigationGroups.map((group) => (
                 <li key={group.key}>
                   <span className="block px-3 py-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -142,7 +151,7 @@ export function Navigation({ showCtaButton = true, ctaLabel, className }: Naviga
                       <li key={subItem.key}>
                         <Link
                           to={subItem.href}
-                          onClick={() => setMobileOpen(false)}
+                          onClick={handleCloseMobileMenu}
                           className={linkClass}
                         >
                           {t(`landing.items.${subItem.key}.title`)}
@@ -155,7 +164,7 @@ export function Navigation({ showCtaButton = true, ctaLabel, className }: Naviga
             </ul>
           </div>
         </nav>
-      )}
+      ) : null}
     </header>
   )
 }

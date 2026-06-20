@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import {
   Stepper,
   StepperContent,
@@ -26,6 +26,15 @@ export type StepperProgressBarTitlesItem = {
   title: string
 }
 
+export type StepperProgressBarTitlesFooterState = {
+  currentStep: number
+  totalSteps: number
+  goToPrevious: () => void
+  goToNext: () => void | Promise<void>
+  isFirst: boolean
+  isLast: boolean
+}
+
 export type StepperProgressBarTitlesProps = {
   steps?: readonly StepperProgressBarTitlesItem[]
   value?: number
@@ -34,22 +43,46 @@ export type StepperProgressBarTitlesProps = {
   className?: string
   colorVariant?: StepperColorVariant
   renderContent?: (step: StepperProgressBarTitlesItem, index: number) => ReactNode
+  onBeforeStepChange?: (fromStep: number, toStep: number) => boolean | Promise<boolean>
+  renderFooter?: (state: StepperProgressBarTitlesFooterState) => ReactNode
 }
 
 export function StepperProgressBarTitles({
   steps = defaultSteps,
   value,
-  defaultValue = 2,
+  defaultValue = 1,
   onValueChange,
   className,
   colorVariant = 'default',
   renderContent = (step) => `${step.title} content`,
+  onBeforeStepChange,
+  renderFooter,
 }: StepperProgressBarTitlesProps) {
+  const [internalStep, setInternalStep] = useState(defaultValue)
+  const currentStep = value ?? internalStep
+
+  const handleStepChange = async (nextStep: number) => {
+    if (nextStep !== currentStep && onBeforeStepChange) {
+      const allowed = await onBeforeStepChange(currentStep, nextStep)
+      if (!allowed) return
+    }
+
+    if (value === undefined) {
+      setInternalStep(nextStep)
+    }
+    onValueChange?.(nextStep)
+  }
+
+  const goToPrevious = () => {
+    void handleStepChange(currentStep - 1)
+  }
+
+  const goToNext = () => handleStepChange(currentStep + 1)
+
   return (
     <Stepper
-      value={value}
-      defaultValue={defaultValue}
-      onValueChange={onValueChange}
+      value={currentStep}
+      onValueChange={handleStepChange}
       className={cn('w-full max-w-lg space-y-8', className)}
     >
       <StepperNav className="mb-10 gap-5">
@@ -87,6 +120,17 @@ export function StepperProgressBarTitles({
           </StepperContent>
         ))}
       </StepperPanel>
+
+      {renderFooter
+        ? renderFooter({
+            currentStep,
+            totalSteps: steps.length,
+            goToPrevious,
+            goToNext,
+            isFirst: currentStep === 1,
+            isLast: currentStep === steps.length,
+          })
+        : null}
     </Stepper>
   )
 }

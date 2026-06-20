@@ -14,6 +14,7 @@ import {
 import Test from './user/pages/test'
 import Home from './user/pages/home'
 import LandingPage from './user/pages/landing'
+import ContactPage from './user/pages/contact'
 import ChangelogPage from './user/pages/changelog'
 import {
   StudentDashboard,
@@ -140,14 +141,6 @@ const App = () => {
                 element={<Home />}
               />
               <Route
-                path="/success/end-learning-apathy"
-                element={<LandingPage />}
-              />
-              <Route
-                path="/success/intuitive-gaming"
-                element={<LandingPage />}
-              />
-              <Route
                 path="/solutions/teachers"
                 element={<LandingPage />}
               />
@@ -160,34 +153,6 @@ const App = () => {
                 element={<LandingPage />}
               />
               <Route
-                path="/platform/workspace"
-                element={<LandingPage />}
-              />
-              <Route
-                path="/platform/game-studio"
-                element={<LandingPage />}
-              />
-              <Route
-                path="/platform/analytics"
-                element={<LandingPage />}
-              />
-              <Route
-                path="/platform/collaboration"
-                element={<LandingPage />}
-              />
-              <Route
-                path="/platform/pricing"
-                element={<LandingPage />}
-              />
-              <Route
-                path="/science/wq-concept"
-                element={<LandingPage />}
-              />
-              <Route
-                path="/science/evidence"
-                element={<LandingPage />}
-              />
-              <Route
                 path="/mission/vision"
                 element={<LandingPage />}
               />
@@ -197,19 +162,7 @@ const App = () => {
               />
               <Route
                 path="/contact"
-                element={<LandingPage />}
-              />
-              <Route
-                path="/success/wound-care"
-                element={<LandingPage />}
-              />
-              <Route
-                path="/science/blog"
-                element={<LandingPage />}
-              />
-              <Route
-                path="/science/help-center"
-                element={<LandingPage />}
+                element={<ContactPage />}
               />
               <Route
                 path="/trust/security"
@@ -221,10 +174,6 @@ const App = () => {
               />
               <Route
                 path="/trust/compliance"
-                element={<LandingPage />}
-              />
-              <Route
-                path="/trust/licenses"
                 element={<LandingPage />}
               />
               <Route

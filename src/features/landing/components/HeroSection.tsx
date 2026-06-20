@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { GridIconBackground } from '@/components/shared'
+import { landingContactPath } from './navigation/navigation-content'
 
 type HeroIconEntry = {
   icon: LucideIcon
@@ -104,21 +105,13 @@ export function HeroSection() {
               {t('landing.hero.description')}
             </p>
 
-            <div className="mt-12 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <div className="mt-12 flex justify-center">
               <Button
                 asChild
                 size="lg"
                 className="px-5 text-base"
               >
-                <Link to="/auth/signup">{t('landing.cta.startFree')}</Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="ghost"
-                className="px-5 text-base text-foreground hover:text-foreground"
-              >
-                <Link to="/contact">{t('landing.cta.contact')}</Link>
+                <Link to={landingContactPath}>{t('landing.cta.startFree')}</Link>
               </Button>
             </div>
           </div>
