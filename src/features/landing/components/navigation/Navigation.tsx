@@ -37,6 +37,10 @@ export function Navigation({ showCtaButton = true, ctaLabel, className }: Naviga
     mobileMenu.onClose()
   }
 
+  const handleToggleMobileMenu = () => {
+    mobileMenu.onToggle()
+  }
+
   return (
     <header
       className={cn(
@@ -110,7 +114,7 @@ export function Navigation({ showCtaButton = true, ctaLabel, className }: Naviga
           <button
             type="button"
             aria-label={mobileMenuAriaLabel}
-            onClick={mobileMenu.onToggle}
+            onClick={handleToggleMobileMenu}
             className="-mr-2 flex p-2 lg:hidden"
           >
             {mobileMenu.isOpen ? <X className="size-5" /> : <Menu className="size-5" />}

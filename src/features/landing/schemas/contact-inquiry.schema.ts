@@ -15,18 +15,18 @@ export const contactInquirySchema = z
     institutionName: z.string().trim().min(1, 'Institution name is required'),
     cityState: z.string().trim().min(1, 'City / state is required'),
     institutionType: z.enum(INSTITUTION_TYPE_KEYS, {
-      errorMap: () => ({ message: 'Institution type is required' }),
+      error: 'Institution type is required',
     }),
     contactName: z.string().trim().min(1, 'Contact name is required'),
     contactRole: z.string().trim().min(1, 'Contact role is required'),
     contactEmail: z.string().trim().email('Valid email is required'),
     contactPhone: z.string().trim().min(1, 'Phone number is required'),
     estimatedLearners: z
-      .number({ invalid_type_error: 'Enter a valid number' })
+      .number({ error: 'Enter a valid number' })
       .int('Must be a whole number')
       .min(0, 'Must be 0 or greater'),
     estimatedTeachers: z
-      .number({ invalid_type_error: 'Enter a valid number' })
+      .number({ error: 'Enter a valid number' })
       .int('Must be a whole number')
       .min(0, 'Must be 0 or greater'),
     desiredStartDate: z.string().trim().min(1, 'Desired start date is required'),
@@ -42,7 +42,7 @@ export const contactInquirySchema = z
       .min(1, 'Select at least one existing system'),
     existingSystemsOtherNote: z.string().trim().optional(),
     isPublicInstitution: z.enum(YES_NO_VALUES, {
-      errorMap: () => ({ message: 'Please indicate whether this is a public institution' }),
+      error: 'Please indicate whether this is a public institution',
     }),
     acceptedAgb: z.boolean().refine((value) => value === true, {
       message: 'Please accept the terms and conditions',
