@@ -17,6 +17,7 @@ import LandingPage from './user/pages/landing'
 import ContactPage from './user/pages/contact'
 import { LegalPage } from './user/pages/legal'
 import { MissionVisionPage } from './user/pages/mission-vision'
+import { DocsPage } from './user/pages/docs'
 import ChangelogPage from './user/pages/changelog'
 import {
   StudentDashboard,
@@ -189,6 +190,10 @@ const App = () => {
               <Route
                 path="/changelog"
                 element={<ChangelogPage />}
+              />
+              <Route
+                path="/docs"
+                element={<DocsPage />}
               />
               <Route
                 path="/test"

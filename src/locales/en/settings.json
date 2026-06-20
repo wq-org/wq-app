@@ -47,7 +47,7 @@
       },
       "email": {
         "label": "E-mail",
-        "placeholder": "wq-health@serious-game.com"
+        "placeholder": "admin@wq-app.de"
       },
       "institutionName": {
         "label": "Institution name"

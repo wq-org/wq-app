@@ -40,6 +40,9 @@
       },
       "mission": {
         "label": "Mission"
+      },
+      "docs": {
+        "label": "Documentation"
       }
     },
     "items": {
@@ -146,6 +149,10 @@
       "changelog": {
         "title": "Product Changelog",
         "description": "Latest releases and improvements across the platform."
+      },
+      "docs": {
+        "title": "Documentation",
+        "description": "Guides and reference material for using WQ."
       }
     },
     "footer": {
@@ -160,6 +167,7 @@
       "items": {
         "home": "Home",
         "changelog": "Changelog",
+        "docs": "Documentation",
         "workspace": "Learning Workspace",
         "gameStudio": "WQ Game Studio",
         "analytics": "Competency Analytics",
@@ -209,6 +217,10 @@
         "An education where no one is left behind, simply because learning works differently for every person.",
         "The next generation no longer learns only through reading, listening, and memorizing. They need interaction, feedback, visual approaches, and learning moments that feel personal."
       ]
+    },
+    "docs": {
+      "title": "Documentation",
+      "placeholder": "Documentation for WQ will be published here."
     },
     "legal": {
       "impressum": {

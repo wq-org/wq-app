@@ -16,6 +16,7 @@ export type LandingPageConfig = {
 
 export const landingContactPath = '/contact'
 export const landingLoginPath = '/auth/login'
+export const landingDocsPath = '/docs'
 
 export const landingStandalonePages: LandingPageConfig[] = [
   { key: 'impressum', path: '/legal/impressum' },
@@ -40,6 +41,11 @@ export const landingNavigationGroups: NavigationGroupConfig[] = [
       { key: 'partners', href: '/mission/partners' },
     ],
   },
+  {
+    key: 'docs',
+    sectionId: 'docs',
+    items: [{ key: 'docs', href: landingDocsPath }],
+  },
 ]
 
 export const landingFooterGroups: NavigationGroupConfig[] = [
@@ -49,6 +55,7 @@ export const landingFooterGroups: NavigationGroupConfig[] = [
     items: [
       { key: 'home', href: '/' },
       { key: 'changelog', href: '/changelog' },
+      { key: 'docs', href: landingDocsPath },
     ],
   },
   {

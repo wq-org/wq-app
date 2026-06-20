@@ -40,6 +40,9 @@
       },
       "mission": {
         "label": "Mission"
+      },
+      "docs": {
+        "label": "Dokumentation"
       }
     },
     "items": {
@@ -146,6 +149,10 @@
       "changelog": {
         "title": "Produkt-Changelog",
         "description": "Neueste Releases und Verbesserungen auf der Plattform."
+      },
+      "docs": {
+        "title": "Dokumentation",
+        "description": "Anleitungen und Referenzmaterial für WQ."
       }
     },
     "footer": {
@@ -160,6 +167,7 @@
       "items": {
         "home": "Startseite",
         "changelog": "Changelog",
+        "docs": "Dokumentation",
         "workspace": "Lern-Workspace",
         "gameStudio": "WQ Game Studio",
         "analytics": "Kompetenz-Analytics",
@@ -209,6 +217,10 @@
         "Eine Bildung, in der niemand zurückbleibt, nur weil Lernen für jeden Menschen anders funktioniert.",
         "Die nächste Generation lernt nicht mehr nur durch Lesen, Zuhören und Auswendiglernen. Sie braucht Interaktion, Feedback, visuelle Zugänge und Lernmomente, die sich persönlich anfühlen."
       ]
+    },
+    "docs": {
+      "title": "Dokumentation",
+      "placeholder": "Die Dokumentation für WQ wird in Kürze hier veröffentlicht."
     },
     "legal": {
       "impressum": {

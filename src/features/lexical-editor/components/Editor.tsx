@@ -134,8 +134,8 @@ const lessonEditorExtension = defineExtension({
     CodeHighlightKitExtension,
     configExtension(LinkExtension, { validateUrl, attributes: undefined }),
   ],
-  name: 'wq-health-lesson-editor',
-  namespace: 'wq-health-lesson-editor',
+  name: 'wq-app-lesson-editor',
+  namespace: 'wq-app-lesson-editor',
   theme: mergeCodeHighlightTheme(theme),
   nodes: [
     ImageNode,
