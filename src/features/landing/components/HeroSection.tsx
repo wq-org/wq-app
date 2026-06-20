@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   BookOpen,
@@ -13,8 +13,8 @@ import {
   Pencil,
   type LucideIcon,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { GridIconBackground } from '@/components/shared'
+import { SparkleButton } from '@/components/shared/sparkle-button'
 import { landingContactPath } from './navigation/navigation-content'
 
 type HeroIconEntry = {
@@ -89,6 +89,7 @@ const HERO_ICONS: HeroIconEntry[] = [
 
 export function HeroSection() {
   const { t } = useTranslation('navigation')
+  const navigate = useNavigate()
 
   return (
     <section className="min-h-screen bg-background">
@@ -106,13 +107,12 @@ export function HeroSection() {
             </p>
 
             <div className="mt-12 flex justify-center">
-              <Button
-                asChild
-                size="lg"
-                className="px-5 text-base"
+              <SparkleButton
+                hue="green"
+                onClick={() => navigate(landingContactPath)}
               >
-                <Link to={landingContactPath}>{t('landing.cta.startFree')}</Link>
-              </Button>
+                {t('landing.cta.startFree')}
+              </SparkleButton>
             </div>
           </div>
         </div>
