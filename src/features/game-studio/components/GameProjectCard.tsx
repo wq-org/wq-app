@@ -19,6 +19,7 @@ export function GameProjectCard({
   linkedCourseIds = [],
   onOpen,
   onCourseLinkChanged,
+  showActions = true,
 }: GameProjectCardProps) {
   const { t } = useTranslation('features.gameStudio')
   const resolvedTitle = title || t('gameProjectCard.untitledProject')
@@ -52,12 +53,14 @@ export function GameProjectCard({
             ? t('gameProjectCard.status.published')
             : t('gameProjectCard.status.draft')}
         </Badge>
-        <GameProjectCardCourseMenu
-          gameId={id}
-          linkedCourseIds={linkedCourseIds}
-          status={status}
-          onCourseLinkChanged={onCourseLinkChanged}
-        />
+        {showActions ? (
+          <GameProjectCardCourseMenu
+            gameId={id}
+            linkedCourseIds={linkedCourseIds}
+            status={status}
+            onCourseLinkChanged={onCourseLinkChanged}
+          />
+        ) : null}
       </CardHeader>
       <CardContent className="flex flex-col p-6">
         <div className="flex flex-col items-start gap-2 flex-1 min-w-0">

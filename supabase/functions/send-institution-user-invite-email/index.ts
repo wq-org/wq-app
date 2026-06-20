@@ -107,7 +107,9 @@ Deno.serve(async (req) => {
 
   const { data: invite, error: inviteError } = await supabase
     .from('institution_invites')
-    .select('email, expires_at, accepted_at, revoked_at, institution_id, membership_role')
+    .select(
+      'email, expires_at, accepted_at, revoked_at, institution_id, membership_role, classroom_id',
+    )
     .eq('token', inviteToken)
     .maybeSingle()
 
@@ -139,6 +141,7 @@ Deno.serve(async (req) => {
   }
 
   const institutionId = invite.institution_id as string
+  const classroomId = typeof invite.classroom_id === 'string' ? invite.classroom_id : null
 
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
@@ -169,6 +172,41 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: 'Could not verify institution admin' }, 500)
     }
     maySend = !!adminMembership
+  }
+
+  if (!maySend && role === 'student' && classroomId) {
+    const { data: classroom, error: classroomError } = await supabase
+      .from('classrooms')
+      .select('id')
+      .eq('id', classroomId)
+      .eq('institution_id', institutionId)
+      .eq('primary_teacher_id', user.id)
+      .maybeSingle()
+
+    if (classroomError) {
+      console.error('classrooms select:', classroomError.message)
+      return jsonResponse({ error: 'Could not verify classroom teacher' }, 500)
+    }
+
+    maySend = !!classroom
+  }
+
+  if (!maySend && role === 'student' && classroomId) {
+    const { data: coTeacherMembership, error: coTeacherError } = await supabase
+      .from('classroom_members')
+      .select('id')
+      .eq('classroom_id', classroomId)
+      .eq('user_id', user.id)
+      .eq('membership_role', 'co_teacher')
+      .is('withdrawn_at', null)
+      .maybeSingle()
+
+    if (coTeacherError) {
+      console.error('classroom_members select:', coTeacherError.message)
+      return jsonResponse({ error: 'Could not verify classroom co-teacher' }, 500)
+    }
+
+    maySend = !!coTeacherMembership
   }
 
   if (!maySend) {

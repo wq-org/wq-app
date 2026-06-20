@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 
 import type { InstitutionInvite, InstitutionInviteRow } from '../types/institutionInvites.types'
+import { resendInstitutionAdminInviteEmail } from './institutionApi'
 
 const INVITE_SELECT =
   'id, institution_id, email, membership_role, token, expires_at, invited_by, accepted_at, accepted_user_id, revoked_at, revoked_by, created_at' as const
@@ -84,7 +85,5 @@ export async function resendInviteEmail(institutionId: string): Promise<void> {
   } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
 
-  // Import institutionApi function to reuse the same logic
-  const { resendInstitutionAdminInviteEmail } = await import('./institutionApi')
   await resendInstitutionAdminInviteEmail(institutionId)
 }

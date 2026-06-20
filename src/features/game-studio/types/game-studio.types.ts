@@ -44,6 +44,8 @@ export interface GameProjectCardProps {
   linkedCourseIds?: string[]
   onOpen?: () => void
   onCourseLinkChanged?: () => void
+  /** Hide management actions for read-only/student contexts. */
+  showActions?: boolean
 }
 
 export interface GameProjectCardCompactProps {
@@ -59,6 +61,8 @@ export interface GameProjectCardCompactProps {
   onViewAnalytics?: (id: string) => void
   /** Called after link/unlink/offline/delete actions. */
   onCourseLinkChanged?: () => void
+  /** Hide management actions for read-only/student contexts. */
+  showActions?: boolean
 }
 
 export interface GameCardProps {
@@ -127,6 +131,8 @@ export interface GameProjectCardListProps {
   }[]
   onOpen?: (projectId: string) => void
   onCourseLinkChanged?: () => void
+  /** Hide compact-card management actions for read-only/student contexts. */
+  showActions?: boolean
   variant?: GameProjectCardListVariant
   className?: string
   scrollAreaClassName?: string

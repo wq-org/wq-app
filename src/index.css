@@ -62,13 +62,6 @@
 }
 
 @font-face {
-  font-family: 'EB Garamond';
-  src: url('./assets/fonts/EBGaramond-Regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
   font-family: 'Libertinus Math';
   src: url('./assets/fonts/LibertinusMath-Regular.ttf') format('truetype');
   font-weight: 400;
@@ -100,7 +93,6 @@ body {
 
 @theme inline {
   --font-family-satoshi: 'Satoshi', sans-serif;
-  --font-family-eb-garamond: 'EB Garamond', serif;
   --font-family-libertinus-math: 'Libertinus Math', serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -394,9 +386,6 @@ body {
 @layer utilities {
   .font-satoshi {
     font-family: var(--font-family-satoshi);
-  }
-  .font-eb-garamond {
-    font-family: var(--font-family-eb-garamond);
   }
   .font-libertinus-math {
     font-family: var(--font-family-libertinus-math);

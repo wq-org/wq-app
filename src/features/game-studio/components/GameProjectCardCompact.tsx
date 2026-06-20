@@ -48,6 +48,7 @@ export function GameProjectCardCompact({
   onView = () => {},
   onViewAnalytics,
   onCourseLinkChanged,
+  showActions = true,
 }: GameProjectCardCompactProps) {
   const { t } = useTranslation('features.gameStudio')
   const resolvedTheme: ThemeId = themeId && isThemeId(themeId) ? themeId : 'blue'
@@ -76,14 +77,16 @@ export function GameProjectCardCompact({
         accentClasses.hoverBorder,
       )}
     >
-      <GameProjectCardCourseMenu
-        gameId={id}
-        linkedCourseIds={linkedCourseIds}
-        status={status}
-        onCourseLinkChanged={onCourseLinkChanged}
-        onViewAnalytics={onViewAnalytics}
-        compact
-      />
+      {showActions ? (
+        <GameProjectCardCourseMenu
+          gameId={id}
+          linkedCourseIds={linkedCourseIds}
+          status={status}
+          onCourseLinkChanged={onCourseLinkChanged}
+          onViewAnalytics={onViewAnalytics}
+          compact
+        />
+      ) : null}
 
       <button
         type="button"
@@ -93,7 +96,9 @@ export function GameProjectCardCompact({
       />
 
       <div className="relative z-0 flex min-h-0 flex-1 flex-col gap-6 pointer-events-none">
-        <CardHeader className="flex flex-row items-center gap-2 space-y-0 pr-8 pt-1">
+        <CardHeader
+          className={cn('flex flex-row items-center gap-2 space-y-0 pt-1', showActions && 'pr-8')}
+        >
           <div
             className={cn('rounded-lg border p-2', iconSurfaceClass)}
             aria-label={themeLabel}

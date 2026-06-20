@@ -27,6 +27,7 @@ export function CourseCard({
   teacherInitials = 'U',
   onView = () => {},
   onChanged,
+  showActions = true,
 }: CourseCardProps) {
   const { t } = useTranslation('features.course')
   const { url: teacherAvatarUrl } = useAvatarUrl(teacherAvatar)
@@ -71,11 +72,13 @@ export function CourseCard({
         >
           {releaseBadgeLabel}
         </Badge>
-        <CourseCardActionsMenu
-          courseId={id}
-          releaseStatus={releaseStatus}
-          onChanged={onChanged}
-        />
+        {showActions ? (
+          <CourseCardActionsMenu
+            courseId={id}
+            releaseStatus={releaseStatus}
+            onChanged={onChanged}
+          />
+        ) : null}
       </CardHeader>
       <CardContent className="flex flex-1 flex-col p-6">
         <div className="flex items-start gap-3">

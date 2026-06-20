@@ -8,6 +8,7 @@ export function GameProjectCardList({
   projects,
   onOpen,
   onCourseLinkChanged,
+  showActions = true,
   variant = 'default',
   className,
   scrollAreaClassName,
@@ -34,6 +35,7 @@ export function GameProjectCardList({
               linkedCourseIds={project.linkedCourseIds}
               onView={handleOpen}
               onCourseLinkChanged={onCourseLinkChanged}
+              showActions={showActions}
             />
           ))}
         </div>
@@ -58,6 +60,7 @@ export function GameProjectCardList({
             linkedCourseIds={project.linkedCourseIds}
             onOpen={() => handleOpen(project.id)}
             onCourseLinkChanged={onCourseLinkChanged}
+            showActions={showActions}
           />
         </div>
       ))}

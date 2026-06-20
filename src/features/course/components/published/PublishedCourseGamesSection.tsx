@@ -61,6 +61,7 @@ export function PublishedCourseGamesSection({
                 themeId={game.themeId}
                 onView={onGameOpen}
                 onViewAnalytics={onGameAnalyticsOpen}
+                showActions={false}
               />
             ))}
           </div>

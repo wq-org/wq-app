@@ -45,6 +45,7 @@ export function CourseCardCompact({
   className,
   onView = () => {},
   onChanged,
+  showActions = true,
 }: CourseCardProps) {
   const resolvedTheme: ThemeId = themeId && isThemeId(themeId) ? themeId : 'blue'
   const accentClasses = useAccentClasses()
@@ -69,12 +70,14 @@ export function CourseCardCompact({
         accentClasses.hoverBorder,
       )}
     >
-      <CourseCardActionsMenu
-        courseId={id}
-        releaseStatus={releaseStatus}
-        onChanged={onChanged}
-        compact
-      />
+      {showActions ? (
+        <CourseCardActionsMenu
+          courseId={id}
+          releaseStatus={releaseStatus}
+          onChanged={onChanged}
+          compact
+        />
+      ) : null}
 
       <button
         type="button"
@@ -84,7 +87,9 @@ export function CourseCardCompact({
       />
 
       <div className="relative z-0 flex min-h-0 flex-1 flex-col gap-6 pointer-events-none">
-        <CardHeader className="flex flex-row items-center gap-2 space-y-0 pr-8 pt-1">
+        <CardHeader
+          className={cn('flex flex-row items-center gap-2 space-y-0 pt-1', showActions && 'pr-8')}
+        >
           <div
             className={cn('rounded-lg border p-2', iconSurfaceClass)}
             aria-label={themeLabel}

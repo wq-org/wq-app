@@ -70,6 +70,8 @@ export interface CourseCardProps {
   onView?: (id: string) => void
   /** Called after offline/delete actions from the card menu. */
   onChanged?: () => void
+  /** Hide management actions for read-only/student contexts. */
+  showActions?: boolean
   className?: string
 }
 

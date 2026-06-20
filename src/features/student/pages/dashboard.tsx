@@ -114,6 +114,7 @@ export function Dashboard() {
               variant="compact"
               courses={courses}
               onCourseView={handleCourseView}
+              showActions={false}
               className="gap-2"
             />
           )}

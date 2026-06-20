@@ -1,11 +1,4 @@
 import { useState, useEffect } from 'react'
-import {
-  bootstrapInstitutionFromWizard,
-  createInstitution,
-  fetchInstitutions,
-  resendInstitutionAdminInviteEmail,
-  updateInstitution,
-} from '../api/institutionApi'
 import type {
   BootstrapInstitutionFromWizardResult,
   Institution,
@@ -13,6 +6,14 @@ import type {
   InstitutionUpdateValues,
   NewInstitutionWizardValues,
 } from '../types/institution.types'
+
+import {
+  fetchInstitutions,
+  createInstitution,
+  bootstrapInstitutionFromWizard,
+  updateInstitution,
+  resendInstitutionAdminInviteEmail,
+} from '../api/institutionApi'
 
 export function useInstitutions() {
   const [institutions, setInstitutions] = useState<Institution[]>([])

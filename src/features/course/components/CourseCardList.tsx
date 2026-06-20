@@ -10,6 +10,8 @@ export type CourseCardListProps = {
   courses: readonly CourseCardProps[]
   onCourseView?: (id: string) => void
   onCourseChanged?: () => void
+  /** Hide compact-card management actions for read-only/student contexts. */
+  showActions?: boolean
   variant?: CourseCardListVariant
   className?: string
   scrollAreaClassName?: string
@@ -19,6 +21,7 @@ export function CourseCardList({
   courses,
   onCourseView,
   onCourseChanged,
+  showActions = true,
   variant = 'default',
   className,
   scrollAreaClassName,
@@ -40,6 +43,7 @@ export function CourseCardList({
               {...course}
               onView={handleView}
               onChanged={onCourseChanged}
+              showActions={showActions}
             />
           ))}
         </div>
@@ -63,6 +67,7 @@ export function CourseCardList({
             {...course}
             onView={handleView}
             onChanged={onCourseChanged}
+            showActions={showActions}
           />
         </div>
       ))}
