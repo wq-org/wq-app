@@ -60,3 +60,28 @@
 - Summary line ≤ 72 characters.
 - Every section is **required**. Write `none` if it does not apply — do not omit the heading.
 - `DB` and `Security` must always be explicit — reviewers rely on them to scope the review.
+
+## Required local build check
+
+Before pushing a commit or opening a pull request, run the same production build checks locally:
+
+```bash
+npm ci
+npm run type-check
+npm run build
+```
+
+The most important command is the production build:
+
+```bash
+tsc -b && vite build
+```
+
+What this checks:
+
+- `npm ci` installs dependencies exactly from `package-lock.json`. Use this in CI-like checks because it is stricter and more reproducible than `npm install`.
+- `npm run type-check` runs TypeScript without emitting files and catches type errors early.
+- `tsc -b` runs the TypeScript project build. It validates project references, strict typing, and build-level TypeScript errors.
+- `vite build` creates the optimized production bundle that Vercel/Hetzner will serve. It catches import, environment, asset, and bundling errors that may not appear during `npm run start`.
+
+If `tsc -b && vite build` fails locally, the deployment build will very likely fail too. Fix the local error before pushing.
