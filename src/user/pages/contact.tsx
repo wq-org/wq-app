@@ -40,7 +40,7 @@ export default function ContactPage() {
       <Navigation />
       <main className="relative mx-auto w-full max-w-6xl px-6 pt-28 pb-16">
         <GridPattern className="absolute inset-0 -z-10 h-full w-full opacity-75 [mask-image:radial-gradient(ellipse_at_top,white,transparent_70%)]" />
-        <div className="relative">
+        <div className="relative animate-in fade-in-0 slide-in-from-bottom-4">
           <ContactSection
             onInquirySuccess={handleInquirySuccess}
             onInquiryError={handleInquiryError}

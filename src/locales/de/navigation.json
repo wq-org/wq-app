@@ -131,6 +131,14 @@
         "title": "Kontakt",
         "description": "Nehmen Sie Kontakt mit dem WQ-Team auf."
       },
+      "impressum": {
+        "title": "Impressum",
+        "description": "Impressumsangaben."
+      },
+      "agb": {
+        "title": "AGB",
+        "description": "Allgemeine Geschäftsbedingungen."
+      },
       "home": {
         "title": "Startseite",
         "description": "Zurück zur WQ-Health-Startseite."
@@ -146,7 +154,8 @@
         "platform": "Plattform",
         "success": "Dein Erfolg",
         "science": "Wissenschaft",
-        "trust": "Vertrauen & Recht"
+        "trust": "Vertrauen & Recht",
+        "legal": "Rechtliches"
       },
       "items": {
         "home": "Startseite",
@@ -168,7 +177,9 @@
         "security": "Sicherheits-Nachweis",
         "privacy": "Datenschutz (DSGVO)",
         "compliance": "Compliance",
-        "licenses": "Lizenzen"
+        "licenses": "Lizenzen",
+        "impressum": "Impressum",
+        "agb": "AGB"
       },
       "appearance": {
         "trigger": "Design",
@@ -184,9 +195,32 @@
       }
     },
     "cta": {
-      "startFree": "Jetzt kostenlos testen",
+      "startFree": "Demo anfragen",
       "bookDemo": "Demo buchen",
       "contact": "Kontakt"
+    },
+    "missionVision": {
+      "eyebrow": "UNSERE VISION",
+      "founder": "Godfred Amoah Sefa - Gründer",
+      "paragraphs": [
+        "Wir glauben, dass Bildung nicht trocken, kompliziert oder demotivierend sein muss.",
+        "WQ steht für eine neue Ära des Lernens: interaktiv, spielerisch und verständlich. Lernen soll sich nicht wie ein Pflichtprogramm anfühlen, sondern wie eine Reise, bei der Schüler Schritt für Schritt merken: Ich kann das verstehen.",
+        "Mit WQ werden aus Kursen, Aufgaben und Theorie lebendige Lernerlebnisse. Lehrkräfte können Inhalte visuell, spielerisch und intuitiv vermitteln — und Schüler lernen in ihrem eigenen Tempo.",
+        "Eine Bildung, in der niemand zurückbleibt, nur weil Lernen für jeden Menschen anders funktioniert.",
+        "Die nächste Generation lernt nicht mehr nur durch Lesen, Zuhören und Auswendiglernen. Sie braucht Interaktion, Feedback, visuelle Zugänge und Lernmomente, die sich persönlich anfühlen."
+      ]
+    },
+    "legal": {
+      "impressum": {
+        "title": "Impressum",
+        "placeholder": "Die Impressumsangaben werden in Kürze hier veröffentlicht."
+      },
+      "agb": {
+        "title": "AGB",
+        "placeholder": "Die Allgemeinen Geschäftsbedingungen werden in Kürze hier veröffentlicht."
+      },
+      "agbAcceptance": "Ich habe die <1>AGB</1> gelesen und akzeptiere sie.",
+      "agbRequired": "Bitte akzeptieren Sie die AGB, um fortzufahren."
     },
     "contact": {
       "hero": {

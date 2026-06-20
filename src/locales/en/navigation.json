@@ -131,6 +131,14 @@
         "title": "Contact",
         "description": "Get in touch with the WQ team."
       },
+      "impressum": {
+        "title": "Imprint",
+        "description": "Legal imprint information."
+      },
+      "agb": {
+        "title": "Terms and Conditions",
+        "description": "General terms and conditions."
+      },
       "home": {
         "title": "Home",
         "description": "Return to the WQ Health home page."
@@ -146,7 +154,8 @@
         "platform": "Platform",
         "success": "Your Success",
         "science": "Science",
-        "trust": "Trust & Legal"
+        "trust": "Trust & Legal",
+        "legal": "Legal"
       },
       "items": {
         "home": "Home",
@@ -168,7 +177,9 @@
         "security": "Security Proof",
         "privacy": "Privacy (GDPR)",
         "compliance": "Compliance",
-        "licenses": "Licenses"
+        "licenses": "Licenses",
+        "impressum": "Imprint",
+        "agb": "Terms (AGB)"
       },
       "appearance": {
         "trigger": "Theme",
@@ -184,9 +195,32 @@
       }
     },
     "cta": {
-      "startFree": "Start Free",
+      "startFree": "Request a demo",
       "bookDemo": "Book Demo",
       "contact": "Contact"
+    },
+    "missionVision": {
+      "eyebrow": "OUR VISION",
+      "founder": "Godfred Amoah Sefa - Founder",
+      "paragraphs": [
+        "We believe education does not have to be dry, complicated, or demotivating.",
+        "WQ stands for a new era of learning: interactive, playful, and understandable. Learning should not feel like an obligation, but like a journey where students step by step realize: I can understand this.",
+        "With WQ, courses, tasks, and theory become vibrant learning experiences. Teachers can deliver content visually, playfully, and intuitively — and students learn at their own pace.",
+        "An education where no one is left behind, simply because learning works differently for every person.",
+        "The next generation no longer learns only through reading, listening, and memorizing. They need interaction, feedback, visual approaches, and learning moments that feel personal."
+      ]
+    },
+    "legal": {
+      "impressum": {
+        "title": "Imprint",
+        "placeholder": "Legal imprint details for WQ will be published here."
+      },
+      "agb": {
+        "title": "Terms and Conditions",
+        "placeholder": "Terms and conditions will be published here."
+      },
+      "agbAcceptance": "I have read and accept the <1>Terms and Conditions (AGB)</1>.",
+      "agbRequired": "Please accept the terms and conditions to continue."
     },
     "contact": {
       "hero": {

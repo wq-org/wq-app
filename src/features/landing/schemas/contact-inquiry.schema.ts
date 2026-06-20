@@ -44,6 +44,9 @@ export const contactInquirySchema = z
     isPublicInstitution: z.enum(YES_NO_VALUES, {
       errorMap: () => ({ message: 'Please indicate whether this is a public institution' }),
     }),
+    acceptedAgb: z.boolean().refine((value) => value === true, {
+      message: 'Please accept the terms and conditions',
+    }),
   })
   .superRefine((values, context) => {
     if (
@@ -79,6 +82,7 @@ export const CONTACT_INQUIRY_DEFAULT_VALUES: ContactInquiryFormValues = {
   existingSystems: [],
   existingSystemsOtherNote: '',
   isPublicInstitution: 'yes',
+  acceptedAgb: false,
 }
 
 export { MIN_USE_CASE_LENGTH }

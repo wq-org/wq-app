@@ -16,6 +16,7 @@ import { AuthCardLayout } from '../components/AuthCardLayout'
 import { SelectTabs } from '@/components/shared'
 import type { TabItem } from '@/components/shared'
 import { LanguageSwitcher, ThemeModeToggle } from '@/components/shared'
+import { TermsAcceptanceField } from '@/components/shared/legal/TermsAcceptanceField'
 import { AUTH_GRID_ICONS } from '../constants'
 
 const roleTabs: TabItem[] = [
@@ -34,6 +35,8 @@ export const SignUpPage = () => {
   const [repeatPassword, setRepeatPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [emailError, setEmailError] = useState<string | null>(null)
+  const [acceptedAgb, setAcceptedAgb] = useState(false)
+  const [agbError, setAgbError] = useState<string | null>(null)
 
   useEffect(() => {
     if (pendingRole && pendingRole !== selectedRole) {
@@ -60,7 +63,8 @@ export const SignUpPage = () => {
     validateEmail(email) &&
     password.trim() !== '' &&
     repeatPassword.trim() !== '' &&
-    password === repeatPassword
+    password === repeatPassword &&
+    acceptedAgb
 
   async function handleOnSubmitSignUp(e: React.FormEvent) {
     e.preventDefault()
@@ -70,6 +74,12 @@ export const SignUpPage = () => {
       return
     }
 
+    if (!acceptedAgb) {
+      setAgbError(t('signUp.agbRequired'))
+      return
+    }
+
+    setAgbError(null)
     setIsLoading(true)
 
     try {
@@ -181,6 +191,16 @@ export const SignUpPage = () => {
               {t('signUp.passwordMismatch') || 'Passwords do not match'}
             </p>
           )}
+
+          <TermsAcceptanceField
+            checked={acceptedAgb}
+            error={agbError}
+            id="sign-up-agb"
+            onCheckedChange={(value) => {
+              setAcceptedAgb(value)
+              if (value) setAgbError(null)
+            }}
+          />
 
           <Button
             type="submit"

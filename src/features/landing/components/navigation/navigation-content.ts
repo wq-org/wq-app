@@ -17,7 +17,10 @@ export type LandingPageConfig = {
 export const landingContactPath = '/contact'
 export const landingLoginPath = '/auth/login'
 
-export const landingStandalonePages: LandingPageConfig[] = []
+export const landingStandalonePages: LandingPageConfig[] = [
+  { key: 'impressum', path: '/legal/impressum' },
+  { key: 'agb', path: '/legal/agb' },
+]
 
 export const landingNavigationGroups: NavigationGroupConfig[] = [
   {
@@ -55,6 +58,14 @@ export const landingFooterGroups: NavigationGroupConfig[] = [
       { key: 'security', href: '/trust/security' },
       { key: 'privacy', href: '/trust/privacy' },
       { key: 'compliance', href: '/trust/compliance' },
+    ],
+  },
+  {
+    key: 'legal',
+    sectionId: 'legal',
+    items: [
+      { key: 'impressum', href: '/legal/impressum' },
+      { key: 'agb', href: '/legal/agb' },
     ],
   },
 ]

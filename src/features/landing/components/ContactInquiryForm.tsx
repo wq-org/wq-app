@@ -26,6 +26,7 @@ import {
   INSTITUTION_TYPE_KEYS,
   type ExistingSystemKey,
 } from '@/features/landing/constants/contact-inquiry-options'
+import { TermsAcceptanceField } from '@/components/shared/legal/TermsAcceptanceField'
 import { useContactInquiryForm } from '@/features/landing/hooks/useContactInquiryForm'
 
 type ContactInquiryFormProps = {
@@ -108,42 +109,58 @@ export function ContactInquiryForm({ onInquirySuccess, onInquiryError }: Contact
           </div>
         )}
         renderFooter={({ goToPrevious, goToNext, isFirst, isLast }) => (
-          <div className="flex items-center justify-between gap-2.5">
-            <Button
-              disabled={isFirst || isSubmitting}
-              onClick={goToPrevious}
-              type="button"
-              variant="outline"
-            >
-              {t('landing.contact.form.previous')}
-            </Button>
+          <div className="space-y-4">
             {isLast ? (
-              <Button
-                disabled={isSubmitting}
-                type="submit"
-              >
-                {isSubmitting ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <Spinner
-                      size="xs"
-                      speed={1400}
-                    />
-                    {t('landing.contact.form.submitting')}
-                  </span>
-                ) : (
-                  t('landing.contact.form.submit')
+              <Controller
+                name="acceptedAgb"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <TermsAcceptanceField
+                    checked={field.value}
+                    error={fieldState.error?.message ?? errors.acceptedAgb?.message}
+                    id="contact-inquiry-agb"
+                    onCheckedChange={field.onChange}
+                  />
                 )}
-              </Button>
-            ) : (
+              />
+            ) : null}
+            <div className="flex items-center justify-between gap-2.5">
               <Button
-                disabled={isSubmitting}
-                onClick={() => void goToNext()}
+                disabled={isFirst || isSubmitting}
+                onClick={goToPrevious}
                 type="button"
                 variant="outline"
               >
-                {t('landing.contact.form.next')}
+                {t('landing.contact.form.previous')}
               </Button>
-            )}
+              {isLast ? (
+                <Button
+                  disabled={isSubmitting}
+                  type="submit"
+                >
+                  {isSubmitting ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Spinner
+                        size="xs"
+                        speed={1400}
+                      />
+                      {t('landing.contact.form.submitting')}
+                    </span>
+                  ) : (
+                    t('landing.contact.form.submit')
+                  )}
+                </Button>
+              ) : (
+                <Button
+                  disabled={isSubmitting}
+                  onClick={() => void goToNext()}
+                  type="button"
+                  variant="outline"
+                >
+                  {t('landing.contact.form.next')}
+                </Button>
+              )}
+            </div>
           </div>
         )}
         steps={steps}

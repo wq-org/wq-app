@@ -15,6 +15,8 @@ import Test from './user/pages/test'
 import Home from './user/pages/home'
 import LandingPage from './user/pages/landing'
 import ContactPage from './user/pages/contact'
+import { LegalPage } from './user/pages/legal'
+import { MissionVisionPage } from './user/pages/mission-vision'
 import ChangelogPage from './user/pages/changelog'
 import {
   StudentDashboard,
@@ -154,7 +156,7 @@ const App = () => {
               />
               <Route
                 path="/mission/vision"
-                element={<LandingPage />}
+                element={<MissionVisionPage />}
               />
               <Route
                 path="/mission/partners"
@@ -175,6 +177,14 @@ const App = () => {
               <Route
                 path="/trust/compliance"
                 element={<LandingPage />}
+              />
+              <Route
+                path="/legal/impressum"
+                element={<LegalPage page="impressum" />}
+              />
+              <Route
+                path="/legal/agb"
+                element={<LegalPage page="agb" />}
               />
               <Route
                 path="/changelog"
