@@ -295,6 +295,11 @@
     "filterEmpty": "No plans match your search.",
     "loadError": "Failed to load plans",
     "noDescription": "No description",
+    "status": {
+      "published": "Published",
+      "draft": "Draft",
+      "archived": "Archived"
+    },
     "actions": {
       "editEntitlements": "Edit entitlements"
     },
@@ -332,8 +337,6 @@
           "draft": "Draft",
           "archived": "Archived"
         },
-        "storageBytesCapDefault": "Storage cap (bytes, default)",
-        "metadata": "Metadata (JSON)",
         "priceAmount": "Price amount",
         "currency": "Currency",
         "billingInterval": "Billing interval",
@@ -342,8 +345,6 @@
         "updatedAt": "Updated at",
         "deletedAt": "Deleted at",
         "placeholders": {
-          "storageBytes": "Bytes (digits only)",
-          "metadata": "{ }",
           "priceAmount": "e.g. 99.00"
         },
         "billing": {
@@ -352,7 +353,6 @@
           "yearly": "Yearly"
         },
         "errors": {
-          "metadataJson": "Metadata must be valid JSON.",
           "priceAmount": "Enter a valid price or leave empty.",
           "billingInterval": "Choose a billing interval."
         }

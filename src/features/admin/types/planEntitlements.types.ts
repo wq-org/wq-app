@@ -24,8 +24,6 @@ export type PlanCatalogEditorRow = {
   code: string
   name: string
   description: string | null
-  storage_bytes_cap_default: string | number | null
-  metadata: unknown | null
   updated_at: string
   deleted_at: string | null
   price_amount: string | number | null
@@ -39,8 +37,6 @@ export type PlanCatalogEditorPlan = {
   code: string
   name: string
   description: string | null
-  storageBytesCapDefault: string | null
-  metadata: unknown | null
   updatedAt: string
   deletedAt: string | null
   priceAmount: string | null
@@ -50,8 +46,6 @@ export type PlanCatalogEditorPlan = {
 }
 
 export type PlanCatalogSettingsPatch = {
-  storage_bytes_cap_default: string | null
-  metadata: unknown | null
   price_amount: number | null
   billing_interval: string
   is_active: boolean

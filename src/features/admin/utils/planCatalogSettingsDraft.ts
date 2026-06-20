@@ -9,27 +9,13 @@ import type {
 } from '../types/planEntitlements.types'
 
 export type PlanSettingsDraft = {
-  storageBytes: string
-  metadataJson: string
   priceAmount: string
   billingInterval: string
   isActive: boolean
 }
 
-function stringifyMetadata(metadata: unknown | null): string {
-  if (metadata == null) return ''
-  if (typeof metadata === 'string') return metadata
-  try {
-    return JSON.stringify(metadata, null, 2)
-  } catch {
-    return String(metadata)
-  }
-}
-
 export function planToSettingsDraft(plan: PlanCatalogEditorPlan): PlanSettingsDraft {
   return {
-    storageBytes: plan.storageBytesCapDefault ?? '',
-    metadataJson: stringifyMetadata(plan.metadata),
     priceAmount: plan.priceAmount ?? '',
     billingInterval: plan.billingInterval,
     isActive: plan.isActive,
@@ -42,8 +28,6 @@ export function settingsDraftEqualsPlan(
 ): boolean {
   const baseline = planToSettingsDraft(plan)
   return (
-    draft.storageBytes === baseline.storageBytes &&
-    draft.metadataJson === baseline.metadataJson &&
     draft.priceAmount === baseline.priceAmount &&
     draft.billingInterval === baseline.billingInterval &&
     draft.isActive === baseline.isActive
@@ -53,19 +37,6 @@ export function settingsDraftEqualsPlan(
 export function parseSettingsDraftToPatch(
   draft: PlanSettingsDraft,
 ): { ok: true; patch: PlanCatalogSettingsPatch } | { ok: false; messageKey: string } {
-  const storageTrim = draft.storageBytes.trim().replace(/[^\d]/g, '')
-  const storage_bytes_cap_default = storageTrim.length > 0 ? storageTrim : null
-
-  const metaTrim = draft.metadataJson.trim()
-  let metadata: unknown | null = null
-  if (metaTrim.length > 0) {
-    try {
-      metadata = JSON.parse(metaTrim) as unknown
-    } catch {
-      return { ok: false, messageKey: 'planCatalog.editor.settings.errors.metadataJson' }
-    }
-  }
-
   const priceTrim = draft.priceAmount.trim()
   let price_amount: number | null = null
   if (priceTrim.length > 0) {
@@ -88,8 +59,6 @@ export function parseSettingsDraftToPatch(
   return {
     ok: true,
     patch: {
-      storage_bytes_cap_default,
-      metadata,
       price_amount,
       billing_interval,
       is_active: draft.isActive,

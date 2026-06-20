@@ -4,7 +4,6 @@ import { ChevronDown } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { FieldInput } from '@/components/ui/field-input'
-import { FieldTextarea } from '@/components/ui/field-textarea'
 import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Switch } from '@/components/ui/switch'
@@ -85,25 +84,6 @@ function PlanCatalogSettingsForm({
           t={t}
         />
       </div>
-
-      <FieldInput
-        label={t('planCatalog.editor.settings.storageBytesCapDefault')}
-        value={draft.storageBytes}
-        onValueChange={(v) => updateDraft({ storageBytes: v.replace(/[^\d]/g, '') })}
-        placeholder={t('planCatalog.editor.settings.placeholders.storageBytes')}
-        type="text"
-        disabled={disabled}
-      />
-
-      <FieldTextarea
-        label={t('planCatalog.editor.settings.metadata')}
-        value={draft.metadataJson}
-        onValueChange={(v) => updateDraft({ metadataJson: v })}
-        placeholder={t('planCatalog.editor.settings.placeholders.metadata')}
-        rows={6}
-        disabled={disabled}
-        hideSeparator
-      />
 
       <div className="grid gap-5 sm:grid-cols-2">
         <FieldInput

@@ -295,6 +295,11 @@
     "filterEmpty": "Keine Pläne passen zur Suche.",
     "loadError": "Pläne konnten nicht geladen werden",
     "noDescription": "Keine Beschreibung",
+    "status": {
+      "published": "Veröffentlicht",
+      "draft": "Entwurf",
+      "archived": "Archiviert"
+    },
     "actions": {
       "editEntitlements": "Entitlements bearbeiten"
     },
@@ -332,8 +337,6 @@
           "draft": "Entwurf",
           "archived": "Archiviert"
         },
-        "storageBytesCapDefault": "Speicherlimit in Bytes (Standard)",
-        "metadata": "Metadaten (JSON)",
         "priceAmount": "Preis",
         "currency": "Währung",
         "billingInterval": "Abrechnungsintervall",
@@ -342,8 +345,6 @@
         "updatedAt": "Aktualisiert am",
         "deletedAt": "Gelöscht am",
         "placeholders": {
-          "storageBytes": "Bytes (nur Ziffern)",
-          "metadata": "{ }",
           "priceAmount": "z. B. 99,00"
         },
         "billing": {
@@ -352,7 +353,6 @@
           "yearly": "Jährlich"
         },
         "errors": {
-          "metadataJson": "Metadaten müssen gültiges JSON sein.",
           "priceAmount": "Gültigen Preis eingeben oder leer lassen.",
           "billingInterval": "Abrechnungsintervall wählen."
         }

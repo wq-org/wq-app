@@ -12,10 +12,10 @@ function PlanCatalogStatusBadge({ isActive, deletedAt, t }: PlanCatalogStatusBad
   }
 
   if (isActive) {
-    return <Badge variant="success">{t('planCatalog.status.published')}</Badge>
+    return <Badge variant="darkblue">{t('planCatalog.status.published')}</Badge>
   }
 
-  return <Badge variant="secondary">{t('planCatalog.status.draft')}</Badge>
+  return <Badge variant="orange">{t('planCatalog.status.draft')}</Badge>
 }
 
 export { PlanCatalogStatusBadge }

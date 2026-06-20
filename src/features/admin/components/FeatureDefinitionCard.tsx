@@ -102,7 +102,7 @@ export function FeatureDefinitionCard({ feature, icon: Icon, onEdit }: FeatureDe
               </Badge>
               {isBoolean ? (
                 <Badge
-                  variant="secondary"
+                  variant={feature.defaultEnabled ? 'darkblue' : 'orange'}
                   className="max-w-full font-normal"
                 >
                   {feature.defaultEnabled

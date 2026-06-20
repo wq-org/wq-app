@@ -20,7 +20,7 @@ import type {
 const PLAN_LIST_COLUMNS =
   'id, code, name, description, billing_interval, is_active, deleted_at' as const
 const PLAN_EDITOR_COLUMNS =
-  'id, code, name, description, storage_bytes_cap_default, metadata, updated_at, deleted_at, price_amount, currency, billing_interval, is_active' as const
+  'id, code, name, description, updated_at, deleted_at, price_amount, currency, billing_interval, is_active' as const
 const ENTITLEMENT_COLUMNS =
   'id, plan_id, feature_id, boolean_value, integer_value, bigint_value, text_value' as const
 
@@ -43,14 +43,11 @@ function normalizeBillingInterval(raw: string): string {
 }
 
 function mapPlanEditorRow(row: PlanCatalogEditorRow): PlanCatalogEditorPlan {
-  const storage = row.storage_bytes_cap_default
   return {
     id: row.id,
     code: row.code,
     name: row.name,
     description: row.description,
-    storageBytesCapDefault: storage === null || storage === undefined ? null : String(storage),
-    metadata: row.metadata,
     updatedAt: row.updated_at,
     deletedAt: row.deleted_at,
     priceAmount: row.price_amount == null ? null : String(row.price_amount),
@@ -130,8 +127,6 @@ export async function updatePlanCatalogSettings(
   const { data, error } = await supabase
     .from('plan_catalog')
     .update({
-      storage_bytes_cap_default: patch.storage_bytes_cap_default,
-      metadata: patch.metadata,
       price_amount: patch.price_amount,
       billing_interval: patch.billing_interval,
       is_active: patch.is_active,
