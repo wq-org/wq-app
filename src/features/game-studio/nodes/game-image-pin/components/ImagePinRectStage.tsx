@@ -3,6 +3,7 @@ import Konva from 'konva'
 import { Image as KonvaImage, Layer, Rect, Stage, Text, Transformer } from 'react-konva'
 import useImage from 'use-image'
 
+import { Spinner } from '@/components/ui/spinner'
 import type { GameImagePinRect } from '../image-pin.schema'
 import { IMAGE_PIN_RECT_MIN_SIZE, clampRectToImage } from '../imagePinRectGeometry'
 import { ImagePinRectErrorOverlay } from './ImagePinRectErrorOverlay'
@@ -78,8 +79,8 @@ export function ImagePinRectStage({
   const [draft, setDraft] = useState<DraftBox | null>(null)
   const [imageFailureReported, setImageFailureReported] = useState(false)
 
-  // Compute image load states (per principle_clean_code.md: compute before render)
   const hasImage = image && status === 'loaded'
+  const isImageLoading = Boolean(imageSrc) && status === 'loading'
   const isImageFailed = status === 'failed'
 
   useEffect(() => {
@@ -242,6 +243,21 @@ export function ImagePinRectStage({
     },
     [image, notifyRectanglesChange, notifySelectedRectIdChange, sceneSize.height, sceneSize.width],
   )
+
+  if (isImageLoading) {
+    return (
+      <div
+        ref={containerRef}
+        className="flex min-h-48 w-full items-center justify-center rounded-lg border bg-muted/20"
+      >
+        <Spinner
+          variant="gray"
+          size="sm"
+          speed={1750}
+        />
+      </div>
+    )
+  }
 
   return (
     <div

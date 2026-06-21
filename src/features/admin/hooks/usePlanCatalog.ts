@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { listPlanCatalog } from '../api/planEntitlementsApi'
 import type { PlanCatalog } from '../types/planEntitlements.types'
 
@@ -28,9 +28,9 @@ export function usePlanCatalog() {
     }
   }, [])
 
-  return {
-    items,
-    isLoading,
-    error,
-  }
+  const addItem = useCallback((plan: PlanCatalog) => {
+    setItems((prev) => [plan, ...prev])
+  }, [])
+
+  return { items, isLoading, error, addItem }
 }

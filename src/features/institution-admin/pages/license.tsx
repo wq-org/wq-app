@@ -36,6 +36,7 @@ export const InstitutionAdminLicense = () => {
         {institutionId !== null ? (
           <InstitutionSubscriptionDetails
             subscription={subscription ?? null}
+            canCancel={false}
             onSubscriptionCanceled={refreshSubscription}
           />
         ) : (

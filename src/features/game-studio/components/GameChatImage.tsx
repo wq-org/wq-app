@@ -147,7 +147,6 @@ function GameChatImagePinMedia({
       <img
         src={src}
         alt={alt ?? 'Game preview image'}
-        crossOrigin="anonymous"
         draggable={false}
         className="mx-auto block max-h-[70vh] w-auto max-w-full md:max-w-[620px]"
         onLoad={(event) =>

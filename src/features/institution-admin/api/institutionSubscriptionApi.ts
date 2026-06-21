@@ -68,7 +68,7 @@ export async function fetchLatestInstitutionSubscription(
   }
 }
 
-/** Sets subscription end to now and marks billing as cancelled (direct cancel). */
+/** Sets subscription end to now and marks billing as cancelled (super-admin only). */
 export async function cancelInstitutionSubscriptionNow(subscriptionId: string): Promise<void> {
   const now = new Date().toISOString()
   const { error } = await supabase

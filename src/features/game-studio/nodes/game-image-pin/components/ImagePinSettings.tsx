@@ -24,9 +24,7 @@ import { Separator } from '@/components/ui/separator'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Switch } from '@/components/ui/switch'
 import { Text } from '@/components/ui/text'
-import { AspectRatio } from '@/components/ui/aspect-ratio'
 import {
   Popover,
   PopoverContent,
@@ -35,12 +33,7 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import {
-  AnimatedBeamHub,
-  BeamHubBadge,
-  QuantityStepper,
-  SliderSyncedNumberInput,
-} from '@/components/shared'
+import { AnimatedBeamHub, BeamHubBadge, QuantityStepper } from '@/components/shared'
 import { cn } from '@/lib/utils'
 import {
   resolveGameImagePinPoints,
@@ -105,16 +98,12 @@ export function ImagePinSettings({
   prevNode,
   nextNode,
 }: ImagePinSettingsProps) {
-  const { imagePreview } = nodeData
   const { t } = useTranslation('features.gameStudio')
   const maxPoints = resolveGameImagePinPoints(nodeData.points)
   const retryDeductionPercent = resolveGameImagePinRetryDeductionPercent(
     nodeData.retryDeductionPercent,
   )
 
-  const [qualityOpacity, setQualityOpacity] = useState(50)
-  const [exclusionOpacity, setExclusionOpacity] = useState(0)
-  const [timeLimitEnabled, setTimeLimitEnabled] = useState(false)
   const {
     isOpen: isLearningFieldPopoverOpen,
     onClose: onLearningFieldPopoverClose,
@@ -448,20 +437,6 @@ export function ImagePinSettings({
         </AccordionItem>
       </Accordion>
 
-      <div className={cn('flex items-center justify-between gap-4', imagePinSettingsEnterSubtle)}>
-        <Text
-          as="p"
-          variant="small"
-          className="flex-1"
-        >
-          {t('imagePinSettings.timeLimitLabel')}
-        </Text>
-        <Switch
-          checked={timeLimitEnabled}
-          onCheckedChange={setTimeLimitEnabled}
-        />
-      </div>
-
       <Separator />
 
       <div className={cn('w-full', imagePinSettingsEnterSubtle)}>
@@ -504,105 +479,6 @@ export function ImagePinSettings({
           ]}
         />
       </div>
-
-      <Separator />
-
-      <Accordion
-        type="single"
-        collapsible
-        defaultValue="adaptive-features"
-      >
-        <AccordionItem
-          value="adaptive-features"
-          className="border-b-0"
-        >
-          <AccordionTrigger className="py-3">
-            <Text
-              as="p"
-              variant="h3"
-            >
-              {t('imagePinSettings.adaptiveTitle')}
-            </Text>
-          </AccordionTrigger>
-          <AccordionContent>
-            <div className={cn('flex flex-col gap-6', imagePinSettingsEnterSubtle)}>
-              <div className="flex gap-4">
-                <div className="flex flex-1 flex-col gap-4">
-                  <Text
-                    as="p"
-                    variant="small"
-                  >
-                    {t('imagePinSettings.qualityReductionLabel')}
-                  </Text>
-                  <SliderSyncedNumberInput
-                    label={t('imagePinSettings.qualitySliderLabel')}
-                    inputId="quality-opacity-slider"
-                    value={qualityOpacity}
-                    onValueChange={setQualityOpacity}
-                    min={0}
-                    max={100}
-                    step={1}
-                    suffix="%"
-                  />
-                </div>
-                <div className="flex flex-1 items-start justify-center">
-                  <div className="w-32">
-                    <AspectRatio ratio={1}>
-                      {imagePreview ? (
-                        <img
-                          src={imagePreview}
-                          alt=""
-                          className="h-full w-full rounded-md object-cover"
-                          style={{ opacity: qualityOpacity / 100 }}
-                        />
-                      ) : (
-                        <div className="h-full w-full rounded-md bg-muted" />
-                      )}
-                    </AspectRatio>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <div className="flex flex-1 flex-col gap-4">
-                  <Text
-                    as="p"
-                    variant="small"
-                  >
-                    {t('imagePinSettings.areaExclusionLabel')}
-                  </Text>
-                  <SliderSyncedNumberInput
-                    label={t('imagePinSettings.areaSliderLabel')}
-                    inputId="exclusion-opacity-slider"
-                    value={exclusionOpacity}
-                    onValueChange={setExclusionOpacity}
-                    min={0}
-                    max={100}
-                    step={1}
-                    suffix="%"
-                  />
-                </div>
-                <div className="flex flex-1 items-start justify-center">
-                  <div className="w-32">
-                    <AspectRatio ratio={1}>
-                      {imagePreview ? (
-                        <img
-                          src={imagePreview}
-                          alt=""
-                          className="h-full w-full rounded-md object-cover"
-                          style={{ opacity: (100 - exclusionOpacity) / 100 }}
-                        />
-                      ) : (
-                        <div className="h-full w-full rounded-md bg-muted" />
-                      )}
-                    </AspectRatio>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
 
       <Separator />
 

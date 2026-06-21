@@ -143,7 +143,21 @@
         "overview": "Übersicht",
         "subscription": "Abonnement",
         "courses": "Kurse",
-        "games": "Spiele"
+        "games": "Spiele",
+        "settings": "Einstellungen"
+      },
+      "settings": {
+        "title": "Institutionseinstellungen",
+        "description": "E-Mail-Adresse der Institution aktualisieren. Änderungen werden sofort gespeichert.",
+        "emailLabel": "Kontakt-E-Mail",
+        "emailPlaceholder": "kontakt@institution.de",
+        "save": "Änderungen speichern",
+        "saving": "Speichern…",
+        "cancel": "Abbrechen",
+        "toasts": {
+          "success": "Institutionseinstellungen gespeichert",
+          "error": "Einstellungen konnten nicht gespeichert werden"
+        }
       },
       "subscriptionAlreadyActive": "Diese Institution hat bereits ein aktives Abonnement.",
       "assigningSubscription": "Abonnement wird zugewiesen…",
@@ -301,7 +315,10 @@
       "archived": "Archiviert"
     },
     "actions": {
-      "editEntitlements": "Entitlements bearbeiten"
+      "menuLabel": "Plan-Aktionen",
+      "editEntitlements": "Entitlements bearbeiten",
+      "viewPlan": "Plan ansehen",
+      "publishVersion": "Version veröffentlichen"
     },
     "preview": {
       "title": "Vorschau",
@@ -310,6 +327,30 @@
     "empty": {
       "title": "Noch keine Pläne",
       "description": "Lege zuerst Pläne an, bevor du Entitlement-Werte konfigurierst."
+    },
+    "create": {
+      "button": "Neuer Plan",
+      "title": "Plan erstellen",
+      "description": "Definiere einen neuen kommerziellen Plan. Entitlements können nach der Erstellung konfiguriert werden.",
+      "nameLabel": "Planname",
+      "namePlaceholder": "z. B. Enterprise",
+      "codeLabel": "Plan-Code",
+      "codePlaceholder": "z. B. enterprise",
+      "descriptionLabel": "Beschreibung (optional)",
+      "descriptionPlaceholder": "Kurze Beschreibung dieses Plans…",
+      "cancel": "Abbrechen",
+      "confirm": "Plan erstellen",
+      "saving": "Erstellen…",
+      "errors": {
+        "nameRequired": "Planname ist erforderlich.",
+        "codeRequired": "Plan-Code ist erforderlich.",
+        "codePattern": "Code muss mit einem Buchstaben beginnen und darf nur Kleinbuchstaben, Ziffern und Unterstriche enthalten.",
+        "priceInvalid": "Gültigen Preis eingeben oder leer lassen."
+      },
+      "toasts": {
+        "success": "Plan erstellt",
+        "error": "Plan konnte nicht erstellt werden"
+      }
     },
     "editor": {
       "back": "Zurück zu den Plänen",
@@ -328,10 +369,17 @@
       "saving": "Speichern…",
       "tabs": {
         "editor": "Editor",
-        "settings": "Einstellungen"
+        "settings": "Einstellungen",
+        "versions": "Versionen"
       },
       "settings": {
+        "identity": "Identität",
+        "nameLabel": "Planname",
+        "namePlaceholder": "z. B. Enterprise Plus",
         "codeLabel": "Plan-Code",
+        "codeHint": "Nur Kleinbuchstaben, Ziffern und Unterstriche. Kann nach Veröffentlichung nicht geändert werden.",
+        "descriptionLabel": "Beschreibung (optional)",
+        "descriptionPlaceholder": "Kurze Beschreibung dieses Plans…",
         "status": {
           "published": "Veröffentlicht",
           "draft": "Entwurf",
@@ -353,6 +401,8 @@
           "yearly": "Jährlich"
         },
         "errors": {
+          "nameRequired": "Planname ist erforderlich.",
+          "codePattern": "Code muss mit einem Buchstaben beginnen und darf nur Kleinbuchstaben, Ziffern und Unterstriche enthalten.",
           "priceAmount": "Gültigen Preis eingeben oder leer lassen.",
           "billingInterval": "Abrechnungsintervall wählen."
         }
@@ -363,6 +413,43 @@
         "unexpected": "Etwas ist schiefgelaufen.",
         "settingsSaveSuccess": "Planeinstellungen aktualisiert",
         "settingsSaveError": "Planeinstellungen konnten nicht gespeichert werden"
+      }
+    },
+    "versions": {
+      "sectionTitle": "Veröffentlichte Versionen",
+      "sectionDescription": "Jede veröffentlichte Version ist ein unveränderlicher Schnappschuss des Plans und seiner Entitlements. Weise eine Version einer Institution über das Lizenz-Panel zu.",
+      "publishButton": "Version veröffentlichen",
+      "loadError": "Versionen konnten nicht geladen werden",
+      "status": {
+        "published": "Veröffentlicht",
+        "archived": "Archiviert",
+        "draft": "Entwurf"
+      },
+      "empty": {
+        "title": "Noch keine Versionen",
+        "description": "Veröffentliche diesen Plan, um einen unveränderlichen Schnappschuss zu erstellen, der Institutionen zugewiesen werden kann."
+      },
+      "table": {
+        "version": "Version",
+        "status": "Status",
+        "name": "Name",
+        "price": "Preis",
+        "publishedAt": "Veröffentlicht",
+        "changeNote": "Änderungsnotiz"
+      },
+      "publishDialog": {
+        "title": "Neue Version veröffentlichen",
+        "description": "Erstellt einen unveränderlichen Schnappschuss der aktuellen Plan-Entitlements. Nach der Veröffentlichung kann die Version nicht mehr bearbeitet werden.",
+        "changeNoteLabel": "Änderungsnotiz (optional)",
+        "changeNotePlaceholder": "Beschreibe, was sich in dieser Version geändert hat…",
+        "changeNoteHint": "Nur für Super-Admins sichtbar. Hilft dabei, was verkauft wurde, nachzuvollziehen.",
+        "cancel": "Abbrechen",
+        "confirm": "Veröffentlichen",
+        "publishing": "Veröffentlichen…"
+      },
+      "toasts": {
+        "publishSuccess": "Version erfolgreich veröffentlicht",
+        "publishError": "Version konnte nicht veröffentlicht werden"
       }
     }
   },

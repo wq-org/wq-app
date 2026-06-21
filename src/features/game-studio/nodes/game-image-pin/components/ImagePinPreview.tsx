@@ -17,7 +17,6 @@ import { useUser } from '@/contexts/user'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { useTranslation } from 'react-i18next'
 
-import { GameChatHistory } from '../../../components/GameChatHistory'
 import type { GameChatHistoryMessage } from '../../../components/game-chat.types'
 import { IF_ELSE_GAMEPLAY_ANCHOR_ATTR } from '../../game-if-else/ifElsePreview.constants'
 import { useIfElsePreviewFollowContent } from '../../game-if-else/useIfElsePreviewFollowContent'
@@ -36,6 +35,7 @@ import { useResolvedGameImagePinPreviewSrc } from '../hooks/useResolvedGameImage
 import { useImagePinGame } from '../hooks/useImagePinGame'
 import { ImagePin } from './ImagePin'
 import { ImagePinChatInput } from './ImagePinChatInput'
+import { ImagePinPreviewChatHistory } from './ImagePinPreviewChatHistory'
 
 export type ImagePinPreviewProps = {
   nodeId: string
@@ -307,14 +307,11 @@ export function ImagePinPreview({
       {...(shellSegmentActive ? { [IF_ELSE_GAMEPLAY_ANCHOR_ATTR]: '' } : {})}
       className={cn('flex flex-col gap-2', !useShellSession && 'min-h-0 flex-1')}
     >
-      <GameChatHistory
+      <ImagePinPreviewChatHistory
         messages={displayMessages}
-        layout="play"
         flat={useShellSession}
-        className={useShellSession ? undefined : 'min-h-0 flex-1'}
-        showUserAvatar
+        className={useShellSession ? undefined : 'flex-1'}
         incomingAvatarUrl={userAvatarUrl ?? undefined}
-        incomingBubbleVariant="default"
         receivingBubbleVariant={useShellSession ? 'dark' : 'orange'}
         renderImageChildren={renderImageChildren}
       />

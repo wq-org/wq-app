@@ -1,13 +1,14 @@
 import { useMemo, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { FieldInput } from '@/components/ui/field-input'
 import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Text } from '@/components/ui/text'
+import { Textarea } from '@/components/ui/textarea'
 
 import {
   PLAN_BILLING_MONTHLY,
@@ -16,7 +17,6 @@ import {
 } from '../config/planCatalogBilling'
 import type { PlanCatalogEditorPlan } from '../types/planEntitlements.types'
 import type { PlanSettingsDraft } from '../utils/planCatalogSettingsDraft'
-import { PlanCatalogStatusBadge } from './PlanCatalogStatusBadge'
 
 function formatDateTime(iso: string | null, locale: string): string {
   if (!iso) return '—'
@@ -28,6 +28,15 @@ function formatDateTime(iso: string | null, locale: string): string {
   } catch {
     return iso
   }
+}
+
+const CODE_PATTERN = /^[a-z][a-z0-9_]*$/
+
+function slugifyCode(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
 }
 
 type PlanCatalogSettingsFormProps = {
@@ -49,6 +58,9 @@ function PlanCatalogSettingsForm({
 }: PlanCatalogSettingsFormProps) {
   const [billingOpen, setBillingOpen] = useState(false)
 
+  const isDraft = !plan.isActive && !plan.deletedAt
+  const locale = i18nLanguage === 'de' ? 'de-DE' : 'en-US'
+
   const billingLabel = useMemo(() => {
     if (draft.billingInterval === PLAN_BILLING_MONTHLY) {
       return t('planCatalog.editor.settings.billing.monthly')
@@ -59,31 +71,108 @@ function PlanCatalogSettingsForm({
     return t('planCatalog.editor.settings.billing.none')
   }, [draft.billingInterval, t])
 
-  const updatedAtDisplay = formatDateTime(plan.updatedAt, i18nLanguage)
-  const deletedAtDisplay = formatDateTime(plan.deletedAt, i18nLanguage)
+  const updatedAtDisplay = formatDateTime(plan.updatedAt, locale)
+  const deletedAtDisplay = formatDateTime(plan.deletedAt, locale)
 
   const handleSelectBilling = (value: string) => {
     updateDraft({ billingInterval: value })
     setBillingOpen(false)
   }
 
+  const handleNameChange = (v: string) => {
+    const next: Partial<PlanSettingsDraft> = { name: v }
+    if (!draft.code || draft.code === slugifyCode(draft.name)) {
+      next.code = slugifyCode(v)
+    }
+    updateDraft(next)
+  }
+
+  const codeError = draft.code && !CODE_PATTERN.test(draft.code)
+
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center gap-2">
-        <Text
-          as="p"
-          variant="small"
-          color="muted"
-        >
-          {t('planCatalog.editor.settings.codeLabel')}
-        </Text>
-        <Badge variant="secondary">{plan.code}</Badge>
-        <PlanCatalogStatusBadge
-          isActive={plan.isActive}
-          deletedAt={plan.deletedAt}
-          t={t}
-        />
-      </div>
+      {isDraft ? (
+        <>
+          <div className="flex flex-col gap-1">
+            <Text
+              as="p"
+              variant="small"
+              className="font-medium text-muted-foreground"
+            >
+              {t('planCatalog.editor.settings.identity')}
+            </Text>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            <FieldInput
+              label={t('planCatalog.editor.settings.nameLabel')}
+              value={draft.name}
+              onValueChange={handleNameChange}
+              placeholder={t('planCatalog.editor.settings.namePlaceholder')}
+              disabled={disabled}
+            />
+            <div className="flex flex-col gap-1.5">
+              <FieldInput
+                label={t('planCatalog.editor.settings.codeLabel')}
+                value={draft.code}
+                onValueChange={(v) =>
+                  updateDraft({ code: v.toLowerCase().replace(/[^a-z0-9_]/g, '') })
+                }
+                placeholder="e.g. enterprise_plus"
+                disabled={disabled}
+                aria-invalid={Boolean(codeError)}
+              />
+              {codeError && (
+                <Text
+                  as="p"
+                  variant="small"
+                  color="danger"
+                  className="text-xs"
+                >
+                  {t('planCatalog.create.errors.codePattern')}
+                </Text>
+              )}
+              <Text
+                as="p"
+                variant="small"
+                color="muted"
+                className="text-xs"
+              >
+                {t('planCatalog.editor.settings.codeHint')}
+              </Text>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label className="text-sm font-medium text-foreground">
+              {t('planCatalog.editor.settings.descriptionLabel')}
+            </Label>
+            <Textarea
+              value={draft.description}
+              onChange={(e) => updateDraft({ description: e.target.value })}
+              placeholder={t('planCatalog.editor.settings.descriptionPlaceholder')}
+              rows={2}
+              disabled={disabled}
+              className="resize-none"
+            />
+          </div>
+
+          <Separator />
+        </>
+      ) : (
+        <div className="flex flex-wrap items-center gap-2">
+          <Text
+            as="p"
+            variant="small"
+            color="muted"
+          >
+            {t('planCatalog.editor.settings.codeLabel')}
+          </Text>
+          <span className="rounded-md bg-secondary px-2 py-0.5 font-mono text-xs text-secondary-foreground">
+            {plan.code}
+          </span>
+        </div>
+      )}
 
       <div className="grid gap-5 sm:grid-cols-2">
         <FieldInput

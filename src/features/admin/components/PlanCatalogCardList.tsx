@@ -7,10 +7,17 @@ type PlanCatalogCardListProps = {
   plans: readonly PlanCatalog[]
   onEdit: (planId: string) => void
   onPreview: (plan: PlanCatalog) => void
+  onPublish?: (planId: string) => void
   className?: string
 }
 
-function PlanCatalogCardList({ plans, onEdit, onPreview, className }: PlanCatalogCardListProps) {
+function PlanCatalogCardList({
+  plans,
+  onEdit,
+  onPreview,
+  onPublish,
+  className,
+}: PlanCatalogCardListProps) {
   return (
     <div className={cn('grid grid-cols-1 gap-3 md:grid-cols-2', className)}>
       {plans.map((plan) => (
@@ -19,6 +26,7 @@ function PlanCatalogCardList({ plans, onEdit, onPreview, className }: PlanCatalo
           plan={plan}
           onEdit={onEdit}
           onPreview={onPreview}
+          onPublish={onPublish}
         />
       ))}
     </div>

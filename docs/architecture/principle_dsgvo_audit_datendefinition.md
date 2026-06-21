@@ -105,7 +105,7 @@ Gilt verschärft für Kreiskliniken und Bismarckschule (Pflegeausbildung).
 
 ### 2.6 Verboten — Besonderer Kinderschutz (Neckar-Realschule, Schüler unter 16)
 
-Gilt für alle Schüler\*innen an der Neckar-Realschule (Jahrgang 5–10, Alter 10–16 Jahre).
+Gilt für alle Schülerinnen an der Neckar-Realschule (Jahrgang 5–10, Alter 10–16 Jahre).
 
 ```
 ❌ Anwesenheits- und Fehlzeitenhistorie im Einzeldetail
@@ -553,32 +553,32 @@ Vor jeder Datenbank-Änderung, die `audit.events` betrifft, sind folgende Fragen
 
 ### 8.1 Beim Schreiben eines neuen Audit-Triggers
 
-- [ ] Enthält der Payload **keinen** Freitext aus notes, messages, tasks, DSR?
-- [ ] Enthält der Payload **keine** E-Mail, Telefon, Adresse, vollständigen Namen?
-- [ ] Enthält der Payload **keine** Tokens, Secrets, Credentials?
-- [ ] Enthält der Payload **keine** Art. 9 Daten (Gesundheit, Religion, Ethnizität)?
-- [ ] Ist für Kreiskliniken/Bismarckschule sichergestellt, dass kein klinischer Kontext im Log landet?
-- [ ] Ist für Neckar-Realschule sichergestellt, dass kein kinderschutzrelevanter Freitext geloggt wird?
-- [ ] Ist `institution_id` immer gesetzt?
-- [ ] Ist `visibility_level` korrekt gesetzt (`institution_admin` | `super_admin` | `security_only`)?
-- [ ] Ist das Event nur per `audit.log_event() SECURITY DEFINER` einfügbar?
-- [ ] Ist der `event_type` semantisch klar (kein `updated` für alles)?
+- Enthält der Payload **keinen** Freitext aus notes, messages, tasks, DSR?
+- Enthält der Payload **keine** E-Mail, Telefon, Adresse, vollständigen Namen?
+- Enthält der Payload **keine** Tokens, Secrets, Credentials?
+- Enthält der Payload **keine** Art. 9 Daten (Gesundheit, Religion, Ethnizität)?
+- Ist für Kreiskliniken/Bismarckschule sichergestellt, dass kein klinischer Kontext im Log landet?
+- Ist für Neckar-Realschule sichergestellt, dass kein kinderschutzrelevanter Freitext geloggt wird?
+- Ist `institution_id` immer gesetzt?
+- Ist `visibility_level` korrekt gesetzt (`institution_admin` | `super_admin` | `security_only`)?
+- Ist das Event nur per `audit.log_event() SECURITY DEFINER` einfügbar?
+- Ist der `event_type` semantisch klar (kein `updated` für alles)?
 
 ### 8.2 Beim Entwickeln der Audit-Log-UI
 
-- [ ] Werden Felder nur aus der Allowlist (Abschnitt 3) angezeigt?
-- [ ] Ist der Institution Admin auf `institution_id = eigener Mandant` beschränkt?
-- [ ] Werden `actor_user_id` und `subject_id` niemals im Rohformat ohne Kontext angezeigt?
-- [ ] Gibt es keine "Alles anzeigen"-Funktion, die `payload` als Raw-JSON rendert?
-- [ ] Sind Rechnungs-Events ohne Zahlungsdetails?
-- [ ] Sind DSR-Events ohne Freitext?
+- Werden Felder nur aus der Allowlist (Abschnitt 3) angezeigt?
+- Ist der Institution Admin auf `institution_id = eigener Mandant` beschränkt?
+- Werden `actor_user_id` und `subject_id` niemals im Rohformat ohne Kontext angezeigt?
+- Gibt es keine "Alles anzeigen"-Funktion, die `payload` als Raw-JSON rendert?
+- Sind Rechnungs-Events ohne Zahlungsdetails?
+- Sind DSR-Events ohne Freitext?
 
 ### 8.3 Bei Schema-Änderungen an Domain-Tabellen
 
-- [ ] Neue Freitextfelder → explizit von Audit-Triggern ausschließen
-- [ ] Neue Gesundheitsdaten-Felder → `visibility_level = security_only` oder gar nicht loggen
-- [ ] Neue Kind-Tabellen mit Schüler-Bezug → Allowlist prüfen
-- [ ] Neue Settings-Felder → prüfen ob Secret-Natur vorliegt
+- Neue Freitextfelder → explizit von Audit-Triggern ausschließen
+- Neue Gesundheitsdaten-Felder → `visibility_level = security_only` oder gar nicht loggen
+- Neue Kind-Tabellen mit Schüler-Bezug → Allowlist prüfen
+- Neue Settings-Felder → prüfen ob Secret-Natur vorliegt
 
 ---
 
@@ -608,7 +608,7 @@ Vor jeder Datenbank-Änderung, die `audit.events` betrifft, sind folgende Fragen
 
 ### Neckar-Realschule Stuttgart
 
-- Schüler\*innen 10–16 Jahre → Art. 8 DSGVO (Minderjährigenschutz)
+- Schülerinnen 10–16 Jahre → Art. 8 DSGVO (Minderjährigenschutz)
 - Für Schüler unter 16: Einwilligung nur mit Zustimmung der Erziehungsberechtigten
 - **Besonderes Augenmerk:** VKL-Klassen (Vorbereitungsklassen für neu Zugewanderte) → besonderer Schutz, da Migrationshintergrund Art. 9 DSGVO naheliegen kann
 - WQ Health darf Minderjährigen-Daten keinesfalls für Profiling, automatisierte Entscheidungen oder Scoring nutzen
@@ -632,6 +632,14 @@ Vor jeder Datenbank-Änderung, die `audit.events` betrifft, sind folgende Fragen
 | **DSFA**              | Datenschutz-Folgenabschätzung nach Art. 35 DSGVO — erforderlich bei hohem Risiko                                               |
 
 ---
+
+| Tabelle/RPC              | Super-Admin read-only Bypass | Begründung                                    |
+| ------------------------ | ---------------------------- | --------------------------------------------- |
+| Lessons, Courses, Topics | Ja (mit Audit-Log)           | Lehrinhalt, Art. 6 lit. b/f                   |
+| Games / Game Studio      | Ja (mit Audit-Log)           | Arbeitsergebnis                               |
+| Submissions/Scores       | Mit Vorsicht — anlassbezogen | Leistungsdaten, ggf. sensibler                |
+| Notes (persönlich)       | Nein standardmäßig           | Persönlicher Inhalt                           |
+| Chat `messages.content`  | Nein — nie                   | Private Kommunikation, Art. 5 lit. f, Art. 25 |
 
 _Dieses Dokument ist verbindliche interne Arbeitsgrundlage für alle Datenbankentwicklungs- und Designentscheidungen bei WQ Health. Es ersetzt keine Rechtsberatung. Bei Unklarheiten ist ein Datenschutzbeauftragter oder Fachanwalt für IT-Recht hinzuzuziehen. Empfehlung: activeMind AG, DataGuard, Fieldfisher._
 

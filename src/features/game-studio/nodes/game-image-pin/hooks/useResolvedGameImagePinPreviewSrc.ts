@@ -4,18 +4,18 @@ import { useEffect, useState } from 'react'
 
 import { getFileSignedUrl, lookupStoragePathByCloudFileId } from '@/features/cloud'
 
-import {
-  isSupabaseCloudSignedUrl,
-  resolveGameImagePinStoragePath,
-} from '../../../utils/gameImagePinStoragePath'
+import { resolveGameImagePinStoragePath } from '../../../utils/gameImagePinStoragePath'
 import type { GameImagePinNodeData } from '../image-pin.schema'
 
 const SIGNED_URL_TTL_SECONDS = 3600
 
 function pickStoredPreviewFallback(storedPreview: string, storagePath: string): string {
   if (!storedPreview) return ''
-  // Published snapshots often embed a teacher-scoped signed URL that expires.
-  if (storagePath && isSupabaseCloudSignedUrl(storedPreview)) return ''
+  // Published snapshots embed a teacher-scoped signed URL that may expire.
+  // We still use it as the initial display value so the image shows immediately;
+  // the effect below replaces it with a fresh signed URL when one is available.
+  // Returning '' here caused a blank image flash while the refresh was in-flight.
+  void storagePath // storagePath used only for the refresh branch, not to suppress preview
   return storedPreview
 }
 

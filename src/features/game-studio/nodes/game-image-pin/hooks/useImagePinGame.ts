@@ -145,6 +145,20 @@ function buildPreviewDescriptionMessage(
   }
 }
 
+function buildPreviewImageMessage(nodeId: string, imageSrc: string): GameChatHistoryMessage {
+  return {
+    id: `preview-${nodeId}-image`,
+    text: '',
+    time: formatPreviewChatTime(),
+    direction: 'incoming',
+    image: {
+      variant: 'image-pin',
+      src: imageSrc,
+      alt: 'Game Image Pin preview image',
+    },
+  }
+}
+
 function buildPreviewAnswerMessage(
   text: string,
   nodeId: string,
@@ -218,7 +232,7 @@ function buildInitialPreviewMessages(
     ? [buildPreviewDescriptionMessage(nodeId, description)]
     : []
   const first = questions[0]
-  if (!first) return messages
+  if (!first) return imageSrc ? [...messages, buildPreviewImageMessage(nodeId, imageSrc)] : messages
   return [...messages, buildPreviewQuestionMessage(nodeId, imageSrc, first, 0)]
 }
 
@@ -372,7 +386,8 @@ export function useImagePinGame({
     return state.messages.map((m) => {
       if (!m.image || m.image.variant !== 'image-pin') return m
 
-      const isActiveQuestion = m.id === latestQuestionMessageId && !isLatestSubmitted
+      const isActiveQuestion =
+        m.id === latestQuestionMessageId && latestQuestionFromMessage !== null && !isLatestSubmitted
 
       return {
         ...m,
@@ -383,7 +398,7 @@ export function useImagePinGame({
         },
       }
     })
-  }, [state.messages, latestQuestionMessageId, isLatestSubmitted])
+  }, [state.messages, latestQuestionMessageId, latestQuestionFromMessage, isLatestSubmitted])
 
   const getSubmissionForMessage = (message: GameChatHistoryMessage): ImagePinSubmission | null => {
     return submissions[message.id] ?? null

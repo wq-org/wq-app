@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, type ReactNode } from 'react'
 import type { ChatBubbleRounded, ChatBubbleVariant } from '@/components/shared/chat'
-import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
 import { cn } from '@/lib/utils'
 import { GameIncomingChatMessageBubble } from './GameIncomingChatMessageBubble'
 import { GameReceivingChatMessageBubble } from './GameReceivingChatMessageBubble'
+import { GamePreviewChatHistoryFrame } from './GamePreviewChatHistoryFrame'
 import type { GameChatBubbleLayout, GameChatHistoryMessage } from './game-chat.types'
 
 type GameChatHistoryProps = {
@@ -45,14 +45,8 @@ export function GameChatHistory({
   flat = false,
   scrollToMessageId,
 }: GameChatHistoryProps) {
-  const bottomRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
   const shouldAutoScroll = !flat && autoScroll !== false
-
-  useEffect(() => {
-    if (!shouldAutoScroll) return
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, shouldAutoScroll])
 
   useEffect(() => {
     if (!scrollToMessageId) return
@@ -61,20 +55,25 @@ export function GameChatHistory({
   }, [scrollToMessageId])
 
   const isPlayLayout = layout === 'play'
+  const messageListClassName = isPlayLayout
+    ? flat
+      ? 'gap-2 pb-1 pt-0'
+      : 'gap-3 pb-2 pt-1'
+    : flat
+      ? 'gap-3 py-1'
+      : 'gap-4 pb-6 pt-5'
 
-  const messageList = (
-    <div
-      ref={listRef}
-      className={cn(
-        'flex flex-col',
-        isPlayLayout
-          ? flat
-            ? 'gap-2 pb-1 pt-0'
-            : 'gap-3 pb-2 pt-1'
-          : flat
-            ? 'gap-3 py-1'
-            : 'gap-4 pb-6 pt-5',
-      )}
+  return (
+    <GamePreviewChatHistoryFrame
+      hasContent={messages.length > 0}
+      flat={flat}
+      autoScroll={shouldAutoScroll}
+      hideScrollBar={false}
+      reservePreviewHeight={isPlayLayout && !flat}
+      listRef={listRef}
+      className={cn('w-full min-w-0', isPlayLayout && !flat && 'mx-auto max-w-2xl', className)}
+      scrollAreaClassName={cn('bg-background', isPlayLayout ? 'px-2 sm:px-3' : 'px-4 sm:px-5')}
+      messageListClassName={messageListClassName}
     >
       {messages.map((message) => (
         <div
@@ -119,38 +118,6 @@ export function GameChatHistory({
           )}
         </div>
       ))}
-
-      {shouldAutoScroll ? <div ref={bottomRef} /> : null}
-    </div>
-  )
-
-  const columnClassName = cn(
-    'w-full min-w-0',
-    isPlayLayout && !flat && 'mx-auto max-w-2xl',
-    className,
-  )
-
-  if (flat) {
-    return <div className={columnClassName}>{messageList}</div>
-  }
-
-  return (
-    <div
-      className={cn(
-        'flex min-h-0 w-full min-w-0 flex-col overflow-hidden rounded-[1.25rem]',
-        isPlayLayout && !flat && 'mx-auto max-w-2xl',
-        className,
-      )}
-    >
-      <BlurredScrollArea
-        className={cn(
-          'flex h-full min-h-0 flex-1 flex-col bg-background',
-          isPlayLayout ? 'px-2 sm:px-3' : 'px-4 sm:px-5',
-        )}
-        viewportClassName="min-h-0 max-h-full flex-1 basis-0 [&>div]:!block [&>div]:min-h-0"
-      >
-        {messageList}
-      </BlurredScrollArea>
-    </div>
+    </GamePreviewChatHistoryFrame>
   )
 }

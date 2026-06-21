@@ -143,7 +143,21 @@
         "overview": "Overview",
         "subscription": "Subscription",
         "courses": "Courses",
-        "games": "Games"
+        "games": "Games",
+        "settings": "Settings"
+      },
+      "settings": {
+        "title": "Institution settings",
+        "description": "Update the institution's contact email address. Changes are saved immediately.",
+        "emailLabel": "Contact email",
+        "emailPlaceholder": "contact@institution.com",
+        "save": "Save changes",
+        "saving": "Saving…",
+        "cancel": "Cancel",
+        "toasts": {
+          "success": "Institution settings saved",
+          "error": "Could not save settings"
+        }
       },
       "subscriptionAlreadyActive": "This institution already has an active subscription.",
       "assigningSubscription": "Assigning subscription…",
@@ -301,7 +315,10 @@
       "archived": "Archived"
     },
     "actions": {
-      "editEntitlements": "Edit entitlements"
+      "menuLabel": "Plan actions",
+      "editEntitlements": "Edit entitlements",
+      "viewPlan": "View plan",
+      "publishVersion": "Publish version"
     },
     "preview": {
       "title": "Preview",
@@ -310,6 +327,30 @@
     "empty": {
       "title": "No plans yet",
       "description": "Add plans before configuring entitlement values."
+    },
+    "create": {
+      "button": "New plan",
+      "title": "Create plan",
+      "description": "Define a new commercial plan. You can configure entitlements after creation.",
+      "nameLabel": "Plan name",
+      "namePlaceholder": "e.g. Enterprise",
+      "codeLabel": "Plan code",
+      "codePlaceholder": "e.g. enterprise",
+      "descriptionLabel": "Description (optional)",
+      "descriptionPlaceholder": "Short description of this plan…",
+      "cancel": "Cancel",
+      "confirm": "Create plan",
+      "saving": "Creating…",
+      "errors": {
+        "nameRequired": "Plan name is required.",
+        "codeRequired": "Plan code is required.",
+        "codePattern": "Code must start with a letter and contain only lowercase letters, numbers, and underscores.",
+        "priceInvalid": "Enter a valid price or leave empty."
+      },
+      "toasts": {
+        "success": "Plan created",
+        "error": "Could not create plan"
+      }
     },
     "editor": {
       "back": "Back to plans",
@@ -328,10 +369,17 @@
       "saving": "Saving…",
       "tabs": {
         "editor": "Editor",
-        "settings": "Settings"
+        "settings": "Settings",
+        "versions": "Versions"
       },
       "settings": {
+        "identity": "Identity",
+        "nameLabel": "Plan name",
+        "namePlaceholder": "e.g. Enterprise Plus",
         "codeLabel": "Plan code",
+        "codeHint": "Lowercase letters, numbers and underscores only. Cannot be changed once published.",
+        "descriptionLabel": "Description (optional)",
+        "descriptionPlaceholder": "Short description of this plan…",
         "status": {
           "published": "Published",
           "draft": "Draft",
@@ -353,6 +401,8 @@
           "yearly": "Yearly"
         },
         "errors": {
+          "nameRequired": "Plan name is required.",
+          "codePattern": "Code must start with a letter and contain only lowercase letters, numbers, and underscores.",
           "priceAmount": "Enter a valid price or leave empty.",
           "billingInterval": "Choose a billing interval."
         }
@@ -363,6 +413,43 @@
         "unexpected": "Something went wrong.",
         "settingsSaveSuccess": "Plan settings updated",
         "settingsSaveError": "Could not save plan settings"
+      }
+    },
+    "versions": {
+      "sectionTitle": "Published versions",
+      "sectionDescription": "Each published version is an immutable snapshot of the plan and its entitlements. Assign a version to an institution from the license panel.",
+      "publishButton": "Publish version",
+      "loadError": "Failed to load versions",
+      "status": {
+        "published": "Published",
+        "archived": "Archived",
+        "draft": "Draft"
+      },
+      "empty": {
+        "title": "No versions yet",
+        "description": "Publish this plan to create an immutable snapshot that can be assigned to institutions."
+      },
+      "table": {
+        "version": "Version",
+        "status": "Status",
+        "name": "Name",
+        "price": "Price",
+        "publishedAt": "Published",
+        "changeNote": "Change note"
+      },
+      "publishDialog": {
+        "title": "Publish new version",
+        "description": "Creates an immutable snapshot of the current plan entitlements. Once published, the version cannot be edited.",
+        "changeNoteLabel": "Change note (optional)",
+        "changeNotePlaceholder": "Describe what changed in this version…",
+        "changeNoteHint": "Visible to super-admins only. Helps track what was sold.",
+        "cancel": "Cancel",
+        "confirm": "Publish",
+        "publishing": "Publishing…"
+      },
+      "toasts": {
+        "publishSuccess": "Version published successfully",
+        "publishError": "Could not publish version"
       }
     }
   },

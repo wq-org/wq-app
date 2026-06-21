@@ -30,6 +30,7 @@ export function GameIncomingChatMessageBubble({
   const bubbleStateKey =
     messageId != null ? `${messageId}-${resolvedStatus}` : `${text}-${time}-${resolvedStatus}`
   const showImage = Boolean(image) && resolvedStatus !== 'loading'
+  const showBubble = resolvedStatus === 'loading' || text.trim().length > 0
 
   const isPlayLayout = layout === 'play'
 
@@ -67,27 +68,29 @@ export function GameIncomingChatMessageBubble({
             {imageChildren}
           </GameChatImage>
         ) : null}
-        <div
-          key={bubbleStateKey}
-          className={cn(
-            chatBubbleVariants({ variant, rounded }),
-            getChatBubbleTailClass('receiving', rounded),
-            chatBubbleEnterAnimation,
-          )}
-        >
-          {resolvedStatus === 'loading' ? (
-            <div className="flex min-h-9 items-center justify-center py-0.5">
-              <DotWaveLoader variant="orange" />
-            </div>
-          ) : (
-            <>
-              <p className={cn('whitespace-pre-line text-inherit', textBold && 'font-bold')}>
-                {text}
-              </p>
-              <p className="mt-1 text-[10px] opacity-70">{time}</p>
-            </>
-          )}
-        </div>
+        {showBubble ? (
+          <div
+            key={bubbleStateKey}
+            className={cn(
+              chatBubbleVariants({ variant, rounded }),
+              getChatBubbleTailClass('receiving', rounded),
+              chatBubbleEnterAnimation,
+            )}
+          >
+            {resolvedStatus === 'loading' ? (
+              <div className="flex min-h-9 items-center justify-center py-0.5">
+                <DotWaveLoader variant="orange" />
+              </div>
+            ) : (
+              <>
+                <p className={cn('whitespace-pre-line text-inherit', textBold && 'font-bold')}>
+                  {text}
+                </p>
+                <p className="mt-1 text-[10px] opacity-70">{time}</p>
+              </>
+            )}
+          </div>
+        ) : null}
       </div>
     </div>
   )

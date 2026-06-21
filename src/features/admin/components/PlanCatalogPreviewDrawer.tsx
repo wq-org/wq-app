@@ -104,7 +104,7 @@ function PlanCatalogPreviewDrawer({ plan, open, onOpenChange }: PlanCatalogPrevi
       open={open}
       onOpenChange={onOpenChange}
     >
-      <DrawerContent>
+      <DrawerContent onCloseAutoFocus={(e) => e.preventDefault()}>
         <div className="flex items-center justify-between px-4 pt-4">
           <DrawerHeader className="flex-1 p-0">
             <div className="flex flex-wrap items-center gap-2">

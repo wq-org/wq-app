@@ -1,12 +1,12 @@
 'use client'
 
-import { useEffect, useMemo, useRef } from 'react'
+import { useMemo } from 'react'
 import type { SerializedEditorState } from 'lexical'
 
 import { ReceivingChatMessageBubble, SendingChatMessageBubble } from '@/components/shared/chat'
 import type { ChatBubbleVariant } from '@/components/shared/chat/chat-bubble-variants'
-import { BlurredScrollArea } from '@/components/ui/blurred-scroll-area'
 import { cn } from '@/lib/utils'
+import { GamePreviewChatHistoryFrame } from '../../../components/GamePreviewChatHistoryFrame'
 
 export type OpenQuestionPreviewChatMessage = {
   id: string
@@ -98,7 +98,6 @@ export function OpenQuestionPreviewChatHistory({
   className,
   flat = false,
 }: OpenQuestionPreviewChatHistoryProps) {
-  const bottomRef = useRef<HTMLDivElement>(null)
   const seedMessages = useMemo(
     () =>
       buildSeedMessages({
@@ -111,18 +110,16 @@ export function OpenQuestionPreviewChatHistory({
     [descriptionContent, nodeId, showDescription, showTitle, title],
   )
 
-  useEffect(() => {
-    if (flat) return
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [flat, previewMessages, seedMessages])
-
   const hasContent = seedMessages.length > 0 || previewMessages.length > 0
-  if (!hasContent) {
-    return null
-  }
 
-  const messageList = (
-    <div className={cn('flex flex-col', flat ? 'gap-2 py-0' : 'gap-4 py-1')}>
+  return (
+    <GamePreviewChatHistoryFrame
+      hasContent={hasContent}
+      flat={flat}
+      className={className}
+      scrollAreaClassName="bg-transparent"
+      messageListClassName={cn(flat ? 'gap-2 py-0' : 'gap-4 py-1')}
+    >
       {seedMessages.map((message) => (
         <div
           key={message.id}
@@ -191,28 +188,6 @@ export function OpenQuestionPreviewChatHistory({
           )}
         </div>
       ))}
-      {!flat ? <div ref={bottomRef} /> : null}
-    </div>
-  )
-
-  if (flat) {
-    return <div className={cn('w-full min-w-0', className)}>{messageList}</div>
-  }
-
-  return (
-    <div
-      className={cn(
-        'flex min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden rounded-[1.25rem]',
-        className,
-      )}
-    >
-      <BlurredScrollArea
-        className="flex h-full min-h-0 flex-1 flex-col bg-transparent"
-        hideScrollBar
-        viewportClassName="min-h-0 max-h-full flex-1 basis-0 [&>div]:!block [&>div]:min-h-0"
-      >
-        {messageList}
-      </BlurredScrollArea>
-    </div>
+    </GamePreviewChatHistoryFrame>
   )
 }

@@ -46,6 +46,9 @@ export type PlanCatalogEditorPlan = {
 }
 
 export type PlanCatalogSettingsPatch = {
+  name: string
+  code: string
+  description: string | null
   price_amount: number | null
   billing_interval: string
   is_active: boolean

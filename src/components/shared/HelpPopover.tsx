@@ -50,9 +50,12 @@ export function HelpPopover({
       </PopoverTrigger>
       <PopoverContent
         align="end"
-        className="h-[min(18rem,calc(100vh-2rem))] w-96 max-w-[95vw] overflow-hidden rounded-2xl p-4"
+        className="h-[min(18rem,calc(100vh-2rem))] w-96 max-w-[95vw] overflow-hidden rounded-2xl p-0"
       >
-        <ScrollArea className="h-full pr-3">
+        <ScrollArea
+          className="h-full min-h-0"
+          viewportClassName="p-4 pr-6"
+        >
           <div className="flex flex-col gap-3">
             <Text
               as="h3"

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { ArrowLeft, ChevronDown, FilePenLine, Settings } from 'lucide-react'
+import { ArrowLeft, ChevronDown, FilePenLine, History, Settings } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
@@ -19,6 +19,9 @@ import { updatePlanCatalogSettings } from '../api/planEntitlementsApi'
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 import { PlanCatalogSettingsForm } from '../components/PlanCatalogSettingsForm'
 import { PlanCatalogStatusBadge } from '../components/PlanCatalogStatusBadge'
+import { PlanVersionsList } from '../components/PlanVersionsList'
+import { PublishPlanVersionDialog } from '../components/PublishPlanVersionDialog'
+import { usePlanVersions } from '../hooks/usePlanVersions'
 import {
   parseSettingsDraftToPatch,
   planToSettingsDraft,
@@ -59,15 +62,25 @@ const AdminPlanEntitlementsEditor = () => {
   const { plan, groups, setRows, isLoading, isSaving, hasChanges, error, save, reset } =
     usePlanEntitlements(planId)
 
-  const [activeTabId, setActiveTabId] = useState<'editor' | 'settings'>('editor')
+  const [activeTabId, setActiveTabId] = useState<'editor' | 'settings' | 'versions'>('editor')
   const [settingsDraft, setSettingsDraft] = useState<PlanSettingsDraft | null>(null)
   const [isSavingSettings, setIsSavingSettings] = useState(false)
+  const [publishDialogOpen, setPublishDialogOpen] = useState(false)
+
+  const {
+    versions,
+    isLoading: isLoadingVersions,
+    isPublishing,
+    error: versionsError,
+    publish,
+  } = usePlanVersions(planId)
 
   const selectTabs = useMemo(
     () =>
       [
         { id: 'editor', icon: FilePenLine, title: t('planCatalog.editor.tabs.editor') },
         { id: 'settings', icon: Settings, title: t('planCatalog.editor.tabs.settings') },
+        { id: 'versions', icon: History, title: t('planCatalog.editor.tabs.versions') },
       ] as const,
     [t],
   )
@@ -75,6 +88,7 @@ const AdminPlanEntitlementsEditor = () => {
   useEffect(() => {
     setActiveTabId('editor')
     setSettingsDraft(null)
+    setPublishDialogOpen(false)
   }, [planId])
 
   // Derive: use the explicitly-set draft when present; otherwise fall back to the plan's values once loaded.
@@ -119,6 +133,21 @@ const AdminPlanEntitlementsEditor = () => {
     if (!plan) return
     setSettingsDraft(planToSettingsDraft(plan))
   }, [plan])
+
+  const handlePublishVersion = useCallback(
+    async (changeNote: string) => {
+      try {
+        await publish(changeNote)
+        toast.success(t('planCatalog.versions.toasts.publishSuccess'))
+        setPublishDialogOpen(false)
+      } catch (e) {
+        toast.error(t('planCatalog.versions.toasts.publishError'), {
+          description: e instanceof Error ? e.message : t('planCatalog.editor.toasts.unexpected'),
+        })
+      }
+    },
+    [publish, t],
+  )
 
   const handleSaveSettings = useCallback(async () => {
     if (!planId || !plan || !effectiveSettingsDraft) return
@@ -211,7 +240,7 @@ const AdminPlanEntitlementsEditor = () => {
             <SelectTabs
               tabs={selectTabs}
               activeTabId={activeTabId}
-              onTabChange={(id) => setActiveTabId(id as 'editor' | 'settings')}
+              onTabChange={(id) => setActiveTabId(id as 'editor' | 'settings' | 'versions')}
               className="w-full max-w-md"
             />
 
@@ -367,6 +396,47 @@ const AdminPlanEntitlementsEditor = () => {
                     </Collapsible>
                   )
                 })}
+              </div>
+            ) : activeTabId === 'versions' ? (
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col gap-0.5">
+                    <Text
+                      as="h2"
+                      variant="h3"
+                      className="font-semibold text-foreground"
+                    >
+                      {t('planCatalog.versions.sectionTitle')}
+                    </Text>
+                    <Text
+                      as="p"
+                      variant="small"
+                      color="muted"
+                    >
+                      {t('planCatalog.versions.sectionDescription')}
+                    </Text>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="darkblue"
+                    size="sm"
+                    onClick={() => setPublishDialogOpen(true)}
+                    disabled={isPublishing}
+                  >
+                    {t('planCatalog.versions.publishButton')}
+                  </Button>
+                </div>
+                <PlanVersionsList
+                  versions={versions}
+                  isLoading={isLoadingVersions}
+                  error={versionsError}
+                />
+                <PublishPlanVersionDialog
+                  open={publishDialogOpen}
+                  isPublishing={isPublishing}
+                  onOpenChange={setPublishDialogOpen}
+                  onConfirm={handlePublishVersion}
+                />
               </div>
             ) : effectiveSettingsDraft ? (
               <FieldCard className="px-5 py-4">

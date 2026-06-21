@@ -127,6 +127,9 @@ export async function updatePlanCatalogSettings(
   const { data, error } = await supabase
     .from('plan_catalog')
     .update({
+      name: patch.name,
+      code: patch.code,
+      description: patch.description,
       price_amount: patch.price_amount,
       billing_interval: patch.billing_interval,
       is_active: patch.is_active,
@@ -169,6 +172,39 @@ export async function getPlanEntitlementsEditorData(planId: string): Promise<{
   ])
 
   return { plan, features, entitlements }
+}
+
+export type CreatePlanPayload = {
+  code: string
+  name: string
+  description?: string
+  price_amount: number | null
+  currency: string
+  billing_interval: string
+  is_active: boolean
+}
+
+export async function createPlan(payload: CreatePlanPayload): Promise<PlanCatalog> {
+  const { data, error } = await supabase
+    .from('plan_catalog')
+    .insert({
+      code: payload.code.trim().toLowerCase(),
+      name: payload.name.trim(),
+      description: payload.description?.trim() || null,
+      price_amount: payload.price_amount,
+      currency: payload.currency,
+      billing_interval: payload.billing_interval,
+      is_active: payload.is_active,
+    })
+    .select(PLAN_LIST_COLUMNS)
+    .single()
+
+  if (error) {
+    console.error('createPlan:', error)
+    throw new Error(error.message)
+  }
+
+  return mapPlan(data as PlanCatalogRow)
 }
 
 export async function savePlanEntitlements(

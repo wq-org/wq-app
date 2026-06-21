@@ -247,6 +247,7 @@ type InstitutionSubscriptionDetailsProps =
       institutionId: string
       refreshToken?: number
       planAssignment?: PlanAssignment
+      canCancel?: boolean
       onSubscriptionCanceled?: () => void
       subscription?: undefined
     }
@@ -254,6 +255,7 @@ type InstitutionSubscriptionDetailsProps =
       institutionId?: undefined
       refreshToken?: number
       planAssignment?: PlanAssignment
+      canCancel?: boolean
       onSubscriptionCanceled?: () => void
       subscription: InstitutionSubscriptionWithPlan | null
     }
@@ -263,6 +265,7 @@ export function InstitutionSubscriptionDetails({
   subscription: propSubscription,
   refreshToken = 0,
   planAssignment,
+  canCancel = true,
   onSubscriptionCanceled,
 }: InstitutionSubscriptionDetailsProps) {
   const { t, i18n } = useTranslation('features.institution')
@@ -385,7 +388,7 @@ export function InstitutionSubscriptionDetails({
     )
   }
 
-  const showCancelFooter = Boolean(sub && !isTerminalBillingStatus(sub.billing_status))
+  const showCancelFooter = canCancel && Boolean(sub && !isTerminalBillingStatus(sub.billing_status))
 
   return (
     <div className="rounded-2xl border bg-card p-6 shadow-sm">

@@ -29,6 +29,7 @@ export function GameReceivingChatMessageBubble({
   const bubbleStateKey =
     messageId != null ? `${messageId}-${resolvedStatus}` : `${text}-${time}-${resolvedStatus}`
   const showImage = Boolean(image) && resolvedStatus !== 'loading'
+  const showBubble = resolvedStatus === 'loading' || text.trim().length > 0
 
   const isPlayLayout = layout === 'play'
 
@@ -51,25 +52,27 @@ export function GameReceivingChatMessageBubble({
             {imageChildren}
           </GameChatImage>
         ) : null}
-        <div
-          key={bubbleStateKey}
-          className={cn(
-            chatBubbleVariants({ variant, rounded }),
-            getChatBubbleTailClass('sending', rounded),
-            chatBubbleEnterAnimation,
-          )}
-        >
-          {resolvedStatus === 'loading' ? (
-            <div className="flex min-h-9 items-center justify-center py-0.5">
-              <DotWaveLoader variant="default" />
-            </div>
-          ) : (
-            <>
-              <p className="whitespace-pre-line text-inherit">{text}</p>
-              <p className="mt-1 text-right text-[10px] opacity-70">{time}</p>
-            </>
-          )}
-        </div>
+        {showBubble ? (
+          <div
+            key={bubbleStateKey}
+            className={cn(
+              chatBubbleVariants({ variant, rounded }),
+              getChatBubbleTailClass('sending', rounded),
+              chatBubbleEnterAnimation,
+            )}
+          >
+            {resolvedStatus === 'loading' ? (
+              <div className="flex min-h-9 items-center justify-center py-0.5">
+                <DotWaveLoader variant="default" />
+              </div>
+            ) : (
+              <>
+                <p className="whitespace-pre-line text-inherit">{text}</p>
+                <p className="mt-1 text-right text-[10px] opacity-70">{time}</p>
+              </>
+            )}
+          </div>
+        ) : null}
       </div>
 
       {avatarUrl ? (

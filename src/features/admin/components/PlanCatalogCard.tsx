@@ -1,10 +1,14 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Eye, Settings2 } from 'lucide-react'
+import { Eye, FilePenLine, MoreHorizontal, PackageCheck } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Separator } from '@/components/ui/separator'
 import { Text } from '@/components/ui/text'
+
 import type { PlanCatalog } from '../types/planEntitlements.types'
 import { PlanCatalogStatusBadge } from './PlanCatalogStatusBadge'
 
@@ -12,13 +16,27 @@ type PlanCatalogCardProps = {
   plan: PlanCatalog
   onEdit: (planId: string) => void
   onPreview: (plan: PlanCatalog) => void
+  onPublish?: (planId: string) => void
 }
 
-function PlanCatalogCard({ plan, onEdit, onPreview }: PlanCatalogCardProps) {
+function PlanCatalogCard({ plan, onEdit, onPreview, onPublish }: PlanCatalogCardProps) {
   const { t } = useTranslation('features.admin')
+  const [open, setOpen] = useState(false)
 
-  const handlePreview = () => onPreview(plan)
-  const handleEdit = () => onEdit(plan.id)
+  const handleEdit = () => {
+    setOpen(false)
+    onEdit(plan.id)
+  }
+
+  const handlePreview = () => {
+    setOpen(false)
+    onPreview(plan)
+  }
+
+  const handlePublish = () => {
+    setOpen(false)
+    onPublish?.(plan.id)
+  }
 
   return (
     <Card className="gap-0 py-3">
@@ -31,20 +49,71 @@ function PlanCatalogCard({ plan, onEdit, onPreview }: PlanCatalogCardProps) {
               t={t}
             />
           </div>
-          <Badge variant="secondary">{plan.code}</Badge>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <Badge
+              variant="secondary"
+              className="font-mono text-xs"
+            >
+              {plan.code}
+            </Badge>
+          </div>
         </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="shrink-0 rounded-full"
-          onClick={handlePreview}
+
+        <Popover
+          open={open}
+          onOpenChange={setOpen}
         >
-          <Eye className="size-4" />
-          <span className="sr-only">{t('planCatalog.preview.title')}</span>
-        </Button>
+          <PopoverTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              className="ml-2 shrink-0 rounded-full"
+            >
+              <MoreHorizontal className="size-4" />
+              <span className="sr-only">{t('planCatalog.actions.menuLabel')}</span>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            className="w-52 p-1"
+            align="end"
+            side="bottom"
+          >
+            <div className="flex flex-col gap-0.5">
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-8 justify-start gap-2 px-2 text-sm font-normal"
+                onClick={handleEdit}
+              >
+                <FilePenLine className="size-4 shrink-0 text-muted-foreground" />
+                {t('planCatalog.actions.editEntitlements')}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-8 justify-start gap-2 px-2 text-sm font-normal"
+                onClick={handlePreview}
+              >
+                <Eye className="size-4 shrink-0 text-muted-foreground" />
+                {t('planCatalog.actions.viewPlan')}
+              </Button>
+              <Separator className="my-0.5" />
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-8 justify-start gap-2 px-2 text-sm font-normal text-blue-500 hover:text-blue-500"
+                onClick={handlePublish}
+              >
+                <PackageCheck className="size-4 shrink-0" />
+                {t('planCatalog.actions.publishVersion')}
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
       </CardHeader>
-      <CardContent className="space-y-1 px-4 pb-2">
+
+      <CardContent className="px-4 pb-2">
         <Text
           as="p"
           variant="small"
@@ -54,17 +123,6 @@ function PlanCatalogCard({ plan, onEdit, onPreview }: PlanCatalogCardProps) {
           {plan.description || t('planCatalog.noDescription')}
         </Text>
       </CardContent>
-      <CardFooter className="px-4 pt-2">
-        <Button
-          type="button"
-          variant="darkblue"
-          size="sm"
-          onClick={handleEdit}
-        >
-          <Settings2 className="size-4" />
-          {t('planCatalog.actions.editEntitlements')}
-        </Button>
-      </CardFooter>
     </Card>
   )
 }

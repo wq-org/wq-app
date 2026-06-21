@@ -42,7 +42,21 @@ export {
   listPlanEntitlements,
   getPlanEntitlementsEditorData,
   savePlanEntitlements,
+  createPlan,
 } from './api/planEntitlementsApi'
+export type { CreatePlanPayload } from './api/planEntitlementsApi'
+export {
+  listPlanVersions,
+  publishPlanVersion,
+  listPlanVersionEntitlements,
+} from './api/planVersionsApi'
+export type {
+  PlanVersion,
+  PlanVersionRow,
+  PlanVersionStatus,
+  PlanVersionEntitlement,
+  PlanVersionEntitlementRow,
+} from './types/planVersions.types'
 export type {
   FeatureDefinition,
   FeatureDefinitionRow,

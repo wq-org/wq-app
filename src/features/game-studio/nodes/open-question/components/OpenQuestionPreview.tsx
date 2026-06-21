@@ -499,7 +499,7 @@ export function OpenQuestionPreview({
         incomingBubbleVariant="default"
         receivingBubbleVariant={receivingBubbleVariant}
         flat={continuousSession}
-        className={continuousSession ? undefined : 'min-h-0 flex-1'}
+        className={continuousSession ? undefined : 'flex-1'}
       />
 
       {showInlineChrome ? footerChrome : null}

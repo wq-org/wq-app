@@ -28,6 +28,10 @@ export {
   GameNodeDialogShell,
   type GameNodeDialogShellProps,
 } from './components/GameNodeDialogShell'
+export {
+  GamePreviewChatHistoryFrame,
+  type GamePreviewChatHistoryFrameProps,
+} from './components/GamePreviewChatHistoryFrame'
 
 // ---- Registry ----
 export {

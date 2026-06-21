@@ -1,15 +1,100 @@
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 import {
   PublishedCourseReadOnlyContent,
   PublishedTopicLessonReadOnlyContent,
   PublishedTopicReadOnlyContent,
 } from '@/features/course'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
 
 import { AdminWorkspaceShell } from '../components/AdminWorkspaceShell'
 
 const COURSE_BASE_PATH = '/super_admin/courses'
 const GAME_BASE_PATH = '/super_admin/games'
+
+function CourseBreadcrumb({
+  courseId,
+  courseVersionId,
+  topicId,
+  page,
+}: {
+  courseId?: string
+  courseVersionId?: string
+  topicId?: string
+  page: 'course' | 'topic' | 'lesson'
+}) {
+  const courseDetailHref =
+    courseId && courseVersionId
+      ? `${COURSE_BASE_PATH}/${courseId}/published/${courseVersionId}`
+      : undefined
+  const topicHref =
+    courseId && courseVersionId && topicId
+      ? `${COURSE_BASE_PATH}/${courseId}/published/${courseVersionId}/topic/${topicId}`
+      : undefined
+
+  return (
+    <Breadcrumb>
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink asChild>
+            <Link to={COURSE_BASE_PATH}>Courses</Link>
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+
+        {page === 'course' && (
+          <>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Course</BreadcrumbPage>
+            </BreadcrumbItem>
+          </>
+        )}
+
+        {(page === 'topic' || page === 'lesson') && courseDetailHref && (
+          <>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to={courseDetailHref}>Course</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+          </>
+        )}
+
+        {page === 'topic' && (
+          <>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Topic</BreadcrumbPage>
+            </BreadcrumbItem>
+          </>
+        )}
+
+        {page === 'lesson' && topicHref && (
+          <>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to={topicHref}>Topic</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Lesson</BreadcrumbPage>
+            </BreadcrumbItem>
+          </>
+        )}
+      </BreadcrumbList>
+    </Breadcrumb>
+  )
+}
 
 export function AdminCourseContentPage() {
   const { courseId, courseVersionId } = useParams<{
@@ -19,7 +104,12 @@ export function AdminCourseContentPage() {
 
   return (
     <AdminWorkspaceShell>
-      <div className="flex w-full flex-col gap-6 px-4 py-8">
+      <div className="flex w-full flex-col gap-4 px-4 py-8">
+        <CourseBreadcrumb
+          courseId={courseId}
+          courseVersionId={courseVersionId}
+          page="course"
+        />
         <PublishedCourseReadOnlyContent
           courseId={courseId}
           courseVersionId={courseVersionId}
@@ -40,7 +130,13 @@ export function AdminCourseTopicPage() {
 
   return (
     <AdminWorkspaceShell>
-      <div className="flex w-full flex-col gap-6 px-4 py-8">
+      <div className="flex w-full flex-col gap-4 px-4 py-8">
+        <CourseBreadcrumb
+          courseId={courseId}
+          courseVersionId={courseVersionId}
+          topicId={topicId}
+          page="topic"
+        />
         <PublishedTopicReadOnlyContent
           courseId={courseId}
           courseVersionId={courseVersionId}
@@ -62,7 +158,13 @@ export function AdminCourseTopicLessonPage() {
 
   return (
     <AdminWorkspaceShell>
-      <div className="flex w-full flex-col gap-6 px-4 py-8">
+      <div className="flex w-full flex-col gap-4 px-4 py-8">
+        <CourseBreadcrumb
+          courseId={courseId}
+          courseVersionId={courseVersionId}
+          topicId={topicId}
+          page="lesson"
+        />
         <PublishedTopicLessonReadOnlyContent
           courseId={courseId}
           courseVersionId={courseVersionId}

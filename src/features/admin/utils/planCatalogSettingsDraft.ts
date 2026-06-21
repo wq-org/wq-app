@@ -9,6 +9,9 @@ import type {
 } from '../types/planEntitlements.types'
 
 export type PlanSettingsDraft = {
+  name: string
+  code: string
+  description: string
   priceAmount: string
   billingInterval: string
   isActive: boolean
@@ -16,6 +19,9 @@ export type PlanSettingsDraft = {
 
 export function planToSettingsDraft(plan: PlanCatalogEditorPlan): PlanSettingsDraft {
   return {
+    name: plan.name,
+    code: plan.code,
+    description: plan.description ?? '',
     priceAmount: plan.priceAmount ?? '',
     billingInterval: plan.billingInterval,
     isActive: plan.isActive,
@@ -28,15 +34,29 @@ export function settingsDraftEqualsPlan(
 ): boolean {
   const baseline = planToSettingsDraft(plan)
   return (
+    draft.name === baseline.name &&
+    draft.code === baseline.code &&
+    draft.description === baseline.description &&
     draft.priceAmount === baseline.priceAmount &&
     draft.billingInterval === baseline.billingInterval &&
     draft.isActive === baseline.isActive
   )
 }
 
+const PLAN_CODE_PATTERN = /^[a-z][a-z0-9_]*$/
+
 export function parseSettingsDraftToPatch(
   draft: PlanSettingsDraft,
 ): { ok: true; patch: PlanCatalogSettingsPatch } | { ok: false; messageKey: string } {
+  if (!draft.name.trim()) {
+    return { ok: false, messageKey: 'planCatalog.editor.settings.errors.nameRequired' }
+  }
+
+  const codeTrim = draft.code.trim()
+  if (!codeTrim || !PLAN_CODE_PATTERN.test(codeTrim)) {
+    return { ok: false, messageKey: 'planCatalog.editor.settings.errors.codePattern' }
+  }
+
   const priceTrim = draft.priceAmount.trim()
   let price_amount: number | null = null
   if (priceTrim.length > 0) {
@@ -59,6 +79,9 @@ export function parseSettingsDraftToPatch(
   return {
     ok: true,
     patch: {
+      name: draft.name.trim(),
+      code: codeTrim,
+      description: draft.description.trim() || null,
       price_amount,
       billing_interval,
       is_active: draft.isActive,

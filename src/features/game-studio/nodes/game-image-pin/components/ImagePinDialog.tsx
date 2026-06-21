@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { getFileSignedUrl } from '@/features/cloud'
@@ -26,6 +26,14 @@ export function ImagePinDialog({
   const { uploadImagePinFile } = useImagePinImageUpload()
   const gameImagePinNodeData = nodeData as GameImagePinNodeData
   const { points, retryDeductionPercent } = gameImagePinNodeData
+  const [pendingPreviewSrc, setPendingPreviewSrc] = useState<string | null>(null)
+  const previewNodeData = useMemo(
+    () =>
+      pendingPreviewSrc
+        ? { ...gameImagePinNodeData, imagePreview: pendingPreviewSrc }
+        : gameImagePinNodeData,
+    [gameImagePinNodeData, pendingPreviewSrc],
+  )
 
   // Capture mount-time values so the effect closure is stable (key={nodeId} on the
   // parent guarantees one fresh mount per node, so these are always this node's values).
@@ -105,6 +113,8 @@ export function ImagePinDialog({
           <ImagePinEditor
             nodeData={nodeData}
             onPatchNodeData={onPatchNodeData}
+            pendingPreviewSrc={pendingPreviewSrc}
+            onPendingPreviewSrcChange={setPendingPreviewSrc}
             projectImageGallery={projectImageGallery}
             uploadImagePinFile={uploadImagePinFile}
           />
@@ -112,7 +122,7 @@ export function ImagePinDialog({
         previewContent={
           <ImagePinPreview
             nodeId={nodeId}
-            nodeData={gameImagePinNodeData}
+            nodeData={previewNodeData}
           />
         }
         settingsContent={

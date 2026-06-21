@@ -58,6 +58,8 @@ function readFileAsDataUrl(file: File): Promise<string> {
 export type ImagePinEditorProps = {
   nodeData: Record<string, unknown>
   onPatchNodeData: (patch: GameNodeDataPatch) => void
+  pendingPreviewSrc?: string | null
+  onPendingPreviewSrcChange?: (src: string | null) => void
   /** Thumbnails from other Image Pin nodes on the same canvas (from `GameEditorCanvas`). */
   projectImageGallery?: readonly { url: string; title: string; storagePath?: string }[]
   /**
@@ -70,6 +72,8 @@ export type ImagePinEditorProps = {
 export function ImagePinEditor({
   nodeData,
   onPatchNodeData,
+  pendingPreviewSrc: controlledPendingPreviewSrc,
+  onPendingPreviewSrcChange,
   projectImageGallery,
   uploadImagePinFile,
 }: ImagePinEditorProps) {
@@ -95,7 +99,23 @@ export function ImagePinEditor({
    * Kept out of `nodeData` so the (potentially MB-sized) base64 data URL does
    * not get autosaved — that was producing a second autosave per file pick.
    */
-  const [pendingPreviewSrc, setPendingPreviewSrc] = useState<string | null>(null)
+  const [uncontrolledPendingPreviewSrc, setUncontrolledPendingPreviewSrc] = useState<string | null>(
+    null,
+  )
+  const isPendingPreviewControlled = controlledPendingPreviewSrc !== undefined
+  const pendingPreviewSrc = isPendingPreviewControlled
+    ? controlledPendingPreviewSrc
+    : uncontrolledPendingPreviewSrc
+  const setPendingPreviewSrc = useCallback(
+    (src: string | null) => {
+      if (onPendingPreviewSrcChange) {
+        onPendingPreviewSrcChange(src)
+        return
+      }
+      setUncontrolledPendingPreviewSrc(src)
+    },
+    [onPendingPreviewSrcChange],
+  )
   const displayedImageSrc = pendingPreviewSrc ?? imagePreview
 
   const galleryItems = useMemo(() => projectImageGallery ?? [], [projectImageGallery])
@@ -130,7 +150,7 @@ export function ImagePinEditor({
     setSelectedRectId(null)
     setSceneMetrics(null)
     setPendingPreviewSrc(null)
-  }, [imagePreview])
+  }, [imagePreview, setPendingPreviewSrc])
 
   useEffect(() => {
     if (rectangles.length === 0) {
@@ -330,7 +350,7 @@ export function ImagePinEditor({
         isUploadingRef.current = false
       }
     },
-    [applyImagePreviewFromSrc, uploadImagePinFile],
+    [applyImagePreviewFromSrc, setPendingPreviewSrc, uploadImagePinFile],
   )
 
   const handleClearImage = useCallback(() => {

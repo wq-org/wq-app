@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, BookOpen, CreditCard, Gamepad2, LayoutDashboard } from 'lucide-react'
+import { ArrowLeft, BookOpen, CreditCard, Gamepad2, LayoutDashboard, Settings2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { PlanFeaturesCard, SelectTabs, TabsContent } from '@/components/shared'
 import { Button } from '@/components/ui/button'
+import { FieldCard } from '@/components/ui/field-card'
+import { FieldInput } from '@/components/ui/field-input'
+import { Separator } from '@/components/ui/separator'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useUser } from '@/contexts/user'
@@ -23,6 +26,7 @@ import { assignInstitutionSubscription } from '../api/institutionSubscriptionApi
 import { useInstitutions } from '../hooks/useInstitutions'
 import {
   createFormValuesFromInstitution,
+  type InstitutionType,
   type InstitutionEditFormValues,
 } from '../types/institution.types'
 
@@ -30,6 +34,7 @@ const OVERVIEW_TAB = 'overview'
 const SUBSCRIPTION_TAB = 'subscription'
 const COURSES_TAB = 'courses'
 const GAMES_TAB = 'games'
+const SETTINGS_TAB = 'settings'
 
 const AdminInstitutionDetails = () => {
   const { institutionId } = useParams<{ institutionId: string }>()
@@ -41,6 +46,8 @@ const AdminInstitutionDetails = () => {
   const [isSaving, setIsSaving] = useState(false)
   const [subscriptionRefreshToken, setSubscriptionRefreshToken] = useState(0)
   const [isAssigningSubscription, setIsAssigningSubscription] = useState(false)
+  const [emailDraft, setEmailDraft] = useState('')
+  const [isSavingEmail, setIsSavingEmail] = useState(false)
 
   const role = getRole()
   const listPath = role ? `/${role}/institution` : '/'
@@ -57,6 +64,7 @@ const AdminInstitutionDetails = () => {
   useEffect(() => {
     if (institution) {
       setFormValues(createFormValuesFromInstitution(institution))
+      setEmailDraft(institution.email ?? '')
     }
   }, [institution])
 
@@ -117,9 +125,37 @@ const AdminInstitutionDetails = () => {
         icon: Gamepad2,
         title: t('institutions.details.tabs.games'),
       },
+      {
+        id: SETTINGS_TAB,
+        icon: Settings2,
+        title: t('institutions.details.tabs.settings'),
+      },
     ],
     [t],
   )
+
+  const hasEmailChanged = emailDraft !== (institution?.email ?? '')
+
+  const handleSaveEmail = async () => {
+    if (!institution) return
+    setIsSavingEmail(true)
+    try {
+      await editInstitution(institution.id, {
+        name: institution.name,
+        type: (institution.type ?? '') as InstitutionType | '',
+        email: emailDraft,
+        status: institution.status ?? 'active',
+        description: institution.description ?? '',
+      })
+      toast.success(t('institutions.details.settings.toasts.success'))
+    } catch (e) {
+      toast.error(t('institutions.details.settings.toasts.error'), {
+        description: e instanceof Error ? e.message : undefined,
+      })
+    } finally {
+      setIsSavingEmail(false)
+    }
+  }
 
   const canSave = formValues.name.trim().length > 0
 
@@ -132,7 +168,7 @@ const AdminInstitutionDetails = () => {
     try {
       await editInstitution(institution.id, {
         name: formValues.name,
-        type: formValues.type,
+        type: (formValues.type ?? '') as InstitutionType | '',
         email: formValues.email,
         status: institution.status ?? 'active',
         description: formValues.description,
@@ -300,6 +336,68 @@ const AdminInstitutionDetails = () => {
             className="mt-0 px-0"
           >
             <InstitutionGamesTab institutionId={institution.id} />
+          </TabsContent>
+
+          <TabsContent
+            tabId={SETTINGS_TAB}
+            activeTabId={activeTab}
+            className="mt-0 px-0"
+          >
+            <FieldCard className="flex flex-col gap-6 p-6">
+              <div className="flex flex-col gap-1">
+                <Text
+                  as="h2"
+                  variant="h3"
+                  className="font-semibold text-foreground"
+                >
+                  {t('institutions.details.settings.title')}
+                </Text>
+                <Text
+                  as="p"
+                  variant="small"
+                  color="muted"
+                >
+                  {t('institutions.details.settings.description')}
+                </Text>
+              </div>
+
+              <Separator />
+
+              <div className="max-w-sm">
+                <FieldInput
+                  label={t('institutions.details.settings.emailLabel')}
+                  value={emailDraft}
+                  onValueChange={setEmailDraft}
+                  placeholder={t('institutions.details.settings.emailPlaceholder')}
+                  type="email"
+                  disabled={isSavingEmail}
+                  autoComplete="off"
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={isSavingEmail || !hasEmailChanged}
+                  onClick={() => setEmailDraft(institution.email ?? '')}
+                >
+                  {t('institutions.details.settings.cancel')}
+                </Button>
+                <Button
+                  type="button"
+                  variant="darkblue"
+                  size="sm"
+                  disabled={isSavingEmail || !hasEmailChanged}
+                  onClick={() => void handleSaveEmail()}
+                >
+                  {isSavingEmail
+                    ? t('institutions.details.settings.saving')
+                    : t('institutions.details.settings.save')}
+                </Button>
+              </div>
+            </FieldCard>
           </TabsContent>
         </div>
       </div>
