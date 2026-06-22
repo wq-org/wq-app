@@ -43,6 +43,10 @@ function questionMarkerId(nodeId: string, index: number, questionId: string): st
   return `${nodeId}-question-${index}-${questionId}`
 }
 
+function answerMessageId(nodeId: string, index: number, questionId: string): string {
+  return `${nodeId}-answer-${index}-${questionId}`
+}
+
 export function OpenQuestionPreview({
   nodeId,
   nodeData,
@@ -99,6 +103,7 @@ export function OpenQuestionPreview({
   /** Answer held until the user confirms in the submit dialog — not shown in chat yet. */
   const [pendingAnswerText, setPendingAnswerText] = useState<string | null>(null)
   const scoringInFlightRef = useRef(false)
+  const confirmSubmitLockRef = useRef(false)
 
   const avatarFallback =
     profile?.display_name?.trim().charAt(0).toUpperCase() ??
@@ -314,21 +319,36 @@ export function OpenQuestionPreview({
 
   const handleConfirmSubmit = useCallback(() => {
     const trimmed = pendingAnswerText?.trim() ?? ''
-    if (!trimmed || !currentQuestion || scoringInFlightRef.current) return
+    if (
+      !trimmed ||
+      !currentQuestion ||
+      scoringInFlightRef.current ||
+      confirmSubmitLockRef.current
+    ) {
+      return
+    }
 
+    confirmSubmitLockRef.current = true
+
+    const messageId = answerMessageId(nodeId, currentIndex, currentQuestion.id)
     const answerMessage: OpenQuestionPreviewChatMessage = {
-      id: `${nodeId}-answer-${currentIndex}-${currentQuestion.id}`,
+      id: messageId,
       direction: 'sending',
       text: trimmed,
     }
 
-    const nextMessages: OpenQuestionPreviewChatMessage[] = [...previewMessages, answerMessage]
+    const nextMessages: OpenQuestionPreviewChatMessage[] = [
+      ...previewMessages.filter((message) => message.id !== messageId),
+      answerMessage,
+    ]
 
     setPendingAnswerText(null)
     setComposerValue('')
     setEditingMessageId(null)
     setPreviewMessages(nextMessages)
-    void runScoring(nextMessages)
+    void runScoring(nextMessages).finally(() => {
+      confirmSubmitLockRef.current = false
+    })
   }, [currentIndex, currentQuestion, nodeId, pendingAnswerText, previewMessages, runScoring])
 
   const handleSubmitDialogOpenChange = useCallback((open: boolean) => {
