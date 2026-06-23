@@ -441,12 +441,14 @@ export function Editor({
           {!isEmbedded ? <CommentPlugin /> : null}
           {anchorElem ? (
             <>
-              <FloatingTextFormatToolbarPlugin
-                anchorElem={anchorElem}
-                onRequestLinkDialog={handleRequestLinkDialog}
-                features={floatingToolbarFeatures}
-                portalToDocumentBody={isEmbedded}
-              />
+              {!readOnly ? (
+                <FloatingTextFormatToolbarPlugin
+                  anchorElem={anchorElem}
+                  onRequestLinkDialog={handleRequestLinkDialog}
+                  features={floatingToolbarFeatures}
+                  portalToDocumentBody={isEmbedded}
+                />
+              ) : null}
               <FloatingLinkEditorPlugin
                 anchorElem={anchorElem}
                 onRequestLinkDialog={handleRequestLinkDialog}

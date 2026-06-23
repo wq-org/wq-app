@@ -1,5 +1,5 @@
 import type { PublishIssue } from '../../../types/publish-validation.types'
-import { extractPlainTextFromLexicalState } from './extractPlainTextFromLexicalState'
+import { extractPlainTextFromLexicalState } from '../../../utils/extractPlainTextFromLexicalState'
 import {
   collectGradableOpenQuestions,
   collectPreviewableOpenQuestions,

@@ -1,10 +1,8 @@
 import { Text } from '@/components/ui/text'
-import { USER_ROLES } from '@/features/auth'
 import { useSettingsProfilePage } from '../hooks/useSettingsProfilePage'
 import type { SettingsProfileSectionProps } from '../types/settings.types'
 import { SettingsLoadingState } from './SettingsLoadingState'
 import { SettingsProfileForm } from './SettingsProfileForm'
-import { InstitutionEmailChangeSection } from './InstitutionEmailChangeSection'
 
 export function SettingsProfileSection({ role, embedded = false }: SettingsProfileSectionProps) {
   const {
@@ -61,12 +59,6 @@ export function SettingsProfileSection({ role, embedded = false }: SettingsProfi
                 onLinkedInValidate={validateLinkedIn}
                 onSave={handleSave}
               />
-              {role === USER_ROLES.INSTITUTION_ADMIN && profile.institution?.id ? (
-                <InstitutionEmailChangeSection
-                  institutionId={profile.institution.id}
-                  currentEmail={profile.email ?? ''}
-                />
-              ) : null}
             </div>
           ) : null}
         </div>

@@ -1,5 +1,10 @@
 export { BasicPdfViewer } from './BasicPdfViewer'
-export type { BasicPdfViewerProps, PdfLinkInsert, PdfSelectionInsert } from './BasicPdfViewer'
+export type {
+  BasicPdfViewerProps,
+  PdfLinkInsert,
+  PdfSelectionInsert,
+  PdfFieldInsertAction,
+} from './BasicPdfViewer'
 export { PdfCard, PdfCardList } from './PdfCard'
 export type { PdfCardFile, PdfCardListProps, PdfCardProps } from './PdfCard'
 export { PdfPanelPreview } from './PdfPanelPreview'

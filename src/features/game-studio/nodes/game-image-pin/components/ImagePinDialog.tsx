@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { getFileSignedUrl } from '@/features/cloud'
+import { useGameEditorContext } from '@/contexts/game-studio'
+import type { EditorExternalInsertApi } from '@/features/lexical-editor'
 import { GameNodeDialogShell } from '../../../components/GameNodeDialogShell'
 import { GameLayout } from '../../../components/GameDialogLayout'
 import type { GameNodeDialogProps } from '../../_registry/game-node-registry.types'
@@ -23,10 +25,71 @@ export function ImagePinDialog({
   projectImageGallery,
 }: GameNodeDialogProps) {
   const { t } = useTranslation('features.gameStudio')
+  const editorContext = useGameEditorContext()
   const { uploadImagePinFile } = useImagePinImageUpload()
   const gameImagePinNodeData = nodeData as GameImagePinNodeData
   const { points, retryDeductionPercent } = gameImagePinNodeData
   const [pendingPreviewSrc, setPendingPreviewSrc] = useState<string | null>(null)
+
+  const nodeDataRef = useRef(gameImagePinNodeData)
+  const descriptionInsertApiRef = useRef<EditorExternalInsertApi | null>(null)
+
+  useEffect(() => {
+    nodeDataRef.current = gameImagePinNodeData
+  }, [gameImagePinNodeData])
+
+  const handleDescriptionInsertReady = useCallback((api: EditorExternalInsertApi | null) => {
+    descriptionInsertApiRef.current = api
+  }, [])
+
+  // Rich-text: use the live Lexical append API
+  const setDescriptionText = useCallback((text: string) => {
+    descriptionInsertApiRef.current?.appendText(text)
+  }, [])
+  const insertDescriptionImage = useCallback((url: string) => {
+    descriptionInsertApiRef.current?.appendImage(url)
+  }, [])
+
+  const setImageUrl = useCallback(
+    (url: string) => {
+      onPatchNodeData({ imagePreview: url, filepath: '', cloudFileId: null })
+    },
+    [onPatchNodeData],
+  )
+  const getImageUrl = useCallback(() => nodeDataRef.current.imagePreview ?? '', [])
+
+  useEffect(() => {
+    editorContext?.registerNodeFields([
+      {
+        nodeId,
+        fieldKey: 'description',
+        label: t('agent.insertIntoDescription'),
+        type: 'rich-text',
+        setValue: setDescriptionText,
+        insertImageUrl: insertDescriptionImage,
+        imageInsertLabel: t('agent.insertIntoDescription'),
+      },
+      {
+        nodeId,
+        fieldKey: 'image_url',
+        label: t('agent.insertImageUrl'),
+        type: 'image',
+        setValue: setImageUrl,
+        getValue: getImageUrl,
+        insertImageUrl: setImageUrl,
+        imageInsertLabel: t('agent.insertIntoImage'),
+      },
+    ])
+    return () => editorContext?.unregisterNodeFields(nodeId)
+  }, [
+    nodeId,
+    editorContext,
+    setDescriptionText,
+    insertDescriptionImage,
+    setImageUrl,
+    getImageUrl,
+    t,
+  ])
   const previewNodeData = useMemo(
     () =>
       pendingPreviewSrc
@@ -111,12 +174,14 @@ export function ImagePinDialog({
       <GameLayout
         editorContent={
           <ImagePinEditor
+            nodeId={nodeId}
             nodeData={nodeData}
             onPatchNodeData={onPatchNodeData}
             pendingPreviewSrc={pendingPreviewSrc}
             onPendingPreviewSrcChange={setPendingPreviewSrc}
             projectImageGallery={projectImageGallery}
             uploadImagePinFile={uploadImagePinFile}
+            onDescriptionInsertReady={handleDescriptionInsertReady}
           />
         }
         previewContent={

@@ -9,6 +9,8 @@ import {
   type LexicalNode,
 } from 'lexical'
 
+import { $createImageNode } from '../nodes/ImageNode'
+
 /**
  * Imperative API handed to the host page so sibling surfaces (e.g. the note
  * agent PDF panel) can append content into this editor without owning a
@@ -19,6 +21,7 @@ import {
 export type EditorExternalInsertApi = {
   appendText: (text: string) => boolean
   appendLink: (url: string, label?: string) => boolean
+  appendImage: (src: string, altText?: string) => boolean
 }
 
 type ExternalContentInsertPluginProps = {
@@ -94,6 +97,18 @@ export function ExternalContentInsertPlugin({ onReady }: ExternalContentInsertPl
           paragraph.append(linkNode)
           return [paragraph]
         })
+      },
+      appendImage: (src: string, altText?: string) => {
+        const trimmedSrc = src.trim()
+        if (!trimmedSrc) return false
+
+        // ImageNode is a top-level DecoratorNode — append directly under root, not
+        // wrapped in a paragraph. Add a trailing empty paragraph so the caret has
+        // somewhere to land after the image.
+        return appendAndReveal(editor, () => [
+          $createImageNode({ src: trimmedSrc, altText: altText?.trim() ?? '' }),
+          $createParagraphNode(),
+        ])
       },
     }
 

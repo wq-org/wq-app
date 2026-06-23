@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils'
 import { configurePdfJsWorker } from './configure-pdf-js-worker'
 import { PDF_VIEWER_LAYOUT, type PdfViewerLayout } from './pdf-viewer-layout'
 import { PdfLinkInsertPopover } from './PdfLinkInsertPopover'
-import { PdfSelectionToolbar } from './PdfSelectionToolbar'
+import { PdfSelectionToolbar, type PdfFieldInsertAction } from './PdfSelectionToolbar'
 import { PdfViewerToolbar } from './PdfViewerToolbar'
 
 configurePdfJsWorker()
@@ -49,11 +49,15 @@ function PdfViewerLoader() {
   )
 }
 
+export type { PdfFieldInsertAction } from './PdfSelectionToolbar'
+
 export type PdfSelectionInsert = {
   /** Visible label of the selection insert action, e.g. "In Notiz einfügen". */
   insertLabel: string
   /** Receives the currently selected PDF text (trimmed, non-empty). */
   onInsertText: (text: string) => void
+  /** When provided, renders one button per action instead of insertLabel/onInsertText. */
+  fieldActions?: PdfFieldInsertAction[]
 }
 
 export type PdfLinkInsert = {
@@ -126,6 +130,7 @@ export function BasicPdfViewer({
           <PdfSelectionToolbar
             insertLabel={selectionInsert.insertLabel}
             onInsertText={selectionInsert.onInsertText}
+            fieldActions={selectionInsert.fieldActions}
           />
         ) : null}
 

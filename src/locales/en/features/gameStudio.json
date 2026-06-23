@@ -35,7 +35,33 @@
     "searchPlaceholder": "Search by filename…",
     "pdfsEmpty": "No PDF files in your cloud yet.",
     "pdfsSearchEmpty": "No PDFs match your search.",
-    "closePreview": "Close preview"
+    "closePreview": "Close preview",
+    "tabPdfs": "PDFs",
+    "tabLessons": "Lessons",
+    "lessonsEmpty": "No lessons yet.",
+    "lessonsSearchEmpty": "No lessons match your search.",
+    "closeLesson": "Close lesson",
+    "searchLessonsLabel": "Search lessons",
+    "searchLessonsPlaceholder": "Search by title…",
+    "insertText": "Insert text",
+    "insertIntoQuestion": "Insert into Question",
+    "insertIntoAnswer": "Insert into Answer",
+    "insertIntoDescription": "Insert into Description",
+    "insertImageUrl": "Insert image URL",
+    "getImage": "Get image",
+    "cropModeActive": "Cropping…",
+    "imageReplaced": "Image replaced",
+    "undo": "Undo",
+    "uploadFailed": "Upload failed — try again",
+    "tabNotes": "Notes",
+    "closeNote": "Close note",
+    "searchNotesLabel": "Search notes",
+    "searchNotesPlaceholder": "Search by title…",
+    "notesEmpty": "No personal notes yet.",
+    "notesSearchEmpty": "No notes match your search.",
+    "noImageField": "This node has no image field to insert into.",
+    "insertIntoImage": "Insert into Image",
+    "cancel": "Cancel"
   },
   "canvas": {
     "toasts": {
@@ -83,13 +109,13 @@
     "description": "This action cannot be undone.",
     "holdMessage": "Hold for {{seconds}} seconds to delete.",
     "deletingIn": "Deleting in {{seconds}}s",
-    "deleting": "Deleting\u2026"
+    "deleting": "Deleting…"
   },
   "nodeBeta": {
     "badge": "Beta",
     "title": "The {{node}} node is in beta",
     "description": "Editing, preview, and settings for the {{node}} node aren't available yet. This screen is read-only while we finish building it.",
-    "creativityHint": "In the meantime, game nodes like Image & Pin are fully open \u2014 fill them with your creativity: upload an image, mark regions, and write a question for each."
+    "creativityHint": "In the meantime, game nodes like Image & Pin are fully open — fill them with your creativity: upload an image, mark regions, and write a question for each."
   },
   "previewDrawer": {
     "title": "Game Simulation",

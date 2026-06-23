@@ -1,16 +1,20 @@
-import { useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Edit, Gamepad2, Settings } from 'lucide-react'
+import { GripVerticalIcon } from 'lucide-react'
 
 import { SelectTabs } from '@/components/shared'
-import { TwoColumnDialogColumns } from '@/components/shared/TwoColumnDialog'
 import type { TabItem } from '@/components/shared'
 
-import { GameAgentPage } from '../pages/GameAgentPage'
+import { AgentPanel } from '../agent'
 
 export type GameLayoutMode = 'default' | 'dual'
 
 type TabType = 'editor' | 'preview' | 'settings'
+
+const AGENT_DEFAULT_PCT = 38
+const AGENT_MIN_PCT = 30
+const AGENT_MAX_PCT = 56
 
 interface GameLayoutProps {
   children?: ReactNode
@@ -18,25 +22,25 @@ interface GameLayoutProps {
   previewContent?: ReactNode
   settingsContent?: ReactNode
   previewOnly?: boolean
-  /** When true, show only preview content (no Editor/Preview/Settings tabs). */
+  /** When true, show only preview content (no tabs). */
   playMode?: boolean
   /**
-   * When true, the tab strip is rendered but locked to the Editor tab (no switching).
-   * Used by beta/read-only nodes (e.g. Start/End) that only show a static notice.
+   * When true, the tab strip is rendered but locked to the Editor tab.
+   * Used by beta/read-only nodes (e.g. Start/End).
    */
   tabsDisabled?: boolean
-  /** Individual tabs that cannot be selected (e.g. If/Else locks Editor + Preview). */
+  /** Individual tabs that cannot be selected. */
   disabledTabIds?: TabType[]
-  /** Tabs omitted from the tab strip entirely (e.g. If/Else has no editor surface). */
+  /** Tabs omitted from the tab strip entirely. */
   hiddenTabIds?: TabType[]
   /** Initial selected tab when the dialog opens. */
   initialTab?: TabType
   /**
-   * `dual` shows the node editor left and agent PDF panel right; `default` is a
+   * `dual` shows the node editor left and agent panel right; `default` is a
    * single column. Defaults to `dual` so the agent sidebar is always present.
    */
   layoutMode?: GameLayoutMode
-  /** Right column in dual mode; defaults to {@link GameAgentPage}. */
+  /** Right column in dual mode; defaults to {@link AgentPanel}. */
   agentPanel?: ReactNode
 }
 
@@ -56,8 +60,33 @@ export function GameLayout({
 }: GameLayoutProps) {
   const { t } = useTranslation('features.gameStudio')
   const [activeTab, setActiveTab] = useState<TabType>(initialTab)
+  const [rightPct, setRightPct] = useState(AGENT_DEFAULT_PCT)
+  const isDraggingRef = useRef(false)
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  // Default to the two-column agent layout; callers can still force `default`.
+  const handleDragStart = useCallback(() => {
+    isDraggingRef.current = true
+  }, [])
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDraggingRef.current || !containerRef.current) return
+      const rect = containerRef.current.getBoundingClientRect()
+      const rightPx = rect.right - e.clientX
+      const pct = (rightPx / rect.width) * 100
+      setRightPct(Math.min(AGENT_MAX_PCT, Math.max(AGENT_MIN_PCT, pct)))
+    }
+    const handleMouseUp = () => {
+      isDraggingRef.current = false
+    }
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mouseup', handleMouseUp)
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [])
+
   const resolvedLayoutMode: GameLayoutMode = layoutMode ?? 'dual'
 
   if (previewOnly || playMode) {
@@ -98,7 +127,7 @@ export function GameLayout({
       : activeTab
 
   const nodePanel = (
-    <div className="flex h-full min-h-0 w-full flex-col">
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden">
       <SelectTabs
         tabs={tabs}
         activeTabId={resolvedTab}
@@ -107,7 +136,7 @@ export function GameLayout({
           setActiveTab(tabId as TabType)
         }}
       />
-      <div className="mt-6 flex min-h-0 flex-1 flex-col">
+      <div className="mt-6 flex min-h-0 flex-1 flex-col overflow-y-auto">
         {resolvedTab === 'editor' && <>{editorContent || children}</>}
         {resolvedTab === 'preview' && <>{previewContent}</>}
         {resolvedTab === 'settings' && <>{settingsContent}</>}
@@ -117,13 +146,34 @@ export function GameLayout({
 
   if (resolvedLayoutMode === 'dual') {
     return (
-      <TwoColumnDialogColumns
-        className="max-h-none md:max-h-[calc(90vh-8rem)]"
-        leftClassName="p-0 md:pr-4"
-        rightClassName="border-t bg-background p-0 md:border-t-0 md:border-l md:pl-0"
-        leftChildren={nodePanel}
-        rightChildren={agentPanel ?? <GameAgentPage className="h-full" />}
-      />
+      <div
+        ref={containerRef}
+        className="flex h-full min-h-0 w-full overflow-hidden"
+        style={{ userSelect: isDraggingRef.current ? 'none' : undefined }}
+      >
+        {/* Left: node editor — fills remaining width */}
+        <div className="min-w-0 flex-1 overflow-hidden pr-3">{nodePanel}</div>
+
+        {/* Drag handle */}
+        <button
+          type="button"
+          aria-label="Resize panels"
+          className="relative flex w-1.5 shrink-0 cursor-col-resize items-center justify-center rounded-full bg-border/50 transition-colors hover:bg-border active:bg-border/80"
+          onMouseDown={handleDragStart}
+        >
+          <div className="z-10 flex h-6 w-3 items-center justify-center rounded-xs border border-border bg-background shadow-sm">
+            <GripVerticalIcon className="size-2.5 text-muted-foreground" />
+          </div>
+        </button>
+
+        {/* Right: agent panel — controlled width */}
+        <div
+          className="shrink-0 overflow-hidden border-l border-border/60 bg-background"
+          style={{ width: `${rightPct}%` }}
+        >
+          {agentPanel ?? <AgentPanel className="h-full" />}
+        </div>
+      </div>
     )
   }
 

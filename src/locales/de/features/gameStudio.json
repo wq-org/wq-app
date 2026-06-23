@@ -35,7 +35,33 @@
     "searchPlaceholder": "Nach Dateiname suchen…",
     "pdfsEmpty": "Noch keine PDF-Dateien in deiner Cloud.",
     "pdfsSearchEmpty": "Keine PDFs passen zur Suche.",
-    "closePreview": "Vorschau schließen"
+    "closePreview": "Vorschau schließen",
+    "tabPdfs": "PDFs",
+    "tabLessons": "Lektionen",
+    "lessonsEmpty": "Noch keine Lektionen vorhanden.",
+    "lessonsSearchEmpty": "Keine Lektionen passen zur Suche.",
+    "closeLesson": "Lektion schließen",
+    "searchLessonsLabel": "Lektionen durchsuchen",
+    "searchLessonsPlaceholder": "Nach Titel suchen…",
+    "insertText": "Text einfügen",
+    "insertIntoQuestion": "In Frage einfügen",
+    "insertIntoAnswer": "In Antwort einfügen",
+    "insertIntoDescription": "In Beschreibung einfügen",
+    "insertImageUrl": "Bild-URL einfügen",
+    "getImage": "Bild übernehmen",
+    "cropModeActive": "Zuschneiden…",
+    "imageReplaced": "Bild ersetzt",
+    "undo": "Rückgängig",
+    "uploadFailed": "Upload fehlgeschlagen — erneut versuchen",
+    "tabNotes": "Notizen",
+    "closeNote": "Notiz schließen",
+    "searchNotesLabel": "Notizen durchsuchen",
+    "searchNotesPlaceholder": "Nach Titel suchen…",
+    "notesEmpty": "Noch keine persönlichen Notizen.",
+    "notesSearchEmpty": "Keine Notizen passen zur Suche.",
+    "noImageField": "Dieser Knoten hat kein Bildfeld zum Einfügen.",
+    "insertIntoImage": "In Bild einfügen",
+    "cancel": "Abbrechen"
   },
   "canvas": {
     "toasts": {
@@ -46,14 +72,14 @@
   },
   "emptyGamesView": {
     "title": "Erstelle dein erstes Spiel",
-    "description": "Baue einen Ablauf mit Start, Spielknoten und Ende und ver\u00f6ffentliche ihn f\u00fcr Lernende."
+    "description": "Baue einen Ablauf mit Start, Spielknoten und Ende und veröffentliche ihn für Lernende."
   },
   "emptyProjectsView": {
     "title": "Noch keine Spielprojekte",
-    "description": "Baue einen Ablauf mit Start, Spielknoten und Ende und ver\u00f6ffentliche ihn f\u00fcr Lernende."
+    "description": "Baue einen Ablauf mit Start, Spielknoten und Ende und veröffentliche ihn für Lernende."
   },
   "sidebar": {
-    "searchPlaceholder": "Knoten einf\u00fcgen...",
+    "searchPlaceholder": "Knoten einfügen...",
     "sectionNodes": "Knoten",
     "sectionLogic": "Logik",
     "noResults": "Keine Ergebnisse gefunden",
@@ -68,47 +94,47 @@
     }
   },
   "nodeLayout": {
-    "overviewTab": "\u00dcberblick",
+    "overviewTab": "Überblick",
     "settingsTab": "Einstellungen",
     "previewTab": "Vorschau",
-    "noContent": "Kein Inhalt verf\u00fcgbar",
-    "deleteHint": "Halte den Button unten 3 Sekunden, um diesen Knoten zu l\u00f6schen.",
+    "noContent": "Kein Inhalt verfügbar",
+    "deleteHint": "Halte den Button unten 3 Sekunden, um diesen Knoten zu löschen.",
     "overviewAriaLabel": "Ubersicht anzeigen",
     "settingsAriaLabel": "Einstellungen anzeigen",
     "editorTab": "Editor",
     "editorAriaLabel": "Editor anzeigen"
   },
   "holdDelete": {
-    "title": "L\u00f6schen",
-    "description": "Diese Aktion kann nicht r\u00fcckg\u00e4ngig gemacht werden.",
-    "holdMessage": "Halte {{seconds}} Sekunden gedr\u00fcckt, um zu l\u00f6schen.",
-    "deletingIn": "L\u00f6schen in {{seconds}}s",
-    "deleting": "Wird gel\u00f6scht\u2026"
+    "title": "Löschen",
+    "description": "Diese Aktion kann nicht rückgängig gemacht werden.",
+    "holdMessage": "Halte {{seconds}} Sekunden gedrückt, um zu löschen.",
+    "deletingIn": "Löschen in {{seconds}}s",
+    "deleting": "Wird gelöscht…"
   },
   "deleteDialog": {
-    "title": "Dieses Spiel l\u00f6schen?",
-    "description": "Das Spiel wird aus deinen Listen entfernt. Ver\u00f6ffentlichte Snapshots bleiben erhalten \u2014 dies ist ein Soft-Delete.",
-    "confirm": "Spiel l\u00f6schen",
-    "deleting": "Wird gel\u00f6scht\u2026",
+    "title": "Dieses Spiel löschen?",
+    "description": "Das Spiel wird aus deinen Listen entfernt. Veröffentlichte Snapshots bleiben erhalten — dies ist ein Soft-Delete.",
+    "confirm": "Spiel löschen",
+    "deleting": "Wird gelöscht…",
     "cancel": "Abbrechen",
-    "successToast": "Spiel gel\u00f6scht.",
-    "errorToast": "Spiel konnte nicht gel\u00f6scht werden. Bitte erneut versuchen."
+    "successToast": "Spiel gelöscht.",
+    "errorToast": "Spiel konnte nicht gelöscht werden. Bitte erneut versuchen."
   },
   "nodeBeta": {
     "badge": "Beta",
     "title": "Der {{node}}-Knoten ist in der Beta",
-    "description": "Bearbeitung, Vorschau und Einstellungen f\u00fcr den {{node}}-Knoten sind noch nicht verf\u00fcgbar. Diese Ansicht ist schreibgesch\u00fctzt, w\u00e4hrend wir sie fertigstellen.",
-    "creativityHint": "In der Zwischenzeit sind Spielknoten wie Bild & Pin vollst\u00e4ndig offen \u2014 f\u00fclle sie mit deiner Kreativit\u00e4t: lade ein Bild hoch, markiere Bereiche und formuliere zu jedem eine Frage."
+    "description": "Bearbeitung, Vorschau und Einstellungen für den {{node}}-Knoten sind noch nicht verfügbar. Diese Ansicht ist schreibgeschützt, während wir sie fertigstellen.",
+    "creativityHint": "In der Zwischenzeit sind Spielknoten wie Bild & Pin vollständig offen — fülle sie mit deiner Kreativität: lade ein Bild hoch, markiere Bereiche und formuliere zu jedem eine Frage."
   },
   "previewDrawer": {
     "title": "Spielsimulation",
-    "back": "Zur\u00fcck zum Editor",
-    "emptyHint": "F\u00fcge einen Startknoten, Spielknoten und einen Endknoten als verbundenen Pfad f\u00fcr die Vorschau hinzu.",
+    "back": "Zurück zum Editor",
+    "emptyHint": "Füge einen Startknoten, Spielknoten und einen Endknoten als verbundenen Pfad für die Vorschau hinzu.",
     "ifElseFallback": "Wenn / sonst",
     "stepLabel": "Schritt {{index}} von {{total}}",
-    "startIntroLabel": "Einf\u00fchrung",
+    "startIntroLabel": "Einführung",
     "invalidNodeTitle": "Dieser Knoten kann noch nicht in der Vorschau angezeigt werden",
-    "invalidNodeHint": "Behebe Folgendes auf der Leinwand und \u00f6ffne die Vorschau erneut:",
+    "invalidNodeHint": "Behebe Folgendes auf der Leinwand und öffne die Vorschau erneut:",
     "completeTitle": "Ende der Vorschau",
     "completeHint": "Du hast das Ende des Spielablaufs erreicht.",
     "labels": {
@@ -123,20 +149,20 @@
       "save": "Speichern",
       "preview": "Vorschau",
       "leave": "Verlassen",
-      "publish": "Ver\u00f6ffentlichen",
-      "unpublish": "Ver\u00f6ffentlichung zur\u00fcckziehen"
+      "publish": "Veröffentlichen",
+      "unpublish": "Veröffentlichung zurückziehen"
     },
     "unpublishDialog": {
-      "title": "Ver\u00f6ffentlichung zur\u00fcckziehen?",
-      "description": "Lernende k\u00f6nnen dieses Spiel im Kurs nicht mehr sehen oder spielen. Dein Entwurf im Game Studio bleibt erhalten \u2014 du kannst weiterbearbeiten und jederzeit erneut ver\u00f6ffentlichen.",
+      "title": "Veröffentlichung zurückziehen?",
+      "description": "Lernende können dieses Spiel im Kurs nicht mehr sehen oder spielen. Dein Entwurf im Game Studio bleibt erhalten — du kannst weiterbearbeiten und jederzeit erneut veröffentlichen.",
       "cancel": "Abbrechen",
-      "confirm": "Ver\u00f6ffentlichung zur\u00fcckziehen",
-      "confirming": "Wird zur\u00fcckgezogen..."
+      "confirm": "Veröffentlichung zurückziehen",
+      "confirming": "Wird zurückgezogen..."
     }
   },
   "settingsDrawer": {
     "title": "Einstellungen",
-    "closeAriaLabel": "Einstellungen schlie\u00dfen",
+    "closeAriaLabel": "Einstellungen schließen",
     "projectTitleLabel": "Projekttitel",
     "projectTitlePlaceholder": "Projekttitel eingeben",
     "projectDescriptionLabel": "Projektbeschreibung",
@@ -148,11 +174,11 @@
     "rollbackLabel": "Rollback",
     "rollbackToVersion": "Rollback auf Version {{version}}",
     "noPreviousVersions": "Keine vorherigen Versionen",
-    "holdToDelete": "Zum L\u00f6schen halten",
+    "holdToDelete": "Zum Löschen halten",
     "toasts": {
       "saved": "Einstellungen gespeichert",
       "saveFailed": "Einstellungen konnten nicht gespeichert werden",
-      "rolledBack": "Auf vorherige Version zur\u00fcckgesetzt",
+      "rolledBack": "Auf vorherige Version zurückgesetzt",
       "rollbackFailed": "Rollback fehlgeschlagen"
     },
     "themeLabel": "Vorschau-Thema",
@@ -171,7 +197,7 @@
     "titlePlaceholder": "Knotentitel eingeben",
     "fieldDescription": "Beschreibung",
     "descriptionPlaceholder": "Knotenbeschreibung eingeben",
-    "deleteHint": "Halten um diesen Knoten zu l\u00f6schen",
+    "deleteHint": "Halten um diesen Knoten zu löschen",
     "incomingNode": "Eingehender Knoten",
     "noIncomingNode": "Kein eingehender Knoten",
     "outgoingNodes": "Ausgehende Knoten",
@@ -179,20 +205,20 @@
     "correctAnswerRoute": "Bei richtiger Antwort",
     "editorAlertTitle": "Verzweigungsknoten",
     "editorAlertDescription": "Dieser Knoten leitet Spielende auf unterschiedliche Pfade weiter, je nachdem ob die vorherige Antwort richtig oder falsch war. Nutze die Nachrichten unten, um beide Ergebnisse klar zu beschreiben.",
-    "overviewAlertTitle": "\u00dcberblick der Pfade",
-    "overviewAlertDescription": "W\u00e4hle zuerst, welcher Pfad als richtiger Weg gilt, und pr\u00fcfe dann beide ausgehenden Ziele.",
+    "overviewAlertTitle": "Überblick der Pfade",
+    "overviewAlertDescription": "Wähle zuerst, welcher Pfad als richtiger Weg gilt, und prüfe dann beide ausgehenden Ziele.",
     "fieldCorrectMessage": "Nachricht nach einer richtigen vorherigen Antwort",
     "correctMessagePlaceholder": "Beschreibe, was nach einer richtigen vorherigen Antwort passiert",
     "fieldWrongMessage": "Nachricht nach einer falschen vorherigen Antwort",
     "wrongMessagePlaceholder": "Beschreibe, was nach einer falschen vorherigen Antwort passiert",
-    "routeSelectionTitle": "Pfad f\u00fcr die richtige Antwort",
+    "routeSelectionTitle": "Pfad für die richtige Antwort",
     "routeSelectionHint": "Der blaue Verzweigungsknoten bleibt neutral. Orange markiert den Pfad, den Spielende nach einem richtigen Ergebnis nehmen.",
     "routeSelectionOptionA": "Nutze Knoten A, wenn die vorherige Antwort richtig war.",
     "routeSelectionOptionB": "Nutze Knoten B, wenn die vorherige Antwort richtig war.",
-    "routeCardCorrect": "Richtige Antwort f\u00fchrt hierhin",
-    "routeCardWrong": "Falsche Antwort f\u00fchrt hierhin",
+    "routeCardCorrect": "Richtige Antwort führt hierhin",
+    "routeCardWrong": "Falsche Antwort führt hierhin",
     "routeCardNotConnected": "Noch kein Knoten verbunden",
-    "routeCardNoDescription": "Keine Beschreibung verf\u00fcgbar",
+    "routeCardNoDescription": "Keine Beschreibung verfügbar",
     "nodeTypeBadge": "Verzweigungsknoten",
     "activeRoute": "Aktiv",
     "correctRouteLabel": "Richtige Antwort -> {{node}}"
@@ -217,7 +243,7 @@
     "noIncoming": "Verbinde einen Spielknoten vor diesem Wenn/Sonst-Knoten, um die Verzweigung zu testen.",
     "yourScore": "Deine Punktzahl: {{score}}",
     "threshold": "Schwelle: {{value}}",
-    "branchResultA": "Oberer Zweig (Knoten A) — Punktzahl erreicht oder \u00fcber Schwelle",
+    "branchResultA": "Oberer Zweig (Knoten A) — Punktzahl erreicht oder über Schwelle",
     "branchResultB": "Unterer Zweig (Knoten B) — Punktzahl unter Schwelle",
     "routesTo": "Weiter zu: {{node}}",
     "branchNotConnected": "Auf diesem Zweig ist kein Knoten verbunden",
@@ -246,37 +272,37 @@
     "titlePlaceholder": "Knotentitel eingeben",
     "fieldDescription": "Beschreibung",
     "descriptionPlaceholder": "Knotenbeschreibung eingeben",
-    "deleteHint": "Halte den Button unten 3 Sekunden, um diesen Knoten zu l\u00f6schen."
+    "deleteHint": "Halte den Button unten 3 Sekunden, um diesen Knoten zu löschen."
   },
   "publishDrawer": {
-    "title": "Spiel ver\u00f6ffentlichen",
+    "title": "Spiel veröffentlichen",
     "untitledGame": "Unbenanntes Spiel",
-    "publishUnavailable": "Ver\u00f6ffentlichen ist nicht verf\u00fcgbar. Speichere zuerst das Projekt.",
-    "publishedSuccess": "Spiel erfolgreich ver\u00f6ffentlicht!",
-    "publishFailed": "Spiel konnte nicht ver\u00f6ffentlicht werden",
+    "publishUnavailable": "Veröffentlichen ist nicht verfügbar. Speichere zuerst das Projekt.",
+    "publishedSuccess": "Spiel erfolgreich veröffentlicht!",
+    "publishFailed": "Spiel konnte nicht veröffentlicht werden",
     "gameTitleLabel": "Spieltitel:",
     "totalNodesLabel": "Gesamte Knoten:",
     "totalPointsLabel": "Erreichbare Gesamtpunkte:",
     "pointsValue": "{{points}} Punkte",
-    "floorNote": "Bei falschen Antworten k\u00f6nnen Abz\u00fcge gelten; der Score f\u00e4llt nie unter 0.",
-    "publishing": "Ver\u00f6ffentlicht...",
-    "publishForStudents": "Halten, um f\u00fcr Lernende zu ver\u00f6ffentlichen",
-    "linkCourseSectionLabel": "Mit Kurs verkn\u00fcpfen (optional)",
-    "linkCourseTrigger": "Kurs ausw\u00e4hlen",
+    "floorNote": "Bei falschen Antworten können Abzüge gelten; der Score fällt nie unter 0.",
+    "publishing": "Veröffentlicht...",
+    "publishForStudents": "Halten, um für Lernende zu veröffentlichen",
+    "linkCourseSectionLabel": "Mit Kurs verknüpfen (optional)",
+    "linkCourseTrigger": "Kurs auswählen",
     "linkCourseLoading": "Kurse werden geladen…",
-    "linkCourseEmptyHint": "Ver\u00f6ffentliche zuerst einen Kurs, um dieses Spiel damit zu verkn\u00fcpfen. Du kannst das Spiel auch ohne Verkn\u00fcpfung ver\u00f6ffentlichen.",
-    "linkCoursePopoverTitle": "Ver\u00f6ffentlichte Kurse",
-    "linkCoursePopoverHint": "Die Verkn\u00fcpfung ist optional. Das Spiel wird auch ohne Kurs ver\u00f6ffentlicht.",
-    "linkCourseNone": "Keine Kursverkn\u00fcpfung",
-    "linkCourseAriaLabel": "Ver\u00f6ffentlichten Kurs zum Verkn\u00fcpfen w\u00e4hlen"
+    "linkCourseEmptyHint": "Veröffentliche zuerst einen Kurs, um dieses Spiel damit zu verknüpfen. Du kannst das Spiel auch ohne Verknüpfung veröffentlichen.",
+    "linkCoursePopoverTitle": "Veröffentlichte Kurse",
+    "linkCoursePopoverHint": "Die Verknüpfung ist optional. Das Spiel wird auch ohne Kurs veröffentlicht.",
+    "linkCourseNone": "Keine Kursverknüpfung",
+    "linkCourseAriaLabel": "Veröffentlichten Kurs zum Verknüpfen wählen"
   },
   "publishValidation": {
-    "requirementsMet": "Fluss-Anforderungen erf\u00fcllt",
-    "requirementsMetWithWarnings": "Ver\u00f6ffentlichbar mit Hinweisen",
-    "requirementsNotMet": "Fluss-Anforderungen nicht erf\u00fcllt",
-    "errorsTitle": "Behebe diese Probleme vor der Ver\u00f6ffentlichung:",
+    "requirementsMet": "Fluss-Anforderungen erfüllt",
+    "requirementsMetWithWarnings": "Veröffentlichbar mit Hinweisen",
+    "requirementsNotMet": "Fluss-Anforderungen nicht erfüllt",
+    "errorsTitle": "Behebe diese Probleme vor der Veröffentlichung:",
     "warningsTitle": "Hinweise (optional beheben):",
-    "rulesTitle": "Behebe diese Graph-Probleme vor der Ver\u00f6ffentlichung:",
+    "rulesTitle": "Behebe diese Graph-Probleme vor der Veröffentlichung:",
     "graphIssues": {
       "start.missing": "Genau ein Start-Knoten ist erforderlich.",
       "start.duplicate": "Nur ein Start-Knoten ist erlaubt ({{count}} gefunden).",
@@ -296,20 +322,20 @@
     "nodeIssues": {
       "imagePin.image.missing": "Image Pin \"{{label}}\" hat kein Bild.",
       "imagePin.rect.none": "Image Pin \"{{label}}\" braucht mindestens eine Zielregion.",
-      "imagePin.rect.invalidGeometry": "Image Pin \"{{label}}\" hat eine Region mit ung\u00fcltiger Gr\u00f6\u00dfe (Region {{rectIndex}}).",
+      "imagePin.rect.invalidGeometry": "Image Pin \"{{label}}\" hat eine Region mit ungültiger Größe (Region {{rectIndex}}).",
       "imagePin.rect.missingQuestion": "Image Pin \"{{label}}\" hat eine Region ohne Fragetext (Region {{rectIndex}}).",
-      "imagePin.points.invalid": "Image Pin \"{{label}}\" hat ung\u00fcltige Punkte.",
-      "imagePin.retryDeduction.invalid": "Image Pin \"{{label}}\" hat einen ung\u00fcltigen Wiederholungsabzug.",
+      "imagePin.points.invalid": "Image Pin \"{{label}}\" hat ungültige Punkte.",
+      "imagePin.retryDeduction.invalid": "Image Pin \"{{label}}\" hat einen ungültigen Wiederholungsabzug.",
       "imagePin.meta.incomplete": "Image Pin \"{{label}}\" hat keine Spielbeschreibung.",
       "openQuestion.prompt.missing": "Open Question \"{{label}}\" braucht mindestens eine Aufgabenstellung.",
-      "openQuestion.answer.missing": "Open Question \"{{label}}\" hat {{count}} Aufgabe(n) ohne Musterl\u00f6sung.",
+      "openQuestion.answer.missing": "Open Question \"{{label}}\" hat {{count}} Aufgabe(n) ohne Musterlösung.",
       "openQuestion.points.invalid": "Open Question \"{{label}}\" muss mindestens 1 Punkt vergeben.",
       "openQuestion.meta.missingDescription": "Open Question \"{{label}}\" hat keine Beschreibung.",
       "dndMath.tab.none": "Drag & Drop Math \"{{label}}\" braucht mindestens einen Aufgaben-Tab.",
       "dndMath.tab.missingTitle": "Drag & Drop Math \"{{label}}\" hat einen Tab ohne Titel.",
       "dndMath.tab.emptyCanvas": "Drag & Drop Math \"{{label}}\" Tab \"{{tabTitle}}\" hat keine Canvas-Zeilen.",
       "dndMath.tab.noContent": "Drag & Drop Math \"{{label}}\" Tab \"{{tabTitle}}\" hat keinen Inhalt.",
-      "dndMath.equation.invalid": "Drag & Drop Math \"{{label}}\" Tab \"{{tabTitle}}\" hat eine ung\u00fcltige Gleichung.",
+      "dndMath.equation.invalid": "Drag & Drop Math \"{{label}}\" Tab \"{{tabTitle}}\" hat eine ungültige Gleichung.",
       "dndMath.reference.orphan": "Drag & Drop Math \"{{label}}\" Tab \"{{tabTitle}}\" hat doppelte Zeilen-Referenzen.",
       "dndMath.scoring.noEvaluatableRow": "Drag & Drop Math \"{{label}}\" Tab \"{{tabTitle}}\" hat keine auswertbare Gleichung.",
       "dndMath.points.invalid": "Drag & Drop Math \"{{label}}\" muss mindestens 1 Punkt vergeben.",
@@ -322,7 +348,7 @@
   "previewIfElse": {
     "ifElseFallback": "Wenn / sonst",
     "routingLogic": "Routing-Logik",
-    "routingDescription": "Dieser Knoten sendet Spielende je nach vorherigem Ergebnis zum n\u00e4chsten Slide.",
+    "routingDescription": "Dieser Knoten sendet Spielende je nach vorherigem Ergebnis zum nächsten Slide.",
     "condition": "Bedingung",
     "noCondition": "Noch keine Bedingung gesetzt.",
     "outgoingPaths": "Ausgehende Pfade",
@@ -332,15 +358,15 @@
     "legacyCondition": "Veraltete Bedingung",
     "branchMessage": "Pfadnachricht",
     "noMessage": "Noch keine Nachricht gesetzt.",
-    "logicSummary": "Dies ist ein Logik-Slide. Er bestimmt den n\u00e4chsten Slide aus dem vorherigen Ergebnis und zeigt keinen normalen Spielinhalt an.",
+    "logicSummary": "Dies ist ein Logik-Slide. Er bestimmt den nächsten Slide aus dem vorherigen Ergebnis und zeigt keinen normalen Spielinhalt an.",
     "correctOutcome": "Wenn die vorherige Antwort richtig war, gehe zu {{node}}: {{destination}}.",
     "wrongOutcome": "Wenn die vorherige Antwort falsch war, gehe zu {{node}}: {{destination}}.",
     "messageLine": "Nachricht: {{message}}",
     "legacyConditionLine": "Veraltete Bedingung: {{condition}}",
     "missingPreviousResultTitle": "Beende zuerst den vorherigen Slide",
-    "missingPreviousResultDescription": "Dieser Logik-Slide kann die n\u00e4chste Route erst ausw\u00e4hlen, wenn der vorherige Slide gepr\u00fcft wurde.",
+    "missingPreviousResultDescription": "Dieser Logik-Slide kann die nächste Route erst auswählen, wenn der vorherige Slide geprüft wurde.",
     "missingMessageTitle": "Bearbeite diesen Logik-Slide, um fortzufahren",
-    "missingMessageDescription": "F\u00fcge die ben\u00f6tigte Pfadnachricht im Wenn/Sonst-Knoten hinzu, bevor dieser Ablauf fortgesetzt werden kann."
+    "missingMessageDescription": "Füge die benötigte Pfadnachricht im Wenn/Sonst-Knoten hinzu, bevor dieser Ablauf fortgesetzt werden kann."
   },
   "gameProjectCard": {
     "untitledProject": "Unbenanntes Projekt",
@@ -348,19 +374,19 @@
     "viewAnalytics": "Analysen",
     "noDescription": "Keine Beschreibung",
     "imageAlt": "Spielprojekt",
-    "open": "\u00d6ffnen",
+    "open": "Öffnen",
     "status": {
-      "published": "Ver\u00f6ffentlicht",
+      "published": "Veröffentlicht",
       "draft": "Entwurf"
     },
     "courseMenu": {
       "triggerAriaLabel": "Projektoptionen",
-      "linkToCourse": "Mit Kurs verkn\u00fcpfen",
+      "linkToCourse": "Mit Kurs verknüpfen",
       "unlinkFromCourse": "Von Kurs trennen"
     },
     "menu": {
       "takeOffline": "Offline nehmen",
-      "deleteGame": "Spiel l\u00f6schen",
+      "deleteGame": "Spiel löschen",
       "toasts": {
         "offlineSuccess": "Spiel offline genommen",
         "offlineSuccessDescription": "{{count}} Auslieferung archiviert.",
@@ -370,36 +396,36 @@
     }
   },
   "linkGameDialog": {
-    "title": "Mit Kurs verkn\u00fcpfen",
-    "description": "W\u00e4hle einen online ver\u00f6ffentlichten Kurs, mit dem dieses Spiel verkn\u00fcpft werden soll.",
+    "title": "Mit Kurs verknüpfen",
+    "description": "Wähle einen online veröffentlichten Kurs, mit dem dieses Spiel verknüpft werden soll.",
     "kursename": "Kursename",
-    "selectCourseColumn": "Kurs ausw\u00e4hlen",
-    "selectCourseAriaLabel": "{{title}} ausw\u00e4hlen",
-    "emptyCourses": "Noch keine online ver\u00f6ffentlichten Kurse vorhanden.",
+    "selectCourseColumn": "Kurs auswählen",
+    "selectCourseAriaLabel": "{{title}} auswählen",
+    "emptyCourses": "Noch keine online veröffentlichten Kurse vorhanden.",
     "cancel": "Abbrechen",
-    "confirm": "Kurs verkn\u00fcpfen",
-    "linking": "Wird verkn\u00fcpft\u2026",
+    "confirm": "Kurs verknüpfen",
+    "linking": "Wird verknüpft…",
     "toasts": {
-      "linkedSuccess": "Spiel mit Kurs verkn\u00fcpft",
-      "linkedFailed": "Spiel konnte nicht mit Kurs verkn\u00fcpft werden",
-      "courseNotLive": "Nur online ver\u00f6ffentlichte Kurse k\u00f6nnen mit einem Spiel verkn\u00fcpft werden."
+      "linkedSuccess": "Spiel mit Kurs verknüpft",
+      "linkedFailed": "Spiel konnte nicht mit Kurs verknüpft werden",
+      "courseNotLive": "Nur online veröffentlichte Kurse können mit einem Spiel verknüpft werden."
     }
   },
   "unlinkGameDialog": {
     "title": "Von Kurs trennen",
-    "description": "W\u00e4hle den verkn\u00fcpften Kurs, den du von diesem Spiel entfernen m\u00f6chtest.",
+    "description": "Wähle den verknüpften Kurs, den du von diesem Spiel entfernen möchtest.",
     "kursename": "Kursename",
-    "selectCourseColumn": "Kurs ausw\u00e4hlen",
-    "selectCourseAriaLabel": "{{title}} ausw\u00e4hlen",
-    "noLinkedCourse": "Dieses Spiel ist mit keinem Kurs verkn\u00fcpft.",
-    "loadFailed": "Der verkn\u00fcpfte Kurs konnte nicht geladen werden.",
+    "selectCourseColumn": "Kurs auswählen",
+    "selectCourseAriaLabel": "{{title}} auswählen",
+    "noLinkedCourse": "Dieses Spiel ist mit keinem Kurs verknüpft.",
+    "loadFailed": "Der verknüpfte Kurs konnte nicht geladen werden.",
     "cancel": "Abbrechen",
     "confirm": "Kurs trennen",
-    "unlinking": "Wird getrennt\u2026",
+    "unlinking": "Wird getrennt…",
     "toasts": {
-      "loadFailed": "Der verkn\u00fcpfte Kurs konnte nicht geladen werden",
-      "unlinkedSuccess": "Kursverkn\u00fcpfung entfernt",
-      "unlinkedFailed": "Kursverkn\u00fcpfung konnte nicht entfernt werden"
+      "loadFailed": "Der verknüpfte Kurs konnte nicht geladen werden",
+      "unlinkedSuccess": "Kursverknüpfung entfernt",
+      "unlinkedFailed": "Kursverknüpfung konnte nicht entfernt werden"
     }
   },
   "gameCard": {
@@ -407,7 +433,7 @@
     "play": "Spielen",
     "versionValue": "Version : {{version}}",
     "status": {
-      "published": "Ver\u00f6ffentlicht",
+      "published": "Veröffentlicht",
       "draft": "Entwurf"
     }
   },
@@ -423,7 +449,7 @@
   },
   "page": {
     "title": "Game Studio",
-    "subtitle": "Erstelle und verwalte Lernspiele f\u00fcr deine Lernenden.",
+    "subtitle": "Erstelle und verwalte Lernspiele für deine Lernenden.",
     "searchLabel": "Spiele durchsuchen",
     "searchPlaceholder": "Nach Titel oder Beschreibung suchen",
     "noMatches": "Keine Spiele entsprechen deiner Suche.",

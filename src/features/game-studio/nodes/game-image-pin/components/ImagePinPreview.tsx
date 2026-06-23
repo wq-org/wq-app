@@ -23,11 +23,7 @@ import { useIfElsePreviewFollowContent } from '../../game-if-else/useIfElsePrevi
 import { useIfElsePreviewFooter } from '../../game-if-else/useIfElsePreviewFooter'
 import { useIfElsePreviewImagePinDnd } from '../../game-if-else/useIfElsePreviewImagePinDnd'
 import { PIN_DRAGGABLE_ID } from '../constants/imagePinPreviewDnd.constants'
-import {
-  resolveGameImagePinDescription,
-  resolveGameImagePinPoints,
-  type GameImagePinNodeData,
-} from '../image-pin.schema'
+import { resolveGameImagePinPoints, type GameImagePinNodeData } from '../image-pin.schema'
 import type { ImagePinSubmissionVariant, NormalizedPinPoint } from '../imagePinValidation'
 import { resolvePlayPreviewFooterMaxScore } from '../../../utils/playPreviewSessionScore'
 import type { GameNodePreviewSessionCompletePayload } from '../../_registry/game-node-registry.types'
@@ -129,11 +125,10 @@ export function ImagePinPreview({
   const { t } = useTranslation('features.gameStudio')
   const { profile } = useUser()
   const { url: userAvatarUrl } = useAvatarUrl(profile?.avatar_url ?? null)
-  const description = resolveGameImagePinDescription(nodeData)
   const resolvedImagePreview = useResolvedGameImagePinPreviewSrc(nodeData)
   const previewNodeData = useMemo(
-    () => ({ ...nodeData, description, imagePreview: resolvedImagePreview }),
-    [description, nodeData, resolvedImagePreview],
+    () => ({ ...nodeData, imagePreview: resolvedImagePreview }),
+    [nodeData, resolvedImagePreview],
   )
   const {
     displayMessages,
@@ -308,6 +303,8 @@ export function ImagePinPreview({
       className={cn('flex flex-col gap-2', !useShellSession && 'min-h-0 flex-1')}
     >
       <ImagePinPreviewChatHistory
+        nodeId={nodeId}
+        descriptionContent={nodeData.descriptionContent ?? null}
         messages={displayMessages}
         flat={useShellSession}
         className={useShellSession ? undefined : 'flex-1'}

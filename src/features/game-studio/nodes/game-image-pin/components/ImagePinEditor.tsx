@@ -1,4 +1,13 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type PointerEvent,
+} from 'react'
+import type { SerializedEditorState } from 'lexical'
 import { Plus, Repeat, Trash2, ImageMinus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
@@ -14,6 +23,8 @@ import { Button } from '@/components/ui/button'
 import { FieldTextarea } from '@/components/ui/field-textarea'
 import { Text } from '@/components/ui/text'
 import { HelpPopover } from '@/components/shared'
+import { LexicalTextarea } from '@/components/shared/lexical-textarea'
+import type { EditorExternalInsertApi } from '@/features/lexical-editor'
 import { getFileSignedUrl } from '@/features/cloud'
 import { lookupCloudFileIdByStoragePath } from '@/features/cloud'
 import { cn } from '@/lib/utils'
@@ -30,6 +41,7 @@ import { useImagePinCloudGalleryImages } from '../hooks/useImagePinCloudGalleryI
 import type { ImagePinCloudUploadResult } from '../hooks/useImagePinImageUpload'
 import { useImagePinQuestionTabs } from '../hooks/useImagePinQuestionTabs'
 
+const DESCRIPTION_MIN_HEIGHT_PX = 80
 const imagePinEditorEnterLift =
   'animate-in fade-in-0 slide-in-from-bottom-4 motion-safe:duration-300' as const
 const imagePinEditorEnterSubtle =
@@ -56,6 +68,7 @@ function readFileAsDataUrl(file: File): Promise<string> {
 }
 
 export type ImagePinEditorProps = {
+  nodeId: string
   nodeData: Record<string, unknown>
   onPatchNodeData: (patch: GameNodeDataPatch) => void
   pendingPreviewSrc?: string | null
@@ -67,19 +80,22 @@ export type ImagePinEditorProps = {
    * via `uploadFile` and the node stores the public URL plus storage `filepath`.
    */
   uploadImagePinFile?: (file: File) => Promise<ImagePinCloudUploadResult | null>
+  /** Forwarded to `LexicalTextarea` so the agent panel can append text to the description. */
+  onDescriptionInsertReady?: (api: EditorExternalInsertApi | null) => void
 }
 
 export function ImagePinEditor({
+  nodeId,
   nodeData,
   onPatchNodeData,
   pendingPreviewSrc: controlledPendingPreviewSrc,
   onPendingPreviewSrcChange,
   projectImageGallery,
   uploadImagePinFile,
+  onDescriptionInsertReady,
 }: ImagePinEditorProps) {
   const { t } = useTranslation('features.gameStudio')
   const pin = nodeData as GameImagePinNodeData
-  const description = typeof pin.description === 'string' ? pin.description : ''
   const imagePreview =
     typeof pin.imagePreview === 'string' && pin.imagePreview.trim() !== '' ? pin.imagePreview : ''
 
@@ -89,6 +105,7 @@ export function ImagePinEditor({
   )
 
   const replaceImageInputRef = useRef<HTMLInputElement>(null)
+  const descriptionSurfaceRef = useRef<HTMLDivElement>(null)
   /** Prevents a second file pick from triggering a new upload while one is in flight. */
   const isUploadingRef = useRef(false)
   const [selectedRectId, setSelectedRectId] = useState<string | null>(null)
@@ -371,11 +388,28 @@ export function ImagePinEditor({
     [handleFileSelected],
   )
 
-  const handleDescriptionChange = useCallback(
-    (value: string) => {
-      onPatchNodeData({ description: value })
+  const handleDescriptionContentChange = useCallback(
+    (value: SerializedEditorState) => {
+      onPatchNodeData({ descriptionContent: value })
     },
     [onPatchNodeData],
+  )
+
+  const focusDescriptionEditor = useCallback(() => {
+    const editable = descriptionSurfaceRef.current?.querySelector<HTMLElement>(
+      '[contenteditable="true"]',
+    )
+    editable?.focus()
+  }, [])
+
+  const handleDescriptionSurfacePointerDown = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      const target = event.target
+      if (!(target instanceof HTMLElement)) return
+      if (target.closest('[contenteditable="true"]')) return
+      focusDescriptionEditor()
+    },
+    [focusDescriptionEditor],
   )
 
   /** Always rendered under the dropzone: combines other Image Pin nodes + your cloud library. */
@@ -443,6 +477,7 @@ export function ImagePinEditor({
       <Accordion
         type="single"
         collapsible
+        defaultValue="game-description"
         className={imagePinEditorEnterSubtle}
       >
         <AccordionItem
@@ -459,12 +494,20 @@ export function ImagePinEditor({
             </Text>
           </AccordionTrigger>
           <AccordionContent>
-            <div className="flex flex-col gap-2 pb-2">
-              <FieldTextarea
-                value={description}
-                rows={5}
+            <div
+              ref={descriptionSurfaceRef}
+              className="flex cursor-text flex-col gap-2 pb-2 [&_label]:sr-only"
+              onPointerDown={handleDescriptionSurfacePointerDown}
+            >
+              <LexicalTextarea
+                id={`image-pin-description-${nodeId}`}
+                label={t('imagePinSettings.gameDescriptionLabel')}
+                hydrationKey={`image-pin-description-${nodeId}`}
+                value={pin.descriptionContent ?? null}
+                onValueChange={handleDescriptionContentChange}
                 placeholder={t('imagePinSettings.gameDescriptionPlaceholder')}
-                onValueChange={handleDescriptionChange}
+                minHeight={DESCRIPTION_MIN_HEIGHT_PX}
+                onExternalInsertReady={onDescriptionInsertReady}
               />
               <Text
                 as="p"

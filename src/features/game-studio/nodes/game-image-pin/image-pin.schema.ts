@@ -13,10 +13,17 @@ export type GameImagePinRect = {
   question?: string
 }
 
+import type { SerializedEditorState } from 'lexical'
+
+import { extractPlainTextFromLexicalState } from '../../utils/extractPlainTextFromLexicalState'
+
 export type GameImagePinNodeData = {
   label?: string
   title?: string
+  /** @deprecated Use `descriptionContent` (Lexical). Kept for legacy persisted nodes. */
   description?: string
+  /** Rich-text game description (Lexical JSON). Mirrors OpenQuestion's descriptionContent. */
+  descriptionContent?: SerializedEditorState | null
   imagePreview?: string
   filepath?: string
   /** `cloud_files.id` for inline_media usage tracking and delete guards. */
@@ -42,7 +49,11 @@ export const gameImagePinDefaultConfig: GameImagePinNodeData = {
 }
 
 export function resolveGameImagePinDescription(data: unknown): string {
-  const description = (data as GameImagePinNodeData | null | undefined)?.description
+  const node = data as GameImagePinNodeData | null | undefined
+  const lexicalText = extractPlainTextFromLexicalState(node?.descriptionContent)
+  if (lexicalText) return lexicalText
+
+  const description = node?.description
   return typeof description === 'string' ? description.trim() : ''
 }
 

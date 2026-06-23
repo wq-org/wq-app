@@ -6,6 +6,7 @@ import type { SerializedEditorState } from 'lexical'
 
 import { SelectTabs } from '@/components/shared'
 import { LexicalTextarea } from '@/components/shared/lexical-textarea'
+import type { EditorExternalInsertApi } from '@/features/lexical-editor'
 import {
   Accordion,
   AccordionContent,
@@ -34,9 +35,15 @@ export type OpenQuestionEditorProps = {
   nodeId: string
   nodeData: GameOpenQuestionNodeData
   onPatchNodeData: (patch: Partial<GameOpenQuestionNodeData>) => void
+  onDescriptionInsertReady?: (api: EditorExternalInsertApi | null) => void
 }
 
-export function OpenQuestionEditor({ nodeId, nodeData, onPatchNodeData }: OpenQuestionEditorProps) {
+export function OpenQuestionEditor({
+  nodeId,
+  nodeData,
+  onPatchNodeData,
+  onDescriptionInsertReady,
+}: OpenQuestionEditorProps) {
   const { t } = useTranslation('features.gameStudio')
   const descriptionSurfaceRef = useRef<HTMLDivElement>(null)
   const descriptionContent = nodeData.descriptionContent ?? null
@@ -130,6 +137,7 @@ export function OpenQuestionEditor({ nodeId, nodeData, onPatchNodeData }: OpenQu
                 value={descriptionContent}
                 onValueChange={handleDescriptionChange}
                 minHeight={DESCRIPTION_MIN_HEIGHT_PX}
+                onExternalInsertReady={onDescriptionInsertReady}
               />
             </div>
           </AccordionContent>

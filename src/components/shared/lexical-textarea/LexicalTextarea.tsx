@@ -2,7 +2,11 @@ import { useCallback, useId } from 'react'
 import type { SerializedEditorState } from 'lexical'
 
 import { Label } from '@/components/ui/label'
-import { Editor, type FloatingToolbarFeatures } from '@/features/lexical-editor'
+import {
+  Editor,
+  type EditorExternalInsertApi,
+  type FloatingToolbarFeatures,
+} from '@/features/lexical-editor'
 import type { LessonDraftState } from '@/features/lesson'
 import { cn } from '@/lib/utils'
 
@@ -24,6 +28,11 @@ export type LexicalTextareaProps = {
   className?: string
   /** Override floating toolbar buttons (embedded defaults disable comments). */
   floatingToolbarFeatures?: Partial<FloatingToolbarFeatures>
+  /**
+   * Called once the editor mounts with an imperative append API, and `null` on unmount.
+   * Lets sibling panels (e.g. the agent sidebar) append text without owning a Lexical context.
+   */
+  onExternalInsertReady?: (api: EditorExternalInsertApi | null) => void
 }
 
 export function LexicalTextarea({
@@ -37,6 +46,7 @@ export function LexicalTextarea({
   disabled = false,
   className,
   floatingToolbarFeatures,
+  onExternalInsertReady,
 }: LexicalTextareaProps) {
   const generatedId = useId()
   const resolvedId = idProp ?? generatedId
@@ -86,6 +96,7 @@ export function LexicalTextarea({
           normalizeInitialContent={normalizeInitialContent}
           onPersistSerializedContent={handlePersist}
           floatingToolbarFeatures={floatingToolbarFeatures}
+          onExternalInsertReady={onExternalInsertReady}
           placeholder={
             <div
               className={cn(

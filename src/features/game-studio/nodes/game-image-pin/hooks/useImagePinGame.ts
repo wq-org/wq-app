@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { DragEndEvent } from '@dnd-kit/core'
 import confetti from 'canvas-confetti'
 import { useTranslation } from 'react-i18next'
+import { hasLexicalEditorContent } from '@/components/shared/chat'
 import type { GameChatHistoryMessage } from '../../../components/game-chat.types'
 import {
   PIN_IMAGE_DROPPABLE_ID,
@@ -227,10 +228,12 @@ function buildInitialPreviewMessages(
   imageSrc: string,
   description: string,
   questions: PreviewQuestion[],
+  includePlainDescription: boolean,
 ): GameChatHistoryMessage[] {
-  const messages: GameChatHistoryMessage[] = description
-    ? [buildPreviewDescriptionMessage(nodeId, description)]
-    : []
+  const messages: GameChatHistoryMessage[] =
+    includePlainDescription && description
+      ? [buildPreviewDescriptionMessage(nodeId, description)]
+      : []
   const first = questions[0]
   if (!first) return imageSrc ? [...messages, buildPreviewImageMessage(nodeId, imageSrc)] : messages
   return [...messages, buildPreviewQuestionMessage(nodeId, imageSrc, first, 0)]
@@ -263,6 +266,7 @@ export function useImagePinGame({
   const { t } = useTranslation('features.gameStudio')
   const imageSrc = getPreviewImageSrc(nodeData)
   const description = resolveGameImagePinDescription(nodeData)
+  const showLexicalDescription = hasLexicalEditorContent(nodeData.descriptionContent)
   const questions = useMemo(() => getPreviewQuestions(nodeData), [nodeData])
   const submitAnswerPrompt = t('imagePinGamePreview.submitAnswerPrompt')
   const howToPlayPrompt = t('imagePinGamePreview.howToPlayPrompt')
@@ -283,10 +287,16 @@ export function useImagePinGame({
 
   const initialState = useMemo<PreviewState>(
     () => ({
-      messages: buildInitialPreviewMessages(nodeId, imageSrc, description, questions),
+      messages: buildInitialPreviewMessages(
+        nodeId,
+        imageSrc,
+        description,
+        questions,
+        !showLexicalDescription,
+      ),
       questionIndex: 0,
     }),
-    [description, imageSrc, nodeId, questions],
+    [description, imageSrc, nodeId, questions, showLexicalDescription],
   )
 
   const [state, setState] = useState<PreviewState>(() => initialState)

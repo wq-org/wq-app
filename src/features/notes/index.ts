@@ -1,6 +1,6 @@
 export { NoteCardList } from './components/NoteCardList'
 export { NoteSettingsDrawer } from './components/NoteSettingsDrawer'
-export { createNote } from './api/notesApi'
+export { createNote, getNoteById, listPersonalNotes } from './api/notesApi'
 export { useNotes } from './hooks/useNotes'
 export { useNoteEditor } from './hooks/useNoteEditor'
 export { NoteEditorPage } from './pages/NoteEditorPage'
