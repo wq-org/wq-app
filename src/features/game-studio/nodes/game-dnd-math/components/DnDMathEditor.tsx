@@ -104,7 +104,16 @@ export function DnDMathEditor({
             <AccordionTrigger className="py-3 text-sm font-medium hover:no-underline">
               {t('dragDropMathEditor.descriptionLabel')}
             </AccordionTrigger>
-            <AccordionContent className="[&_label]:sr-only">
+            {/*
+              `forceMount` keeps the Lexical editor mounted when the accordion is
+              collapsed so the imperative insert API stays registered. Without it,
+              collapsing the description nulls the API ref and the agent panel's
+              "Insert into Description" click silently no-ops.
+            */}
+            <AccordionContent
+              forceMount
+              className="[&_label]:sr-only data-[state=closed]:hidden"
+            >
               <div
                 ref={descriptionSurfaceRef}
                 className="cursor-text"

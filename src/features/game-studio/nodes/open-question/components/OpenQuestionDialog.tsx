@@ -51,9 +51,10 @@ export function OpenQuestionDialog({
   const setDescriptionText = useCallback((text: string) => {
     descriptionInsertApiRef.current?.appendText(text)
   }, [])
-  const insertDescriptionImage = useCallback((url: string) => {
-    descriptionInsertApiRef.current?.appendImage(url)
-  }, [])
+  const insertDescriptionImage = useCallback(
+    (url: string) => descriptionInsertApiRef.current?.appendImage(url) ?? false,
+    [],
+  )
 
   // List every exercise as an agent target so the teacher can pick a slot
   // without first switching tabs in the editor. The `setValue` below switches

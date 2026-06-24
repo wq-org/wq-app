@@ -57,6 +57,8 @@
     "imageReplaced": "Bild ersetzt",
     "undo": "Rückgängig",
     "uploadFailed": "Upload fehlgeschlagen — erneut versuchen",
+    "imageInsertedInto": "In {{label}} eingefügt",
+    "imageInsertNoTarget": "Öffne den Editor eines Knotens mit Beschreibung, um ein Bild einzufügen.",
     "tabNotes": "Notizen",
     "closeNote": "Notiz schließen",
     "searchNotesLabel": "Notizen durchsuchen",

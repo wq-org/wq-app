@@ -512,7 +512,16 @@ export function ImagePinEditor({
               {t('imagePinSettings.gameDescriptionLabel')}
             </Text>
           </AccordionTrigger>
-          <AccordionContent>
+          {/*
+            `forceMount` keeps the Lexical editor mounted when the accordion is
+            collapsed so the imperative insert API stays registered. Without it,
+            collapsing the description nulls the API ref and the agent panel's
+            "Insert into Description" click silently no-ops.
+          */}
+          <AccordionContent
+            forceMount
+            className="data-[state=closed]:hidden"
+          >
             <div
               ref={descriptionSurfaceRef}
               className="flex cursor-text flex-col gap-2 pb-2 [&_label]:sr-only"

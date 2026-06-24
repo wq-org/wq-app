@@ -57,6 +57,8 @@
     "imageReplaced": "Image replaced",
     "undo": "Undo",
     "uploadFailed": "Upload failed — try again",
+    "imageInsertedInto": "Inserted into {{label}}",
+    "imageInsertNoTarget": "Open the editor on a node with a description to insert an image.",
     "tabNotes": "Notes",
     "closeNote": "Close note",
     "searchNotesLabel": "Search notes",

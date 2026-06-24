@@ -130,6 +130,7 @@ export function AgentPanel({ className }: AgentPanelProps) {
       const field = imageTargets.find((f) => f.fieldKey === fieldKey)
       if (!field?.insertImageUrl) {
         setIsCropMode(false)
+        toast.error(t('agent.imageInsertNoTarget'))
         return
       }
 
@@ -153,7 +154,16 @@ export function AgentPanel({ className }: AgentPanelProps) {
           }
         }
 
-        field.insertImageUrl(url)
+        // Returns false when a rich-text editor is unmounted and can't accept
+        // the insert; surface that to the teacher instead of failing silently.
+        const inserted = field.insertImageUrl(url)
+        if (inserted === false) {
+          toast.error(t('agent.imageInsertNoTarget'))
+          return
+        }
+        toast.success(
+          t('agent.imageInsertedInto', { label: field.imageInsertLabel ?? field.label }),
+        )
       } catch (error) {
         console.error('[agent] crop upload failed', error)
         toast.error(t('agent.uploadFailed'))
@@ -239,12 +249,18 @@ export function AgentPanel({ className }: AgentPanelProps) {
         selectedPdf ? (
           <div className="relative min-h-0 flex-1 overflow-y-auto px-2 pb-2">
             <div className="mb-2 flex items-center justify-end">
+              {/*
+                Temporarily disabled — image crop + insert into Lexical
+                description is not yet reliable across all node dialogs. Keep
+                the control visible so the affordance is discoverable, but
+                block the click until the underlying flow stabilizes.
+              */}
               <Button
                 type="button"
                 variant={isCropMode ? 'secondary' : 'outline'}
                 size="sm"
                 className="gap-1.5"
-                disabled={isUploading || cropTargets.length === 0}
+                disabled
                 aria-pressed={isCropMode}
                 aria-label={isCropMode ? t('agent.cropModeActive') : t('agent.getImage')}
                 onClick={() => setIsCropMode((prev) => !prev)}

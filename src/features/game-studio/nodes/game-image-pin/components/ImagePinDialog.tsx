@@ -56,9 +56,10 @@ export function ImagePinDialog({
   const setDescriptionText = useCallback((text: string) => {
     descriptionInsertApiRef.current?.appendText(text)
   }, [])
-  const insertDescriptionImage = useCallback((url: string) => {
-    descriptionInsertApiRef.current?.appendImage(url)
-  }, [])
+  const insertDescriptionImage = useCallback(
+    (url: string) => descriptionInsertApiRef.current?.appendImage(url) ?? false,
+    [],
+  )
 
   const setImageUrl = useCallback(
     (url: string) => {

@@ -12,9 +12,11 @@ export interface GameNodeField {
   getValue?: () => string
   /**
    * Receives an uploaded image URL. Image-type fields treat this as a replacement;
-   * rich-text fields insert it as a Lexical ImageNode.
+   * rich-text fields insert it as a Lexical ImageNode. Returns `false` when the
+   * insertion couldn't run (e.g. the rich-text editor isn't mounted), so the
+   * caller can show feedback instead of failing silently.
    */
-  insertImageUrl?: (url: string) => void
+  insertImageUrl?: (url: string) => boolean | void
   /** Human label for the image-insert action shown in the crop overlay button. */
   imageInsertLabel?: string
 }

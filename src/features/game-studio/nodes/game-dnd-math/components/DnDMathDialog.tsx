@@ -46,9 +46,10 @@ export function DnDMathDialog(props: GameNodeDialogProps) {
   const setDescriptionText = useCallback((text: string) => {
     descriptionInsertApiRef.current?.appendText(text)
   }, [])
-  const insertDescriptionImage = useCallback((url: string) => {
-    descriptionInsertApiRef.current?.appendImage(url)
-  }, [])
+  const insertDescriptionImage = useCallback(
+    (url: string) => descriptionInsertApiRef.current?.appendImage(url) ?? false,
+    [],
+  )
 
   const exerciseTabs = useMemo<DragDropMathExerciseTab[]>(
     () =>
