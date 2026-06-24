@@ -1,9 +1,10 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState, type PointerEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { SerializedEditorState } from 'lexical'
 
 import { SelectTabs } from '@/components/shared'
 import { LexicalTextarea } from '@/components/shared/lexical-textarea'
+import type { EditorExternalInsertApi } from '@/features/lexical-editor'
 import {
   Accordion,
   AccordionContent,
@@ -24,9 +25,16 @@ export type DnDMathEditorProps = {
   nodeId: string
   nodeData: Record<string, unknown>
   onPatchNodeData: (patch: GameNodeDataPatch) => void
+  /** Forwarded to `LexicalTextarea` so the agent panel can append into the description. */
+  onDescriptionInsertReady?: (api: EditorExternalInsertApi | null) => void
 }
 
-export function DnDMathEditor({ nodeId, nodeData, onPatchNodeData }: DnDMathEditorProps) {
+export function DnDMathEditor({
+  nodeId,
+  nodeData,
+  onPatchNodeData,
+  onDescriptionInsertReady,
+}: DnDMathEditorProps) {
   const { t } = useTranslation('features.gameStudio')
   const pin = nodeData as GameDragDropMathNodeData
   const descriptionContent = pin.descriptionContent ?? null
@@ -49,12 +57,30 @@ export function DnDMathEditor({ nodeId, nodeData, onPatchNodeData }: DnDMathEdit
   })
 
   const [tabIdPendingDelete, setTabIdPendingDelete] = useState<string | null>(null)
+  const descriptionSurfaceRef = useRef<HTMLDivElement>(null)
 
   const handleDescriptionChange = useCallback(
     (next: SerializedEditorState) => {
       onPatchNodeData({ descriptionContent: next })
     },
     [onPatchNodeData],
+  )
+
+  const focusDescriptionEditor = useCallback(() => {
+    const editable = descriptionSurfaceRef.current?.querySelector<HTMLElement>(
+      '[contenteditable="true"]',
+    )
+    editable?.focus()
+  }, [])
+
+  const handleDescriptionSurfacePointerDown = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      const target = event.target
+      if (!(target instanceof HTMLElement)) return
+      if (target.closest('[contenteditable="true"]')) return
+      focusDescriptionEditor()
+    },
+    [focusDescriptionEditor],
   )
 
   const handleConfirmDeleteTab = useCallback(() => {
@@ -79,15 +105,22 @@ export function DnDMathEditor({ nodeId, nodeData, onPatchNodeData }: DnDMathEdit
               {t('dragDropMathEditor.descriptionLabel')}
             </AccordionTrigger>
             <AccordionContent className="[&_label]:sr-only">
-              <LexicalTextarea
-                id={`drag-drop-math-description-${nodeId}`}
-                label={t('dragDropMathEditor.descriptionLabel')}
-                placeholder={t('dragDropMathEditor.descriptionPlaceholder')}
-                hydrationKey={nodeId}
-                value={descriptionContent}
-                onValueChange={handleDescriptionChange}
-                minHeight={300}
-              />
+              <div
+                ref={descriptionSurfaceRef}
+                className="cursor-text"
+                onPointerDown={handleDescriptionSurfacePointerDown}
+              >
+                <LexicalTextarea
+                  id={`drag-drop-math-description-${nodeId}`}
+                  label={t('dragDropMathEditor.descriptionLabel')}
+                  placeholder={t('dragDropMathEditor.descriptionPlaceholder')}
+                  hydrationKey={nodeId}
+                  value={descriptionContent}
+                  onValueChange={handleDescriptionChange}
+                  minHeight={300}
+                  onExternalInsertReady={onDescriptionInsertReady}
+                />
+              </div>
             </AccordionContent>
           </AccordionItem>
         </Accordion>

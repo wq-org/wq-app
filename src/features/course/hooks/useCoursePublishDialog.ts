@@ -11,6 +11,7 @@ type UseCoursePublishDialogArgs = {
   open: boolean
   onOpenChange: (open: boolean) => void
   onPublished?: () => void
+  isDeliveryOffline?: boolean
 }
 
 export function useCoursePublishDialog({
@@ -18,6 +19,7 @@ export function useCoursePublishDialog({
   open,
   onOpenChange,
   onPublished,
+  isDeliveryOffline = false,
 }: UseCoursePublishDialogArgs) {
   const { t } = useTranslation('features.course')
   const { rows: classrooms, loading, error } = useTeacherClassrooms(open)
@@ -58,6 +60,14 @@ export function useCoursePublishDialog({
   const handleConfirm = useCallback(async () => {
     if (!canConfirm) return
 
+    if (isDeliveryOffline) {
+      onOpenChange(false)
+      toast.error(t('settings.toasts.publishBlockedOffline'), {
+        description: t('settings.toasts.publishBlockedOfflineDescription'),
+      })
+      return
+    }
+
     try {
       setPublishing(true)
       const result = await publishCourseToClassrooms(courseId, [...selectedIds])
@@ -75,7 +85,7 @@ export function useCoursePublishDialog({
     } finally {
       setPublishing(false)
     }
-  }, [canConfirm, courseId, onOpenChange, onPublished, selectedIds, t])
+  }, [canConfirm, courseId, isDeliveryOffline, onOpenChange, onPublished, selectedIds, t])
 
   const emptyLabel = useMemo(() => {
     if (loading) return t('settings.publishDialog.loadingClassrooms')

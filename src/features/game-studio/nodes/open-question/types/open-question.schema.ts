@@ -32,4 +32,6 @@ export type GameOpenQuestionNodeData = {
   questions?: OpenQuestionAuthoredQuestion[]
   /** Last-selected Aufgabe tab in the editor (restored when reopening the dialog). */
   activeExerciseId?: string
+  /** Last-selected field tab (`question` / `answer`) within the active exercise. */
+  activeFieldTab?: 'question' | 'answer'
 }

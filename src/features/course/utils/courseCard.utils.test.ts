@@ -1,6 +1,35 @@
 import { describe, expect, it } from 'vitest'
 
-import { resolveCourseCardReleaseStatus } from './courseCard.utils'
+import { isCourseDeliveryOffline, resolveCourseCardReleaseStatus } from './courseCard.utils'
+
+describe('isCourseDeliveryOffline', () => {
+  it('returns true when deliveries exist but none are student-visible', () => {
+    expect(
+      isCourseDeliveryOffline({
+        studentVisibleDeliveryCount: 0,
+        offlineDeliveryCount: 2,
+      }),
+    ).toBe(true)
+  })
+
+  it('returns false when at least one delivery is student-visible', () => {
+    expect(
+      isCourseDeliveryOffline({
+        studentVisibleDeliveryCount: 1,
+        offlineDeliveryCount: 1,
+      }),
+    ).toBe(false)
+  })
+
+  it('returns false when there are no offline deliveries', () => {
+    expect(
+      isCourseDeliveryOffline({
+        studentVisibleDeliveryCount: 0,
+        offlineDeliveryCount: 0,
+      }),
+    ).toBe(false)
+  })
+})
 
 describe('resolveCourseCardReleaseStatus', () => {
   it('returns live when students can see at least one delivery', () => {

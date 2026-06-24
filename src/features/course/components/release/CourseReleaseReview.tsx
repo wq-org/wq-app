@@ -18,6 +18,7 @@ import { Text } from '@/components/ui/text'
 
 import { useCoursePublishFlow } from '../../hooks/useCoursePublishFlow'
 import { useCourseReleaseReview } from '../../hooks/useCourseReleaseReview'
+import { isCourseDeliveryOffline } from '../../utils/courseCard.utils'
 import { workspaceSettingsNavigationState } from '../../types/course-navigation.types'
 import type {
   CourseDraftDiffChangeKind,
@@ -46,10 +47,24 @@ function groupLabel(kind: CourseDraftDiffFileKind, t: (key: string) => string): 
 export function CourseReleaseReview({ courseId, focusLessonId }: CourseReleaseReviewProps) {
   const { t } = useTranslation('features.course')
 
-  const { live, diff, files, selectedFile, selectItem, loading, error, refetch } =
-    useCourseReleaseReview({ courseId, initialFocusLessonId: focusLessonId })
+  const {
+    live,
+    diff,
+    files,
+    selectedFile,
+    selectItem,
+    loading,
+    error,
+    refetch,
+    studentVisibleDeliveryCount,
+    offlineDeliveryCount,
+  } = useCourseReleaseReview({ courseId, initialFocusLessonId: focusLessonId })
 
-  const publishFlow = useCoursePublishFlow({ live, diff })
+  const isDeliveryOffline = isCourseDeliveryOffline({
+    studentVisibleDeliveryCount,
+    offlineDeliveryCount,
+  })
+  const publishFlow = useCoursePublishFlow({ live, diff, isDeliveryOffline })
 
   const hasChanges = (diff?.summary.totalChanges ?? 0) > 0
 
@@ -263,12 +278,27 @@ export function CourseReleaseReview({ courseId, focusLessonId }: CourseReleaseRe
         </div>
       )}
 
-      <div className="flex justify-end border-t pt-4">
+      <div className="flex flex-col items-end gap-2 border-t pt-4">
+        {publishFlow.isPublishBlockedOffline && hasChanges ? (
+          <Text
+            as="p"
+            variant="small"
+            muted
+            className="w-full text-left"
+          >
+            {t('settings.publishBlockedOfflineHint')}
+          </Text>
+        ) : null}
         <Button
           type="button"
           variant="darkblue"
           disabled={!publishFlow.canPublishUpdate}
           className="gap-2"
+          title={
+            publishFlow.isPublishBlockedOffline
+              ? t('settings.publishBlockedOfflineHint')
+              : undefined
+          }
           onClick={publishFlow.handlePublishUpdate}
         >
           <Upload className="size-4" />
@@ -280,6 +310,7 @@ export function CourseReleaseReview({ courseId, focusLessonId }: CourseReleaseRe
         courseId={courseId}
         onPublished={handlePublished}
         flow={publishFlow}
+        isDeliveryOffline={isDeliveryOffline}
       />
     </div>
   )

@@ -6,12 +6,14 @@ type CoursePublishFlowDialogsProps = {
   courseId: string
   onPublished?: () => void
   flow: ReturnType<typeof useCoursePublishFlow>
+  isDeliveryOffline?: boolean
 }
 
 export function CoursePublishFlowDialogs({
   courseId,
   onPublished,
   flow,
+  isDeliveryOffline = false,
 }: CoursePublishFlowDialogsProps) {
   const {
     nextVersionNo,
@@ -30,6 +32,7 @@ export function CoursePublishFlowDialogs({
         open={firstPublishDialog.isOpen}
         onOpenChange={firstPublishDialog.onToggle}
         onPublished={onPublished}
+        isDeliveryOffline={isDeliveryOffline}
       />
       <CourseReleaseConfirmationDialog
         open={confirmDialog.isOpen}
@@ -43,6 +46,7 @@ export function CoursePublishFlowDialogs({
         open={publishDialog.isOpen}
         onOpenChange={publishDialog.onToggle}
         onPublished={onPublished}
+        isDeliveryOffline={isDeliveryOffline}
       />
     </>
   )

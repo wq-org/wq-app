@@ -126,15 +126,21 @@ export function GameLayout({
       ? ((['settings', 'preview', 'editor'] as const).find(isTabAvailable) ?? 'settings')
       : activeTab
 
+  // Agent column is only useful while authoring (Editor tab). Switching to
+  // Preview or Settings hides it so the canvas / settings form get the full width.
+  const isAgentVisible = resolvedTab === 'editor'
+
+  const handleTabChange = (tabId: string) => {
+    if (tabsDisabled || disabledTabSet.has(tabId as TabType)) return
+    setActiveTab(tabId as TabType)
+  }
+
   const nodePanel = (
     <div className="flex h-full min-h-0 w-full flex-col overflow-hidden">
       <SelectTabs
         tabs={tabs}
         activeTabId={resolvedTab}
-        onTabChange={(tabId) => {
-          if (tabsDisabled || disabledTabSet.has(tabId as TabType)) return
-          setActiveTab(tabId as TabType)
-        }}
+        onTabChange={handleTabChange}
       />
       <div className="mt-6 flex min-h-0 flex-1 flex-col overflow-y-auto">
         {resolvedTab === 'editor' && <>{editorContent || children}</>}
@@ -154,25 +160,29 @@ export function GameLayout({
         {/* Left: node editor — fills remaining width */}
         <div className="min-w-0 flex-1 overflow-hidden pr-3">{nodePanel}</div>
 
-        {/* Drag handle */}
-        <button
-          type="button"
-          aria-label="Resize panels"
-          className="relative flex w-1.5 shrink-0 cursor-col-resize items-center justify-center rounded-full bg-border/50 transition-colors hover:bg-border active:bg-border/80"
-          onMouseDown={handleDragStart}
-        >
-          <div className="z-10 flex h-6 w-3 items-center justify-center rounded-xs border border-border bg-background shadow-sm">
-            <GripVerticalIcon className="size-2.5 text-muted-foreground" />
-          </div>
-        </button>
+        {isAgentVisible ? (
+          <>
+            {/* Drag handle */}
+            <button
+              type="button"
+              aria-label="Resize panels"
+              className="relative flex w-1.5 shrink-0 cursor-col-resize items-center justify-center rounded-full bg-border/50 transition-colors hover:bg-border active:bg-border/80"
+              onMouseDown={handleDragStart}
+            >
+              <div className="z-10 flex h-6 w-3 items-center justify-center rounded-xs border border-border bg-background shadow-sm">
+                <GripVerticalIcon className="size-2.5 text-muted-foreground" />
+              </div>
+            </button>
 
-        {/* Right: agent panel — controlled width */}
-        <div
-          className="shrink-0 overflow-hidden border-l border-border/60 bg-background"
-          style={{ width: `${rightPct}%` }}
-        >
-          {agentPanel ?? <AgentPanel className="h-full" />}
-        </div>
+            {/* Right: agent panel — controlled width */}
+            <div
+              className="shrink-0 overflow-hidden border-l border-border/60 bg-background"
+              style={{ width: `${rightPct}%` }}
+            >
+              {agentPanel ?? <AgentPanel className="h-full" />}
+            </div>
+          </>
+        ) : null}
       </div>
     )
   }

@@ -14,6 +14,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
+import { isPlatformMessagingChatEnabled } from '@/lib/platformFeatures'
 import { CommandPaletteContentEnter, CommandPaletteMotionShell } from './CommandPaletteMotionShell'
 
 const ROLE_LABEL_KEY_MAP: Record<SearchItem['type'], string> = {
@@ -45,6 +46,7 @@ export function CommandSearch() {
   const { items, loading } = useSearchItems()
   const { t } = useTranslation(['common', 'features.commandPalette'])
   const navigate = useNavigate()
+  const showChat = isPlatformMessagingChatEnabled()
 
   const filtered = useMemo(() => {
     const currentSearchQuery = searchQuery.trim().toLowerCase()
@@ -136,18 +138,22 @@ export function CommandSearch() {
                         {t(ROLE_LABEL_KEY_MAP[item.type])}
                       </Badge>
                     </div>
-                    <Dialog.Close asChild>
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        size="icon"
-                        className="shrink-0"
-                        aria-label={t('search.openTeacherChat', { ns: 'features.commandPalette' })}
-                        onClick={handleOpenTeacherChat}
-                      >
-                        <MessageCircle className="h-4 w-4" />
-                      </Button>
-                    </Dialog.Close>
+                    {showChat ? (
+                      <Dialog.Close asChild>
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="icon"
+                          className="shrink-0"
+                          aria-label={t('search.openTeacherChat', {
+                            ns: 'features.commandPalette',
+                          })}
+                          onClick={handleOpenTeacherChat}
+                        >
+                          <MessageCircle className="h-4 w-4" />
+                        </Button>
+                      </Dialog.Close>
+                    ) : null}
                   </div>
                 </Card>
               ))}

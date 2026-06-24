@@ -8,6 +8,7 @@ import {
   getLatestPublishedGameVersionId,
   getPublishedGameVersion,
 } from './gameVersionApi'
+import { stripNulChars } from '../utils/stripNulChars'
 import type {
   FlowGameConfig,
   GameCardProps,
@@ -172,14 +173,17 @@ export async function updateGameForStudio(
   gameId: string,
   payload: UpdateGameForStudioPayload,
 ): Promise<GameForStudio> {
+  // PDF text extraction can sneak NUL bytes into pasted content; PostgreSQL
+  // rejects them on JSONB writes (22P05). Sanitize once at the API boundary.
+  const sanitized = stripNulChars(payload)
   const updates: Record<string, unknown> = {
     updated_at: new Date().toISOString(),
   }
-  if (payload.title !== undefined) updates.title = payload.title
-  if (payload.description !== undefined) updates.description = payload.description
-  if (payload.theme_id !== undefined) updates.theme_id = payload.theme_id
-  if (payload.game_content !== undefined) updates.game_content = payload.game_content
-  if (payload.course_id !== undefined) updates.course_id = payload.course_id
+  if (sanitized.title !== undefined) updates.title = sanitized.title
+  if (sanitized.description !== undefined) updates.description = sanitized.description
+  if (sanitized.theme_id !== undefined) updates.theme_id = sanitized.theme_id
+  if (sanitized.game_content !== undefined) updates.game_content = sanitized.game_content
+  if (sanitized.course_id !== undefined) updates.course_id = sanitized.course_id
 
   const { data, error } = await supabase
     .from('games')
@@ -426,4 +430,3 @@ export async function listGameCatalog(
 
   return ((data ?? []) as unknown as GameCatalogRow[]).map(mapGameCatalogRow)
 }
-

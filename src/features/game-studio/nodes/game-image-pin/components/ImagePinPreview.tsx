@@ -149,6 +149,10 @@ export function ImagePinPreview({
     nodeId,
     nodeData: previewNodeData,
     suppressPerAnswerConfetti: embedded && !continuousSession,
+    // Standalone preview = teacher test mode; show the dashed target rect so
+    // they can verify the correct answer position. Embedded play (real flow
+    // or shell session) hides it — students must guess.
+    showTargetRect: !embedded,
   })
 
   const nodeMaxScore = resolveGameImagePinPoints(nodeData.points)

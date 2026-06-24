@@ -70,6 +70,7 @@ export function OpenQuestionEditor({
   } = useOpenQuestionEditorQuestions({
     questions,
     activeExerciseIdFromNode: nodeData.activeExerciseId,
+    activeFieldTabFromNode: nodeData.activeFieldTab,
     onPatchNodeData,
     t,
   })

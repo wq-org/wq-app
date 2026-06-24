@@ -19,6 +19,7 @@ import {
 import { ComputerIcon } from '@/components/shared'
 import type { AddType, CommandBarItem, CommandBarView } from '../types/command-bar.types'
 import type { UserRole } from '@/features/auth'
+import { withoutChatCommandItems } from '@/lib/platformFeatures'
 
 export type AddOption = {
   readonly type: AddType
@@ -128,7 +129,7 @@ export const VIEW_COMMAND_ITEMS: Record<CommandBarView, readonly CommandBarItem[
       actionId: 'upload',
     },
   ],
-  lessons: [
+  lessons: withoutChatCommandItems([
     {
       id: 'home',
       labelKey: 'actions.dashboard',
@@ -172,6 +173,6 @@ export const VIEW_COMMAND_ITEMS: Record<CommandBarView, readonly CommandBarItem[
       to: '/teacher/notes',
     },
     ...LESSONS_VIEW_COMMAND_ITEMS,
-  ],
+  ]),
   'note-editor': [...LESSONS_VIEW_COMMAND_ITEMS],
 }

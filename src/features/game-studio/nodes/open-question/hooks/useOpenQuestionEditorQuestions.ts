@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import type { TFunction } from 'i18next'
 import { CircleQuestionMark, SpellCheck } from 'lucide-react'
 
@@ -24,6 +24,7 @@ function createBlankQuestion(): OpenQuestionAuthoredQuestion {
 export type UseOpenQuestionEditorQuestionsArgs = {
   questions: readonly OpenQuestionAuthoredQuestion[]
   activeExerciseIdFromNode?: string
+  activeFieldTabFromNode?: OpenQuestionEditorFieldTab
   onPatchNodeData: (patch: Partial<GameOpenQuestionNodeData>) => void
   t: TFunction<'features.gameStudio'>
 }
@@ -52,11 +53,18 @@ export type UseOpenQuestionEditorQuestionsResult = {
 export function useOpenQuestionEditorQuestions({
   questions: rawQuestions,
   activeExerciseIdFromNode,
+  activeFieldTabFromNode,
   onPatchNodeData,
   t,
 }: UseOpenQuestionEditorQuestionsArgs): UseOpenQuestionEditorQuestionsResult {
   const questions = useMemo(() => normalizeAuthoredQuestions(rawQuestions), [rawQuestions])
-  const [activeFieldTab, setActiveFieldTab] = useState<OpenQuestionEditorFieldTab>('question')
+  const activeFieldTab: OpenQuestionEditorFieldTab = activeFieldTabFromNode ?? 'question'
+  const setActiveFieldTab = useCallback(
+    (tab: OpenQuestionEditorFieldTab) => {
+      onPatchNodeData({ activeFieldTab: tab })
+    },
+    [onPatchNodeData],
+  )
 
   const activeQuestionId = useMemo(() => {
     if (
@@ -120,7 +128,7 @@ export function useOpenQuestionEditorQuestions({
     const nextQuestions = [...questions, next]
     setActiveFieldTab('question')
     persistExercises(nextQuestions, next.id)
-  }, [persistExercises, questions])
+  }, [persistExercises, questions, setActiveFieldTab])
 
   const handleDeleteQuestion = useCallback(
     (questionId: string) => {

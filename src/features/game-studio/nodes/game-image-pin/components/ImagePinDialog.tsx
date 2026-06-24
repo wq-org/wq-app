@@ -3,11 +3,16 @@ import { useTranslation } from 'react-i18next'
 
 import { getFileSignedUrl } from '@/features/cloud'
 import { useGameEditorContext } from '@/contexts/game-studio'
+import type { GameNodeField } from '@/contexts/game-studio'
 import type { EditorExternalInsertApi } from '@/features/lexical-editor'
 import { GameNodeDialogShell } from '../../../components/GameNodeDialogShell'
 import { GameLayout } from '../../../components/GameDialogLayout'
 import type { GameNodeDialogProps } from '../../_registry/game-node-registry.types'
-import { getMissingGameImagePinDefaults, type GameImagePinNodeData } from '../image-pin.schema'
+import {
+  getMissingGameImagePinDefaults,
+  type GameImagePinNodeData,
+  type GameImagePinRect,
+} from '../image-pin.schema'
 import { useImagePinImageUpload } from '../hooks/useImagePinImageUpload'
 import { ImagePinEditor } from './ImagePinEditor'
 import { ImagePinPreview } from './ImagePinPreview'
@@ -26,10 +31,15 @@ export function ImagePinDialog({
 }: GameNodeDialogProps) {
   const { t } = useTranslation('features.gameStudio')
   const editorContext = useGameEditorContext()
+  const registerNodeFields = editorContext?.registerNodeFields
+  const unregisterNodeFields = editorContext?.unregisterNodeFields
   const { uploadImagePinFile } = useImagePinImageUpload()
   const gameImagePinNodeData = nodeData as GameImagePinNodeData
   const { points, retryDeductionPercent } = gameImagePinNodeData
   const [pendingPreviewSrc, setPendingPreviewSrc] = useState<string | null>(null)
+  // Lifted from `ImagePinEditor` so the agent panel can register insertion
+  // targets that match the visible question tab.
+  const [selectedRectId, setSelectedRectId] = useState<string | null>(null)
 
   const nodeDataRef = useRef(gameImagePinNodeData)
   const descriptionInsertApiRef = useRef<EditorExternalInsertApi | null>(null)
@@ -58,8 +68,53 @@ export function ImagePinDialog({
   )
   const getImageUrl = useCallback(() => nodeDataRef.current.imagePreview ?? '', [])
 
+  const rectangles = useMemo<GameImagePinRect[]>(
+    () =>
+      Array.isArray(gameImagePinNodeData.rectangles)
+        ? (gameImagePinNodeData.rectangles as GameImagePinRect[])
+        : [],
+    [gameImagePinNodeData.rectangles],
+  )
+
+  // Append text to a rect's question and select that rect so the editor jumps
+  // to the targeted question tab on insert — no extra click needed. The append
+  // is computed inside the functional patch so a fast second click reads the
+  // value just written by the first, instead of an outer-scope snapshot.
+  const insertIntoRectQuestion = useCallback(
+    (rectId: string, text: string) => {
+      onPatchNodeData((current) => {
+        const currentRects = Array.isArray(current.rectangles)
+          ? (current.rectangles as GameImagePinRect[])
+          : []
+        return {
+          rectangles: currentRects.map((rect) => {
+            if (rect.id !== rectId) return rect
+            const previous = rect.question ?? ''
+            return { ...rect, question: previous ? `${previous}\n${text}` : text }
+          }),
+        }
+      })
+      setSelectedRectId(rectId)
+    },
+    [onPatchNodeData],
+  )
+
   useEffect(() => {
-    editorContext?.registerNodeFields([
+    if (!registerNodeFields || !unregisterNodeFields) return
+
+    const questionFields: GameNodeField[] = rectangles.map((rect, index) => ({
+      nodeId,
+      fieldKey: `question:${rect.id}`,
+      label: t('agent.insertIntoQuestionNumbered', { index: index + 1 }),
+      type: 'text',
+      setValue: (text: string) => insertIntoRectQuestion(rect.id, text),
+      getValue: () =>
+        (nodeDataRef.current.rectangles as GameImagePinRect[] | undefined)?.find(
+          (r) => r.id === rect.id,
+        )?.question ?? '',
+    }))
+
+    registerNodeFields([
       {
         nodeId,
         fieldKey: 'description',
@@ -79,15 +134,19 @@ export function ImagePinDialog({
         insertImageUrl: setImageUrl,
         imageInsertLabel: t('agent.insertIntoImage'),
       },
+      ...questionFields,
     ])
-    return () => editorContext?.unregisterNodeFields(nodeId)
+    return () => unregisterNodeFields(nodeId)
   }, [
     nodeId,
-    editorContext,
+    registerNodeFields,
+    unregisterNodeFields,
     setDescriptionText,
     insertDescriptionImage,
     setImageUrl,
     getImageUrl,
+    insertIntoRectQuestion,
+    rectangles,
     t,
   ])
   const previewNodeData = useMemo(
@@ -182,6 +241,8 @@ export function ImagePinDialog({
             projectImageGallery={projectImageGallery}
             uploadImagePinFile={uploadImagePinFile}
             onDescriptionInsertReady={handleDescriptionInsertReady}
+            selectedRectId={selectedRectId}
+            onSelectedRectIdChange={setSelectedRectId}
           />
         }
         previewContent={

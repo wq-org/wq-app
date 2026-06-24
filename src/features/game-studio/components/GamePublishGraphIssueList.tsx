@@ -8,7 +8,7 @@ import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
 
 import type { PublishIssue } from '../types/publish-validation.types'
-import { resolvePublishIssueMessage } from '../utils/formatPublishIssue'
+import { getPublishIssueReactKey, resolvePublishIssueMessage } from '../utils/formatPublishIssue'
 
 export type GamePublishGraphIssueListProps = {
   issues: PublishIssue[]
@@ -132,7 +132,7 @@ function IssueSection({
         {issues.map((issue, index) => {
           const message = resolvePublishIssueMessage(issue, translate)
           return (
-            <li key={`${issue.code}-${issue.nodeId ?? issue.edgeId ?? index}`}>
+            <li key={getPublishIssueReactKey(issue, index)}>
               <IssueRow
                 issue={issue}
                 message={message}

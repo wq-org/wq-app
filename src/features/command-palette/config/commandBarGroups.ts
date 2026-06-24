@@ -8,6 +8,7 @@ import {
   Upload,
 } from 'lucide-react'
 import { USER_ROLES, getRoleRoutePrefix } from '@/features/auth'
+import { withoutChatCommandItems } from '@/lib/platformFeatures'
 import type {
   CommandBarContext,
   CommandBarGroup,
@@ -227,6 +228,10 @@ export function getCommandGroupsByRole(role: CommandRoleContext): readonly Comma
   return commandGroupsByContext[role]
 }
 
+function withChatVisibility(items: readonly CommandBarItem[]): readonly CommandBarItem[] {
+  return withoutChatCommandItems(items)
+}
+
 export function getCommandBarGroups(
   role: CommandRoleContext,
   context: CommandBarContext,
@@ -235,7 +240,9 @@ export function getCommandBarGroups(
     return [
       {
         id: 'note-editor',
-        items: [...commandItemsByContext[role], ...LESSONS_VIEW_COMMAND_ITEMS],
+        items: [
+          ...withChatVisibility([...commandItemsByContext[role], ...LESSONS_VIEW_COMMAND_ITEMS]),
+        ],
       },
     ]
   }
@@ -244,12 +251,15 @@ export function getCommandBarGroups(
     return [
       {
         id: context,
-        items: [...commandItemsByContext[context]],
+        items: [...withChatVisibility([...commandItemsByContext[context]])],
       },
     ]
   }
 
-  return [...commandGroupsByContext[context]]
+  return commandGroupsByContext[context].map((group) => ({
+    ...group,
+    items: [...withChatVisibility(group.items)],
+  }))
 }
 
 export function getGroupById(

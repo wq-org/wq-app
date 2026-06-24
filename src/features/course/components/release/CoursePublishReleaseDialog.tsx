@@ -34,6 +34,7 @@ export type CoursePublishReleaseDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   onPublished?: () => void
+  isDeliveryOffline?: boolean
 }
 
 const TITLE_KEYS: Record<CoursePublishReleaseDialogVariant, string> = {
@@ -60,6 +61,7 @@ export function CoursePublishReleaseDialog({
   open,
   onOpenChange,
   onPublished,
+  isDeliveryOffline = false,
 }: CoursePublishReleaseDialogProps) {
   const { t } = useTranslation('features.course')
   const {
@@ -74,7 +76,13 @@ export function CoursePublishReleaseDialog({
     toggleClassroom,
     toggleAll,
     handleConfirm,
-  } = useCoursePublishDialog({ courseId, open, onOpenChange, onPublished })
+  } = useCoursePublishDialog({
+    courseId,
+    open,
+    onOpenChange,
+    onPublished,
+    isDeliveryOffline,
+  })
 
   return (
     <Dialog

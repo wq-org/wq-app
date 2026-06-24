@@ -73,14 +73,11 @@ export function AgentPanel({ className }: AgentPanelProps) {
   const filteredLessons = useSearchFilter(lessons, lessonSearch, LESSON_SEARCH_FIELDS)
   const filteredNotes = filterNotesByQuery(notes, noteSearch)
 
-  // Active node fields change when the dialog opens/closes — re-read on each render but
-  // memoize derived arrays by activeNodeId so child props stay stable across keystrokes.
-  const activeNodeId = context?.activeNodeId ?? null
-  const activeFields = useMemo(
-    () => context?.getActiveNodeFields() ?? [],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [activeNodeId, context],
-  )
+  // `getActiveNodeFields` is now derived from provider state, so its identity
+  // updates whenever a Dialog re-registers fields (e.g. after a + click adds
+  // a new question/exercise). Reading through it keeps this panel live.
+  const getActiveNodeFields = context?.getActiveNodeFields
+  const activeFields = useMemo(() => getActiveNodeFields?.() ?? [], [getActiveNodeFields])
   const insertableFields = useMemo(
     () => activeFields.filter((f) => f.type === 'text' || f.type === 'rich-text'),
     [activeFields],

@@ -20,6 +20,7 @@ import { LegalPage } from './user/pages/legal'
 import { MissionVisionPage } from './user/pages/mission-vision'
 import { DocsPage } from './user/pages/docs'
 import ChangelogPage from './user/pages/changelog'
+import { isPlatformMessagingChatEnabled } from '@/lib/platformFeatures'
 import {
   StudentDashboard,
   StudentSettingsPage,
@@ -697,11 +698,18 @@ const App = () => {
                 <Route
                   path="chat"
                   element={
-                    <RequireAuth>
-                      <RequireOnboarding>
-                        <TeacherChat />
-                      </RequireOnboarding>
-                    </RequireAuth>
+                    isPlatformMessagingChatEnabled() ? (
+                      <RequireAuth>
+                        <RequireOnboarding>
+                          <TeacherChat />
+                        </RequireOnboarding>
+                      </RequireAuth>
+                    ) : (
+                      <Navigate
+                        to="/teacher/dashboard"
+                        replace
+                      />
+                    )
                   }
                 />
                 <Route
@@ -1138,11 +1146,18 @@ const App = () => {
                 <Route
                   path="chat"
                   element={
-                    <RequireAuth>
-                      <RequireOnboarding>
-                        <StudentChat />
-                      </RequireOnboarding>
-                    </RequireAuth>
+                    isPlatformMessagingChatEnabled() ? (
+                      <RequireAuth>
+                        <RequireOnboarding>
+                          <StudentChat />
+                        </RequireOnboarding>
+                      </RequireAuth>
+                    ) : (
+                      <Navigate
+                        to="/student/dashboard"
+                        replace
+                      />
+                    )
                   }
                 />
                 <Route

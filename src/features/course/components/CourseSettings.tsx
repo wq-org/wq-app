@@ -33,6 +33,7 @@ import type { ThemeId } from '@/lib/themes'
 
 import { useCoursePublishFlow } from '../hooks/useCoursePublishFlow'
 import { useCourseReleaseStatus } from '../hooks/useCourseReleaseStatus'
+import { isCourseDeliveryOffline } from '../utils/courseCard.utils'
 import { buildCourseReleaseReviewRoute } from '../utils/courseRelease.utils'
 import { CourseArchiveDialog } from './archive/CourseArchiveDialog'
 import { CourseDeleteDialog } from './CourseDeleteDialog'
@@ -73,8 +74,13 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
     refetch: refetchReleaseStatus,
   } = useCourseReleaseStatus({ courseId })
 
-  const publishFlow = useCoursePublishFlow({ live, diff })
+  const isDeliveryOffline = isCourseDeliveryOffline({
+    studentVisibleDeliveryCount,
+    offlineDeliveryCount,
+  })
+  const publishFlow = useCoursePublishFlow({ live, diff, isDeliveryOffline })
   const hasReleaseChanges = (diff?.summary.totalChanges ?? 0) > 0
+  const showPublishBlockedOfflineHint = publishFlow.isPublishBlockedOffline && hasReleaseChanges
   const showRestoreOnlineAction = offlineDeliveryCount > 0 && studentVisibleDeliveryCount === 0
 
   useEffect(() => {
@@ -271,6 +277,16 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
         />
 
         <div className="flex flex-col gap-4 border-t pt-8 sm:flex-row sm:items-center sm:justify-end">
+          {showPublishBlockedOfflineHint ? (
+            <Text
+              as="p"
+              variant="small"
+              muted
+              className="sm:mr-auto sm:max-w-md sm:text-left"
+            >
+              {t('settings.publishBlockedOfflineHint')}
+            </Text>
+          ) : null}
           <div className="flex flex-wrap items-center justify-end gap-2">
             <Popover
               open={moreMenuOpen}
@@ -400,6 +416,11 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
               variant="darkblue"
               className="gap-2"
               disabled={!publishFlow.canPublishUpdate || releaseLoading}
+              title={
+                publishFlow.isPublishBlockedOffline
+                  ? t('settings.publishBlockedOfflineHint')
+                  : undefined
+              }
               onClick={publishFlow.handlePublishUpdate}
             >
               <Upload
@@ -416,6 +437,7 @@ export function CourseSettings({ courseId, onUnsavedChange }: CourseSettingsProp
         courseId={courseId}
         onPublished={handlePublished}
         flow={publishFlow}
+        isDeliveryOffline={isDeliveryOffline}
       />
       <CourseArchiveDialog
         courseId={courseId}

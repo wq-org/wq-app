@@ -31,6 +31,7 @@
     "publishedHint": "Make this course visible to students",
     "publishAction": "Publish to classrooms",
     "publishUpdateAction": "Publish course update",
+    "publishBlockedOfflineHint": "This course is offline. Use Restore online before publishing changes.",
     "publishing": "Publishing...",
     "publishDialog": {
       "title": "Publish course to classrooms",
@@ -90,6 +91,8 @@
       "saveFailed": "Failed to save changes. Please try again.",
       "deleteFailed": "Failed to delete course. Please try again.",
       "publishStatusFailed": "Failed to update publish status. Please try again.",
+      "publishBlockedOffline": "Course is offline",
+      "publishBlockedOfflineDescription": "Restore the course online from More actions, then publish your changes.",
       "publishSuccess": "Course published",
       "publishSuccessDescription": "Version {{version}} is live in {{count}} classroom(s). Students in those classrooms can access this snapshot.",
       "offlineSuccess": "Course taken offline",

@@ -1,17 +1,23 @@
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 
 import { useDisclosure } from '@/hooks/use-disclosure'
 
+import type { CoursePublishReleaseDialogVariant } from '../components/release/CoursePublishReleaseDialog'
 import type { CourseDraftDiff } from '../types/course-release.types'
 import type { PublishedCourseVersion } from '../types/course-version.types'
-import type { CoursePublishReleaseDialogVariant } from '../components/release/CoursePublishReleaseDialog'
 
 type UseCoursePublishFlowParams = {
   live: PublishedCourseVersion | null
   diff: CourseDraftDiff | null
+  isDeliveryOffline?: boolean
 }
 
-export function useCoursePublishFlow({ live, diff }: UseCoursePublishFlowParams) {
+export function useCoursePublishFlow({
+  live,
+  diff,
+  isDeliveryOffline = false,
+}: UseCoursePublishFlowParams) {
   const { t } = useTranslation('features.course')
   const firstPublishDialog = useDisclosure()
   const confirmDialog = useDisclosure()
@@ -21,8 +27,9 @@ export function useCoursePublishFlow({ live, diff }: UseCoursePublishFlowParams)
   const hasReleaseChanges = (diff?.summary.totalChanges ?? 0) > 0
   const releaseType = diff?.recommendedReleaseType ?? 'none'
   const nextVersionNo = live ? live.versionNo + 1 : null
+  const isPublishBlockedOffline = hasLiveVersion && isDeliveryOffline
 
-  const canPublishUpdate = hasLiveVersion ? hasReleaseChanges : true
+  const canPublishUpdate = hasLiveVersion ? hasReleaseChanges && !isDeliveryOffline : true
 
   const publishDialogVariant: CoursePublishReleaseDialogVariant = !hasLiveVersion
     ? 'first'
@@ -30,7 +37,18 @@ export function useCoursePublishFlow({ live, diff }: UseCoursePublishFlowParams)
       ? 'major'
       : 'update'
 
+  const notifyPublishBlockedOffline = () => {
+    toast.error(t('settings.toasts.publishBlockedOffline'), {
+      description: t('settings.toasts.publishBlockedOfflineDescription'),
+    })
+  }
+
   const handlePublishUpdate = () => {
+    if (isPublishBlockedOffline) {
+      notifyPublishBlockedOffline()
+      return
+    }
+
     if (!hasLiveVersion) {
       firstPublishDialog.onOpen()
       return
@@ -47,6 +65,11 @@ export function useCoursePublishFlow({ live, diff }: UseCoursePublishFlowParams)
   }
 
   const handleConfirmMajor = () => {
+    if (isPublishBlockedOffline) {
+      notifyPublishBlockedOffline()
+      return
+    }
+
     publishDialog.onOpen()
   }
 
@@ -60,6 +83,7 @@ export function useCoursePublishFlow({ live, diff }: UseCoursePublishFlowParams)
     releaseType,
     nextVersionNo,
     canPublishUpdate,
+    isPublishBlockedOffline,
     publishButtonLabel,
     handlePublishUpdate,
     handleConfirmMajor,

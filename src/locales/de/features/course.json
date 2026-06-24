@@ -31,6 +31,7 @@
     "publishedHint": "Diesen Kurs f\u00fcr Lernende sichtbar machen",
     "publishAction": "In Klassenr\u00e4ume ver\u00f6ffentlichen",
     "publishUpdateAction": "Kurs-Update ver\u00f6ffentlichen",
+    "publishBlockedOfflineHint": "Dieser Kurs ist offline. Schalte ihn wieder online, bevor du \u00c4nderungen ver\u00f6ffentlichst.",
     "publishing": "Ver\u00f6ffentlichen...",
     "publishDialog": {
       "title": "Kurs in Klassenr\u00e4umen ver\u00f6ffentlichen",
@@ -90,6 +91,8 @@
       "saveFailed": "\u00c4nderungen konnten nicht gespeichert werden. Bitte versuche es erneut.",
       "deleteFailed": "Kurs konnte nicht gel\u00f6scht werden. Bitte versuche es erneut.",
       "publishStatusFailed": "Ver\u00f6ffentlichungsstatus konnte nicht aktualisiert werden. Bitte versuche es erneut.",
+      "publishBlockedOffline": "Kurs ist offline",
+      "publishBlockedOfflineDescription": "Schalte den Kurs unter Weitere Aktionen wieder online und ver\u00f6ffentliche dann deine \u00c4nderungen.",
       "publishSuccess": "Kurs ver\u00f6ffentlicht",
       "publishSuccessDescription": "Version {{version}} ist in {{count}} Klassenraum/Klassenr\u00e4umen aktiv. Lernende dort k\u00f6nnen auf diesen Snapshot zugreifen.",
       "offlineSuccess": "Kurs offline genommen",

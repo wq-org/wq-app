@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useGameEditorContext } from '@/contexts/game-studio'
+import type { GameNodeField } from '@/contexts/game-studio'
 import type { EditorExternalInsertApi } from '@/features/lexical-editor'
 import { GameNodeDialogShell } from '../../../components/GameNodeDialogShell'
 import { GameLayout } from '../../../components/GameDialogLayout'
@@ -27,6 +28,8 @@ export function OpenQuestionDialog({
 }: GameNodeDialogProps) {
   const { t } = useTranslation('features.gameStudio')
   const editorContext = useGameEditorContext()
+  const registerNodeFields = editorContext?.registerNodeFields
+  const unregisterNodeFields = editorContext?.unregisterNodeFields
   const openQuestionNodeData = nodeData as GameOpenQuestionNodeData
 
   const questionsRef = useRef<OpenQuestionAuthoredQuestion[]>(
@@ -52,31 +55,68 @@ export function OpenQuestionDialog({
     descriptionInsertApiRef.current?.appendImage(url)
   }, [])
 
-  // Plain text fields — getValue lets the panel append rather than overwrite
-  const setQuestionText = useCallback(
-    (text: string) => {
-      const qs = questionsRef.current
-      if (qs.length === 0) return
-      const [first, ...rest] = qs
-      onPatchNodeData({ questions: [{ ...first, question: text }, ...rest] })
-    },
-    [onPatchNodeData],
+  // List every exercise as an agent target so the teacher can pick a slot
+  // without first switching tabs in the editor. The `setValue` below switches
+  // the tab as a side effect so the insertion is visible without extra clicks.
+  const questions = useMemo(
+    () => (Array.isArray(openQuestionNodeData.questions) ? openQuestionNodeData.questions : []),
+    [openQuestionNodeData.questions],
   )
-  const getQuestionText = useCallback(() => questionsRef.current[0]?.question ?? '', [])
 
-  const setAnswerText = useCallback(
-    (text: string) => {
-      const qs = questionsRef.current
-      if (qs.length === 0) return
-      const [first, ...rest] = qs
-      onPatchNodeData({ questions: [{ ...first, answer: text }, ...rest] })
+  // Append + switch tab atomically. Append uses the live `questions` from the
+  // patch's `current` snapshot — not an outer ref — so two clicks in quick
+  // succession can't both read the same "previous" value.
+  const patchExerciseField = useCallback(
+    (exerciseId: string, field: 'question' | 'answer', text: string) => {
+      onPatchNodeData((current) => {
+        const currentQuestions = Array.isArray(current.questions)
+          ? (current.questions as OpenQuestionAuthoredQuestion[])
+          : []
+        const targetIndex = currentQuestions.findIndex((q) => q.id === exerciseId)
+        if (targetIndex === -1) {
+          return { activeExerciseId: exerciseId, activeFieldTab: field }
+        }
+        const target = currentQuestions[targetIndex]
+        const previous = field === 'question' ? target.question : target.answer
+        const next = previous ? `${previous}\n${text}` : text
+        return {
+          questions: currentQuestions.map((q, idx) =>
+            idx === targetIndex ? { ...q, [field]: next } : q,
+          ),
+          activeExerciseId: exerciseId,
+          activeFieldTab: field,
+        }
+      })
     },
     [onPatchNodeData],
   )
-  const getAnswerText = useCallback(() => questionsRef.current[0]?.answer ?? '', [])
 
   useEffect(() => {
-    editorContext?.registerNodeFields([
+    if (!registerNodeFields || !unregisterNodeFields) return
+
+    const exerciseFields: GameNodeField[] = questions.flatMap((question, index) => {
+      const labelIndex = index + 1
+      return [
+        {
+          nodeId,
+          fieldKey: `question:${question.id}`,
+          label: t('agent.insertIntoExerciseQuestion', { index: labelIndex }),
+          type: 'text',
+          setValue: (text: string) => patchExerciseField(question.id, 'question', text),
+          getValue: () => questionsRef.current.find((q) => q.id === question.id)?.question ?? '',
+        },
+        {
+          nodeId,
+          fieldKey: `answer:${question.id}`,
+          label: t('agent.insertIntoExerciseAnswer', { index: labelIndex }),
+          type: 'text',
+          setValue: (text: string) => patchExerciseField(question.id, 'answer', text),
+          getValue: () => questionsRef.current.find((q) => q.id === question.id)?.answer ?? '',
+        },
+      ]
+    })
+
+    registerNodeFields([
       {
         nodeId,
         fieldKey: 'description',
@@ -86,33 +126,17 @@ export function OpenQuestionDialog({
         insertImageUrl: insertDescriptionImage,
         imageInsertLabel: t('agent.insertIntoDescription'),
       },
-      {
-        nodeId,
-        fieldKey: 'question',
-        label: t('agent.insertIntoQuestion'),
-        type: 'text',
-        setValue: setQuestionText,
-        getValue: getQuestionText,
-      },
-      {
-        nodeId,
-        fieldKey: 'answer',
-        label: t('agent.insertIntoAnswer'),
-        type: 'text',
-        setValue: setAnswerText,
-        getValue: getAnswerText,
-      },
+      ...exerciseFields,
     ])
-    return () => editorContext?.unregisterNodeFields(nodeId)
+    return () => unregisterNodeFields(nodeId)
   }, [
     nodeId,
-    editorContext,
+    registerNodeFields,
+    unregisterNodeFields,
+    questions,
+    patchExerciseField,
     setDescriptionText,
     insertDescriptionImage,
-    setQuestionText,
-    getQuestionText,
-    setAnswerText,
-    getAnswerText,
     t,
   ])
 

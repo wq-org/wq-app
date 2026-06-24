@@ -1,6 +1,16 @@
 import type { Course, CourseCardProps, CourseCardReleaseStatus } from '../types/course.types'
 import type { ClassroomCourseListItem } from '../types/course-version.types'
 
+export function isCourseDeliveryOffline({
+  studentVisibleDeliveryCount,
+  offlineDeliveryCount,
+}: {
+  studentVisibleDeliveryCount: number
+  offlineDeliveryCount: number
+}): boolean {
+  return studentVisibleDeliveryCount === 0 && offlineDeliveryCount > 0
+}
+
 export function resolveCourseCardReleaseStatus({
   studentVisibleDeliveryCount,
   offlineDeliveryCount,
@@ -9,7 +19,8 @@ export function resolveCourseCardReleaseStatus({
   offlineDeliveryCount: number
 }): CourseCardReleaseStatus {
   if (studentVisibleDeliveryCount > 0) return 'live'
-  if (offlineDeliveryCount > 0) return 'offline'
+  if (isCourseDeliveryOffline({ studentVisibleDeliveryCount, offlineDeliveryCount }))
+    return 'offline'
   return 'draft'
 }
 

@@ -82,6 +82,12 @@ export type ImagePinEditorProps = {
   uploadImagePinFile?: (file: File) => Promise<ImagePinCloudUploadResult | null>
   /** Forwarded to `LexicalTextarea` so the agent panel can append text to the description. */
   onDescriptionInsertReady?: (api: EditorExternalInsertApi | null) => void
+  /**
+   * Controlled selection — `ImagePinDialog` owns this so the agent panel can
+   * register insertion targets that match the visible question tab.
+   */
+  selectedRectId?: string | null
+  onSelectedRectIdChange?: (rectId: string | null) => void
 }
 
 export function ImagePinEditor({
@@ -93,6 +99,8 @@ export function ImagePinEditor({
   projectImageGallery,
   uploadImagePinFile,
   onDescriptionInsertReady,
+  selectedRectId: controlledSelectedRectId,
+  onSelectedRectIdChange,
 }: ImagePinEditorProps) {
   const { t } = useTranslation('features.gameStudio')
   const pin = nodeData as GameImagePinNodeData
@@ -108,7 +116,18 @@ export function ImagePinEditor({
   const descriptionSurfaceRef = useRef<HTMLDivElement>(null)
   /** Prevents a second file pick from triggering a new upload while one is in flight. */
   const isUploadingRef = useRef(false)
-  const [selectedRectId, setSelectedRectId] = useState<string | null>(null)
+  const [uncontrolledSelectedRectId, setUncontrolledSelectedRectId] = useState<string | null>(null)
+  const isSelectionControlled = controlledSelectedRectId !== undefined
+  const selectedRectId = isSelectionControlled
+    ? controlledSelectedRectId
+    : uncontrolledSelectedRectId
+  const setSelectedRectId = useCallback(
+    (rectId: string | null) => {
+      if (onSelectedRectIdChange) onSelectedRectIdChange(rectId)
+      if (!isSelectionControlled) setUncontrolledSelectedRectId(rectId)
+    },
+    [isSelectionControlled, onSelectedRectIdChange],
+  )
   const [sceneMetrics, setSceneMetrics] = useState<{ width: number; height: number } | null>(null)
   const [cloudGalleryRefresh, setCloudGalleryRefresh] = useState(0)
   /**
@@ -167,7 +186,7 @@ export function ImagePinEditor({
     setSelectedRectId(null)
     setSceneMetrics(null)
     setPendingPreviewSrc(null)
-  }, [imagePreview, setPendingPreviewSrc])
+  }, [imagePreview, setPendingPreviewSrc, setSelectedRectId])
 
   useEffect(() => {
     if (rectangles.length === 0) {
@@ -177,7 +196,7 @@ export function ImagePinEditor({
     if (!selectedRectId || !rectangles.some((rect) => rect.id === selectedRectId)) {
       setSelectedRectId(rectangles[0].id)
     }
-  }, [rectangles, selectedRectId])
+  }, [rectangles, selectedRectId, setSelectedRectId])
 
   const { activeRect, activeRectId, selectTabItems, setActiveTabId } = useImagePinQuestionTabs({
     rectangles,
@@ -217,7 +236,7 @@ export function ImagePinEditor({
         setSelectedRectId(nextActive?.id ?? null)
       }
     },
-    [onPatchNodeData, rectangles, selectedRectId],
+    [onPatchNodeData, rectangles, selectedRectId, setSelectedRectId],
   )
 
   const handleAddRect = useCallback(() => {
@@ -230,7 +249,7 @@ export function ImagePinEditor({
       return { rectangles: [...currentRects, next] }
     })
     setSelectedRectId(next.id)
-  }, [onPatchNodeData, sceneMetrics])
+  }, [onPatchNodeData, sceneMetrics, setSelectedRectId])
 
   const handleDeleteSelectedRect = useCallback(() => {
     if (!selectedRectId) return
@@ -241,7 +260,7 @@ export function ImagePinEditor({
       return { rectangles: currentRects.filter((r) => r.id !== selectedRectId) }
     })
     setSelectedRectId(null)
-  }, [onPatchNodeData, selectedRectId])
+  }, [onPatchNodeData, selectedRectId, setSelectedRectId])
 
   const handleImageLoadFailed = useCallback(
     (failedSrc: string) => {

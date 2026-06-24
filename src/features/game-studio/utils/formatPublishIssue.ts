@@ -35,3 +35,22 @@ export function resolvePublishIssueMessage(
 ): string {
   return translate(getPublishIssueMessageKey(issue), issue.params)
 }
+
+/** Stable, unique React list key for publish validation rows. */
+export function getPublishIssueReactKey(issue: PublishIssue, index: number): string {
+  const parts = [
+    issue.code,
+    issue.nodeId,
+    issue.edgeId,
+    issue.rectId,
+    issue.tabId,
+    issue.params?.rectIndex,
+    issue.params?.tabTitle,
+  ]
+    .map((part) => (part == null ? '' : String(part)))
+    .filter(Boolean)
+
+  if (parts.length === 0) return `publish-issue-${index}`
+
+  return `${parts.join(':')}:${index}`
+}

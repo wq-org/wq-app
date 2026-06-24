@@ -15,6 +15,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Text } from '@/components/ui/text'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
+import { isPlatformMessagingChatEnabled } from '@/lib/platformFeatures'
 
 import type { StudentTeacherSummary } from '../api/studentCourseDeliveriesApi'
 
@@ -28,6 +29,7 @@ export function TeacherProfileDialog({ teacher, open, onOpenChange }: TeacherPro
   const { t } = useTranslation('features.student')
   const navigate = useNavigate()
   const { url: avatarUrl } = useAvatarUrl(teacher?.avatarUrl)
+  const showChat = isPlatformMessagingChatEnabled()
 
   const displayName = teacher?.name?.trim() || null
   const username = teacher?.username?.trim() || null
@@ -92,23 +94,27 @@ export function TeacherProfileDialog({ teacher, open, onOpenChange }: TeacherPro
           ) : null}
         </DialogHeader>
 
-        <Separator />
+        {showChat ? (
+          <>
+            <Separator />
 
-        <DialogFooter className="p-4 sm:justify-start">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-xl"
-            className="rounded-full"
-            aria-label={t('dashboard.sections.teachers.openChat')}
-            onClick={handleOpenChat}
-          >
-            <MessagesSquare
-              className="size-5"
-              aria-hidden
-            />
-          </Button>
-        </DialogFooter>
+            <DialogFooter className="p-4 sm:justify-start">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xl"
+                className="rounded-full"
+                aria-label={t('dashboard.sections.teachers.openChat')}
+                onClick={handleOpenChat}
+              >
+                <MessagesSquare
+                  className="size-5"
+                  aria-hidden
+                />
+              </Button>
+            </DialogFooter>
+          </>
+        ) : null}
       </DialogContent>
     </Dialog>
   )

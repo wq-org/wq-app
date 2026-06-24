@@ -53,6 +53,12 @@ export type UseImagePinGameArgs = {
   nodeData: GameImagePinNodeData
   /** When true, skip confetti on each correct answer (parent may fire on session end). */
   suppressPerAnswerConfetti?: boolean
+  /**
+   * When true, every question's image shows the dashed target-rect overlay so
+   * a teacher previewing the node in test mode can verify the correct answer
+   * position. Defaults to false — students never see the answer.
+   */
+  showTargetRect?: boolean
 }
 
 type ImageNaturalSize = { width: number; height: number }
@@ -94,6 +100,7 @@ function buildPreviewQuestionMessage(
   imageSrc: string,
   question: PreviewQuestion,
   index: number,
+  showTargetRect: boolean,
 ): GameChatHistoryMessage {
   return {
     id: `preview-${nodeId}-question-${index}-${question.id}`,
@@ -106,6 +113,7 @@ function buildPreviewQuestionMessage(
           src: imageSrc,
           alt: 'Game Image Pin preview image',
           rect: question.rect,
+          showTargetRect,
         }
       : undefined,
   }
@@ -117,6 +125,7 @@ function buildPreviewRetryQuestionMessage(
   question: PreviewQuestion,
   index: number,
   attempt: number,
+  showTargetRect: boolean,
 ): GameChatHistoryMessage {
   return {
     id: `preview-${nodeId}-question-${index}-${question.id}-retry-${attempt}`,
@@ -129,6 +138,7 @@ function buildPreviewRetryQuestionMessage(
           src: imageSrc,
           alt: 'Game Image Pin preview image',
           rect: question.rect,
+          showTargetRect,
         }
       : undefined,
   }
@@ -229,6 +239,7 @@ function buildInitialPreviewMessages(
   description: string,
   questions: PreviewQuestion[],
   includePlainDescription: boolean,
+  showTargetRect: boolean,
 ): GameChatHistoryMessage[] {
   const messages: GameChatHistoryMessage[] =
     includePlainDescription && description
@@ -236,7 +247,7 @@ function buildInitialPreviewMessages(
       : []
   const first = questions[0]
   if (!first) return imageSrc ? [...messages, buildPreviewImageMessage(nodeId, imageSrc)] : messages
-  return [...messages, buildPreviewQuestionMessage(nodeId, imageSrc, first, 0)]
+  return [...messages, buildPreviewQuestionMessage(nodeId, imageSrc, first, 0, showTargetRect)]
 }
 
 function getQuestionIndexFromMessageId(messageId: string): number | null {
@@ -262,6 +273,7 @@ export function useImagePinGame({
   nodeId,
   nodeData,
   suppressPerAnswerConfetti = false,
+  showTargetRect = false,
 }: UseImagePinGameArgs) {
   const { t } = useTranslation('features.gameStudio')
   const imageSrc = getPreviewImageSrc(nodeData)
@@ -293,10 +305,11 @@ export function useImagePinGame({
         description,
         questions,
         !showLexicalDescription,
+        showTargetRect,
       ),
       questionIndex: 0,
     }),
-    [description, imageSrc, nodeId, questions, showLexicalDescription],
+    [description, imageSrc, nodeId, questions, showLexicalDescription, showTargetRect],
   )
 
   const [state, setState] = useState<PreviewState>(() => initialState)
@@ -552,7 +565,13 @@ export function useImagePinGame({
                 ...prev,
                 messages: [
                   ...prev.messages,
-                  buildPreviewQuestionMessage(nodeId, imageSrc, nextQuestion, prev.questionIndex),
+                  buildPreviewQuestionMessage(
+                    nodeId,
+                    imageSrc,
+                    nextQuestion,
+                    prev.questionIndex,
+                    showTargetRect,
+                  ),
                 ],
               }
             })
@@ -586,7 +605,13 @@ export function useImagePinGame({
                 ...prev,
                 messages: [
                   ...prev.messages,
-                  buildPreviewQuestionMessage(nodeId, imageSrc, nextQuestion, prev.questionIndex),
+                  buildPreviewQuestionMessage(
+                    nodeId,
+                    imageSrc,
+                    nextQuestion,
+                    prev.questionIndex,
+                    showTargetRect,
+                  ),
                 ],
               }
             })
@@ -637,6 +662,7 @@ export function useImagePinGame({
               questionForRetry,
               prev.questionIndex,
               thisAttempt,
+              showTargetRect,
             ),
           ],
         }))
