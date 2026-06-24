@@ -416,12 +416,18 @@ export function useImagePinGame({
         ...m,
         image: {
           ...m.image,
-          showTargetRect: false,
+          showTargetRect: Boolean(showTargetRect && isActiveQuestion && m.image.rect),
           ...(isActiveQuestion ? { droppableId: PIN_IMAGE_DROPPABLE_ID } : {}),
         },
       }
     })
-  }, [state.messages, latestQuestionMessageId, latestQuestionFromMessage, isLatestSubmitted])
+  }, [
+    isLatestSubmitted,
+    latestQuestionFromMessage,
+    latestQuestionMessageId,
+    showTargetRect,
+    state.messages,
+  ])
 
   const getSubmissionForMessage = (message: GameChatHistoryMessage): ImagePinSubmission | null => {
     return submissions[message.id] ?? null
