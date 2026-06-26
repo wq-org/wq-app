@@ -1,5 +1,4 @@
-import { MessagesSquare, X } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -9,14 +8,11 @@ import {
   DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Separator } from '@/components/ui/separator'
 import { Text } from '@/components/ui/text'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
-import { isPlatformMessagingChatEnabled } from '@/lib/platformFeatures'
 
 import type { ClassroomStudent } from '../types/classroom.types'
 import { getStudentDisplayLabel, getStudentInitial } from '../utils/classroomStudent.utils'
@@ -33,9 +29,7 @@ export function ClassroomStudentDialog({
   onOpenChange,
 }: ClassroomStudentDialogProps) {
   const { t } = useTranslation(['features.teacher', 'common'])
-  const navigate = useNavigate()
   const { url: avatarUrl } = useAvatarUrl(student?.avatarUrl)
-  const showChat = isPlatformMessagingChatEnabled()
 
   const displayLabel = student ? getStudentDisplayLabel(student) : ''
   const displayName = student?.displayName?.trim() || null
@@ -46,11 +40,6 @@ export function ClassroomStudentDialog({
     student?.description?.trim() ||
     student?.email?.trim() ||
     t('pages.classroomDetail.sections.studentsNoBio')
-
-  const handleOpenChat = () => {
-    onOpenChange(false)
-    navigate('/teacher/chat')
-  }
 
   return (
     <Dialog
@@ -122,28 +111,6 @@ export function ClassroomStudentDialog({
             </div>
           ) : null}
         </DialogHeader>
-
-        {showChat ? (
-          <>
-            <Separator />
-
-            <DialogFooter className="p-4 sm:justify-start">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-xl"
-                className="rounded-full"
-                aria-label={t('pages.classroomDetail.sections.studentsOpenChat')}
-                onClick={handleOpenChat}
-              >
-                <MessagesSquare
-                  className="size-5"
-                  aria-hidden
-                />
-              </Button>
-            </DialogFooter>
-          </>
-        ) : null}
       </DialogContent>
     </Dialog>
   )

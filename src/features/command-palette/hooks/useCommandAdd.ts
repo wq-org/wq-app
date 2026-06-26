@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { createCourse } from '@/features/course'
-import { createInstitution, getRoleRoutePrefix } from '@/features/auth'
+import { createInstitution } from '@/features/auth'
 import { createGameForStudio } from '@/features/game-studio'
 import { createTeacherClassroom } from '@/features/classroom'
 import { createNote } from '@/features/notes'
@@ -148,18 +148,6 @@ export function useCommandAdd({
         }
 
         toast.info(t('addDialog.toasts.noteEditorUnavailable'))
-        return
-      }
-
-      if (selectedType === 'task') {
-        const prefix = getRoleRoutePrefix(getRole())
-        reset()
-        onRequestClose?.()
-        if (prefix) {
-          navigate(`${prefix}/tasks`)
-          return
-        }
-        toast.info(t('addDialog.toasts.taskNotWired'))
         return
       }
     } catch (error) {

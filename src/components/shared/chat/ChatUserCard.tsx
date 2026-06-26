@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-import type { Contact } from '@/lib/chat-data'
+import type { Contact } from '@/components/shared/chat/types'
 
 type ChatUserCardProps = {
   contact: Contact

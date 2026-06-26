@@ -8,9 +8,7 @@ export type { StudentCardProps } from './types/student.types'
 export { Dashboard as StudentDashboard } from './pages/dashboard'
 export { StudentCloudPage } from './pages/cloud'
 export { StudentNotesPage } from './pages/notes'
-export { StudentTasksPage } from './pages/tasks'
 export { StudentSettingsPage } from './pages/settings'
-export { Chat as StudentChat } from './pages/chat'
 export { StudentViewPage } from './pages/view'
 export {
   StudentPublishedCourseGamePage,

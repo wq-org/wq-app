@@ -3,8 +3,7 @@
 -- Simplified to in-app delivery: one canonical event fact + one per-user inbox
 -- row carrying read/dismiss state. No channels, no preferences, no categories
 -- (removed for the minimal core; see the notification simplification note).
--- Requires: institutions, profiles, classrooms, course_deliveries,
---           task_deliveries, game_sessions, conversations.
+-- Requires: institutions, profiles, classrooms, course_deliveries, game_sessions.
 -- =============================================================================
 
 -- Replace any legacy notification tables (intentional migration-identity break).
@@ -26,9 +25,7 @@ CREATE TABLE public.notification_events (
   link_payload jsonb,
   classroom_id uuid REFERENCES public.classrooms (id) ON DELETE SET NULL,
   course_delivery_id uuid REFERENCES public.course_deliveries (id) ON DELETE SET NULL,
-  task_delivery_id uuid REFERENCES public.task_deliveries (id) ON DELETE SET NULL,
   game_session_id uuid REFERENCES public.game_sessions (id) ON DELETE SET NULL,
-  conversation_id uuid REFERENCES public.conversations (id) ON DELETE SET NULL,
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
@@ -41,9 +38,7 @@ COMMENT ON COLUMN public.notification_events.dedupe_key IS 'Optional stable key 
 COMMENT ON COLUMN public.notification_events.link_payload IS 'UI routing only (route, tab, anchor).';
 COMMENT ON COLUMN public.notification_events.classroom_id IS 'Optional classroom scope for deep links.';
 COMMENT ON COLUMN public.notification_events.course_delivery_id IS 'Optional course delivery scope.';
-COMMENT ON COLUMN public.notification_events.task_delivery_id IS 'Optional task delivery scope.';
 COMMENT ON COLUMN public.notification_events.game_session_id IS 'Optional game session scope.';
-COMMENT ON COLUMN public.notification_events.conversation_id IS 'Optional chat thread scope.';
 
 -- -----------------------------------------------------------------------------
 -- user_notifications — one row per recipient (in-app inbox + read/dismiss state)

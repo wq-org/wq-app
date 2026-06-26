@@ -55,8 +55,6 @@ DECLARE
   v_classroom_id   uuid;
   v_course_id      uuid;
   v_lesson_id      uuid;
-  v_task_id        uuid;
-  v_conversation_id uuid;
   v_game_version_id uuid;
 BEGIN
   -- 1) Authorization: re-check the manager predicate that the cloud_files
@@ -79,13 +77,10 @@ BEGIN
     cf.classroom_id,
     cf.course_id,
     cf.lesson_id,
-    cf.task_id,
-    cf.conversation_id,
     cf.game_version_id
   INTO
     v_institution_id, v_scope, v_mime_type, v_size_bytes, v_status,
-    v_folder_id, v_classroom_id, v_course_id, v_lesson_id, v_task_id,
-    v_conversation_id, v_game_version_id
+    v_folder_id, v_classroom_id, v_course_id, v_lesson_id, v_game_version_id
   FROM public.cloud_files cf
   WHERE cf.id = p_cloud_file_id;
 
@@ -117,8 +112,6 @@ BEGIN
         'classroom_id',    v_classroom_id,
         'course_id',       v_course_id,
         'lesson_id',       v_lesson_id,
-        'task_id',         v_task_id,
-        'conversation_id', v_conversation_id,
         'game_version_id', v_game_version_id
       ),
       'changed_fields',   '["hard_deleted"]'::jsonb,

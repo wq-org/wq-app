@@ -1,9 +1,8 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { AvatarFallback, AvatarImage, Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { MessageCircle, Search, X } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,7 +13,6 @@ import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { DEFAULT_INSTITUTION_IMAGE } from '@/lib/constants'
-import { isPlatformMessagingChatEnabled } from '@/lib/platformFeatures'
 import { CommandPaletteContentEnter, CommandPaletteMotionShell } from './CommandPaletteMotionShell'
 
 const ROLE_LABEL_KEY_MAP: Record<SearchItem['type'], string> = {
@@ -45,9 +43,6 @@ export function CommandSearch() {
   const [searchQuery, setSearchQuery] = useState('')
   const { items, loading } = useSearchItems()
   const { t } = useTranslation(['common', 'features.commandPalette'])
-  const navigate = useNavigate()
-  const showChat = isPlatformMessagingChatEnabled()
-
   const filtered = useMemo(() => {
     const currentSearchQuery = searchQuery.trim().toLowerCase()
     if (!currentSearchQuery) return items
@@ -60,10 +55,6 @@ export function CommandSearch() {
       return emailMatch || usernameMatch || titleMatch
     })
   }, [searchQuery, items])
-
-  const handleOpenTeacherChat = () => {
-    navigate('/teacher/chat')
-  }
 
   const resultsKey = loading ? 'loading' : filtered.length > 0 ? 'results' : 'empty'
 
@@ -138,22 +129,6 @@ export function CommandSearch() {
                         {t(ROLE_LABEL_KEY_MAP[item.type])}
                       </Badge>
                     </div>
-                    {showChat ? (
-                      <Dialog.Close asChild>
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          size="icon"
-                          className="shrink-0"
-                          aria-label={t('search.openTeacherChat', {
-                            ns: 'features.commandPalette',
-                          })}
-                          onClick={handleOpenTeacherChat}
-                        >
-                          <MessageCircle className="h-4 w-4" />
-                        </Button>
-                      </Dialog.Close>
-                    ) : null}
                   </div>
                 </Card>
               ))}

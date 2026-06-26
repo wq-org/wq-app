@@ -11,7 +11,6 @@ import {
   Search as SearchIcon,
   Upload,
   Building2,
-  ListTodo,
   NotebookPen,
   StickyNote,
   UserRoundPlus,
@@ -72,13 +71,6 @@ export const ADD_OPTIONS = [
     icon: StickyNote,
     availableForRoles: ['super_admin', 'institution_admin', 'teacher', 'student'] as const,
   },
-  {
-    type: 'task' as const,
-    labelKey: 'addDialog.options.task.label',
-    descriptionKey: 'addDialog.options.task.description',
-    icon: ListTodo,
-    availableForRoles: ['super_admin', 'institution_admin', 'teacher'] as const,
-  },
 ] satisfies readonly AddOption[]
 
 export const TYPE_LABEL_KEYS: Record<AddType, string> = {
@@ -89,7 +81,6 @@ export const TYPE_LABEL_KEYS: Record<AddType, string> = {
   inviteStudent: 'addDialog.types.inviteStudent',
   node: 'addDialog.types.node',
   note: 'addDialog.types.note',
-  task: 'addDialog.types.task',
   attendance: 'actions.attendance',
 }
 

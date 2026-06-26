@@ -36,8 +36,6 @@ BEGIN
   NEW.classroom_id := folder_row.classroom_id;
   NEW.course_id := folder_row.course_id;
   NEW.lesson_id := folder_row.lesson_id;
-  NEW.task_id := folder_row.task_id;
-  NEW.conversation_id := folder_row.conversation_id;
   NEW.game_version_id := folder_row.game_version_id;
 
   RETURN NEW;
@@ -103,8 +101,6 @@ SET search_path = public, auth, pg_temp
 AS $$
 DECLARE
   c_inst uuid;
-  t_inst uuid;
-  conv_inst uuid;
   gv_inst uuid;
   course_from_lesson uuid;
 BEGIN
@@ -129,28 +125,6 @@ BEGIN
 
     IF course_from_lesson IS NOT NULL AND course_from_lesson IS DISTINCT FROM NEW.institution_id THEN
       RAISE EXCEPTION 'cloud file lesson institution mismatch';
-    END IF;
-  END IF;
-
-  IF NEW.task_id IS NOT NULL THEN
-    SELECT td.institution_id
-    INTO t_inst
-    FROM public.task_deliveries td
-    WHERE td.id = NEW.task_id;
-
-    IF t_inst IS DISTINCT FROM NEW.institution_id THEN
-      RAISE EXCEPTION 'cloud file task institution mismatch';
-    END IF;
-  END IF;
-
-  IF NEW.conversation_id IS NOT NULL THEN
-    SELECT conv.institution_id
-    INTO conv_inst
-    FROM public.conversations conv
-    WHERE conv.id = NEW.conversation_id;
-
-    IF conv_inst IS DISTINCT FROM NEW.institution_id THEN
-      RAISE EXCEPTION 'cloud file conversation institution mismatch';
     END IF;
   END IF;
 
@@ -180,8 +154,6 @@ AS $$
 DECLARE
   c_inst uuid;
   course_from_lesson uuid;
-  t_inst uuid;
-  conv_inst uuid;
   gv_inst uuid;
 BEGIN
   IF NEW.course_id IS NOT NULL THEN
@@ -205,28 +177,6 @@ BEGIN
 
     IF course_from_lesson IS NOT NULL AND course_from_lesson IS DISTINCT FROM NEW.institution_id THEN
       RAISE EXCEPTION 'cloud folder lesson institution mismatch';
-    END IF;
-  END IF;
-
-  IF NEW.task_id IS NOT NULL THEN
-    SELECT td.institution_id
-    INTO t_inst
-    FROM public.task_deliveries td
-    WHERE td.id = NEW.task_id;
-
-    IF t_inst IS DISTINCT FROM NEW.institution_id THEN
-      RAISE EXCEPTION 'cloud folder task institution mismatch';
-    END IF;
-  END IF;
-
-  IF NEW.conversation_id IS NOT NULL THEN
-    SELECT conv.institution_id
-    INTO conv_inst
-    FROM public.conversations conv
-    WHERE conv.id = NEW.conversation_id;
-
-    IF conv_inst IS DISTINCT FROM NEW.institution_id THEN
-      RAISE EXCEPTION 'cloud folder conversation institution mismatch';
     END IF;
   END IF;
 

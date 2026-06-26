@@ -132,31 +132,8 @@ BEGIN
         OR (SELECT app.student_can_access_course(cf.course_id));
     WHEN 'lesson'::public.cloud_file_scope THEN
       RETURN (SELECT app.student_can_access_lesson(cf.lesson_id));
-    WHEN 'task'::public.cloud_file_scope THEN
-      RETURN EXISTS (
-        SELECT 1
-        FROM public.task_deliveries td
-        WHERE td.id = cf.task_id
-          AND td.teacher_id = uid
-      )
-      OR EXISTS (
-        SELECT 1
-        FROM public.task_deliveries td
-        WHERE td.id = cf.task_id
-          AND td.status <> 'draft'::public.task_delivery_status
-          AND td.deleted_at IS NULL
-          AND td.classroom_id IN (SELECT app.list_active_classroom_ids())
-      );
     WHEN 'game'::public.cloud_file_scope THEN
       RETURN (SELECT app.user_can_select_game_version(cf.game_version_id));
-    WHEN 'chat'::public.cloud_file_scope THEN
-      RETURN EXISTS (
-        SELECT 1
-        FROM public.conversation_members cm
-        WHERE cm.conversation_id = cf.conversation_id
-          AND cm.user_id = uid
-          AND cm.left_at IS NULL
-      );
     ELSE
       RETURN false;
   END CASE;
@@ -279,31 +256,8 @@ BEGIN
         OR (SELECT app.student_can_access_course(fd.course_id));
     WHEN 'lesson'::public.cloud_file_scope THEN
       RETURN (SELECT app.student_can_access_lesson(fd.lesson_id));
-    WHEN 'task'::public.cloud_file_scope THEN
-      RETURN EXISTS (
-        SELECT 1
-        FROM public.task_deliveries td
-        WHERE td.id = fd.task_id
-          AND td.teacher_id = uid
-      )
-      OR EXISTS (
-        SELECT 1
-        FROM public.task_deliveries td
-        WHERE td.id = fd.task_id
-          AND td.status <> 'draft'::public.task_delivery_status
-          AND td.deleted_at IS NULL
-          AND td.classroom_id IN (SELECT app.list_active_classroom_ids())
-      );
     WHEN 'game'::public.cloud_file_scope THEN
       RETURN (SELECT app.user_can_select_game_version(fd.game_version_id));
-    WHEN 'chat'::public.cloud_file_scope THEN
-      RETURN EXISTS (
-        SELECT 1
-        FROM public.conversation_members cm
-        WHERE cm.conversation_id = fd.conversation_id
-          AND cm.user_id = uid
-          AND cm.left_at IS NULL
-      );
     ELSE
       RETURN false;
   END CASE;
@@ -366,13 +320,6 @@ BEGIN
         WHERE l.id = fd.lesson_id
           AND c.teacher_id = uid
       );
-    WHEN 'task'::public.cloud_file_scope THEN
-      RETURN EXISTS (
-        SELECT 1
-        FROM public.task_deliveries td
-        WHERE td.id = fd.task_id
-          AND td.teacher_id = uid
-      );
     WHEN 'game'::public.cloud_file_scope THEN
       RETURN EXISTS (
         SELECT 1
@@ -380,13 +327,6 @@ BEGIN
         JOIN public.games g ON g.id = gv.game_id
         WHERE gv.id = fd.game_version_id
           AND g.teacher_id = uid
-      );
-    WHEN 'chat'::public.cloud_file_scope THEN
-      RETURN EXISTS (
-        SELECT 1
-        FROM public.conversations conv
-        WHERE conv.id = fd.conversation_id
-          AND conv.created_by = uid
       );
     ELSE
       RETURN false;
@@ -468,8 +408,6 @@ CREATE OR REPLACE FUNCTION public.register_cloud_file_record(
   p_classroom_id uuid DEFAULT NULL,
   p_course_id uuid DEFAULT NULL,
   p_lesson_id uuid DEFAULT NULL,
-  p_task_id uuid DEFAULT NULL,
-  p_conversation_id uuid DEFAULT NULL,
   p_game_version_id uuid DEFAULT NULL
 )
 RETURNS public.cloud_files
@@ -485,8 +423,6 @@ DECLARE
   v_classroom_id uuid;
   v_course_id uuid;
   v_lesson_id uuid;
-  v_task_id uuid;
-  v_conversation_id uuid;
   v_game_version_id uuid;
   cap_bytes bigint;
   used_bytes bigint;
@@ -548,16 +484,12 @@ BEGIN
     v_classroom_id := folder_row.classroom_id;
     v_course_id := folder_row.course_id;
     v_lesson_id := folder_row.lesson_id;
-    v_task_id := folder_row.task_id;
-    v_conversation_id := folder_row.conversation_id;
     v_game_version_id := folder_row.game_version_id;
   ELSE
     v_scope := p_scope;
     v_classroom_id := p_classroom_id;
     v_course_id := p_course_id;
     v_lesson_id := p_lesson_id;
-    v_task_id := p_task_id;
-    v_conversation_id := p_conversation_id;
     v_game_version_id := p_game_version_id;
   END IF;
 
@@ -572,8 +504,6 @@ BEGIN
     classroom_id,
     course_id,
     lesson_id,
-    task_id,
-    conversation_id,
     game_version_id,
     mime_type,
     size_bytes,
@@ -593,8 +523,6 @@ BEGIN
     v_classroom_id,
     v_course_id,
     v_lesson_id,
-    v_task_id,
-    v_conversation_id,
     v_game_version_id,
     p_mime_type,
     p_size_bytes,
@@ -620,8 +548,6 @@ REVOKE ALL ON FUNCTION public.register_cloud_file_record(
   uuid,
   uuid,
   uuid,
-  uuid,
-  uuid,
   uuid
 ) FROM public;
 GRANT EXECUTE ON FUNCTION public.register_cloud_file_record(
@@ -631,8 +557,6 @@ GRANT EXECUTE ON FUNCTION public.register_cloud_file_record(
   text,
   bigint,
   text,
-  uuid,
-  uuid,
   uuid,
   uuid,
   uuid,
@@ -646,8 +570,6 @@ COMMENT ON FUNCTION public.register_cloud_file_record(
   text,
   bigint,
   text,
-  uuid,
-  uuid,
   uuid,
   uuid,
   uuid,

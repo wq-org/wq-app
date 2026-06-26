@@ -26,10 +26,7 @@ import {
   DraftingCompass,
   Joystick,
   LampDesk,
-  LayoutList,
   LibraryBig,
-  ListChecks,
-  ListTodo,
   SplinePointer,
 } from 'lucide-react'
 
@@ -71,15 +68,6 @@ const Dashboard = () => {
     [t],
   )
 
-  const taskFilterTabs: TabItem[] = useMemo(
-    () => [
-      { id: 'all', title: t('dashboard.filterTabs.all'), icon: ListTodo },
-      { id: 'published', title: t('dashboard.filterTabs.published'), icon: ListChecks },
-      { id: 'drafts', title: t('dashboard.filterTabs.drafts'), icon: LayoutList },
-    ],
-    [t],
-  )
-
   const {
     rows: teacherClassrooms,
     loading: classroomsLoading,
@@ -99,7 +87,6 @@ const Dashboard = () => {
 
   const [activeCourseTabId, setActiveCourseTabId] = useState<string>(DEFAULT_FILTER_TAB_ID)
   const [activeGameTabId, setActiveGameTabId] = useState<string>(DEFAULT_FILTER_TAB_ID)
-  const [activeTaskTabId, setActiveTaskTabId] = useState<string>(DEFAULT_FILTER_TAB_ID)
 
   useEffect(() => {
     if (!profile?.user_id) return
@@ -179,15 +166,6 @@ const Dashboard = () => {
     }
   }, [gameProjectsError, t])
 
-  const tasksByFilter = useMemo(() => {
-    const all: { id: string; title: string; status: 'draft' | 'published' }[] = []
-    return {
-      all,
-      published: all.filter((task) => task.status === 'published'),
-      drafts: all.filter((task) => task.status === 'draft'),
-    } as const
-  }, [])
-
   const handleCourseView = (id: string) => {
     navigate(`/teacher/course/${id}`)
   }
@@ -202,10 +180,6 @@ const Dashboard = () => {
 
   const handleGameTabChange = (tabId: string) => {
     setActiveGameTabId(tabId)
-  }
-
-  const handleTaskTabChange = (tabId: string) => {
-    setActiveTaskTabId(tabId)
   }
 
   return (
@@ -369,58 +343,6 @@ const Dashboard = () => {
               )}
             </DashboardSection>
           </div>
-        </div>
-
-        <div className="flex w-full min-w-0">
-          <DashboardSection
-            title="Tasks"
-            classNameContainer="h-55.5 max-h-80 min-h-0"
-            icon={ListTodo}
-            showExpandButton
-            expandTo="/teacher/tasks"
-            showContainerBorder
-          >
-            <>
-              <SelectTabs
-                variant="compact"
-                tabs={taskFilterTabs}
-                activeTabId={activeTaskTabId}
-                onTabChange={handleTaskTabChange}
-              />
-              {taskFilterTabs.map((tab) => {
-                const tabTasks =
-                  tab.id === 'all'
-                    ? tasksByFilter.all
-                    : tab.id === 'published'
-                      ? tasksByFilter.published
-                      : tasksByFilter.drafts
-
-                return (
-                  <SelectTabsContent
-                    key={tab.id}
-                    tabId={tab.id}
-                    activeTabId={activeTaskTabId}
-                    className="mt-2 min-h-0 px-0"
-                  >
-                    {tabTasks.length === 0 ? (
-                      <p className="text-sm text-muted-foreground">{t('dashboard.tasks.empty')}</p>
-                    ) : (
-                      <ul className="space-y-2">
-                        {tabTasks.map((task) => (
-                          <li
-                            key={task.id}
-                            className="truncate text-sm text-foreground"
-                          >
-                            {task.title}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </SelectTabsContent>
-                )
-              })}
-            </>
-          </DashboardSection>
         </div>
       </main>
     </AppShell>
