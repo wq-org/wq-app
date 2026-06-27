@@ -24,10 +24,7 @@ export function CommandAddForm({ t, state }: CommandAddFormProps) {
     state.selectedType === 'course' ||
     state.selectedType === 'game' ||
     state.selectedType === 'note'
-  const descriptionOptional =
-    state.selectedType === 'classroom' ||
-    state.selectedType === 'note' ||
-    state.selectedType === 'task'
+  const descriptionOptional = state.selectedType === 'classroom' || state.selectedType === 'note'
   const canSubmit =
     Boolean(state.title.trim()) &&
     (descriptionOptional || Boolean(state.description.trim())) &&

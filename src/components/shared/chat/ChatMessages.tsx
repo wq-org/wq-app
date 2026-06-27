@@ -4,7 +4,7 @@ import type {
   ChatBubbleVariant,
 } from '@/components/shared/chat/chat-bubble-variants'
 import type { ChatHistoryMessage } from '@/components/shared/chat/types'
-import type { Message } from '@/lib/chat-data'
+import type { Message } from '@/components/shared/chat/types'
 
 interface ChatMessagesProps {
   messages: Message[]

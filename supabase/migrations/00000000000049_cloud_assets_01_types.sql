@@ -2,8 +2,6 @@
 -- CLOUD ASSETS — types
 -- Requires: 20260321000002_institution_admin (all parts),
 --           20260323000002_classroom_course_links_lesson_progress (all parts),
---           20260323000004_tasks_notes (all parts),
---           20260000000055_chat (all parts),
 --           20260326000003_game_versions (all parts)
 -- =============================================================================
 
@@ -14,9 +12,7 @@ BEGIN
     'classroom',
     'course',
     'lesson',
-    'task',
     'game',
-    'chat',
     'institution'
   );
 EXCEPTION
@@ -46,13 +42,11 @@ DO $$
 BEGIN
   CREATE TYPE public.cloud_file_link_entity_type AS ENUM (
     'lesson',
-    'task',
     'note',
     'message',
     'game_version',
     'classroom',
-    'course',
-    'conversation'
+    'course'
   );
 EXCEPTION
   WHEN duplicate_object THEN NULL;

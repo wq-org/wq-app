@@ -20,14 +20,11 @@ import { LegalPage } from './user/pages/legal'
 import { MissionVisionPage } from './user/pages/mission-vision'
 import { DocsPage } from './user/pages/docs'
 import ChangelogPage from './user/pages/changelog'
-import { isPlatformMessagingChatEnabled } from '@/lib/platformFeatures'
 import {
   StudentDashboard,
   StudentSettingsPage,
-  StudentChat,
   StudentCloudPage,
   StudentNotesPage,
-  StudentTasksPage,
   StudentViewPage,
   StudentGameHistoryPage,
   StudentPublishedCourseGamePage,
@@ -43,10 +40,8 @@ import {
   TeacherSettingsPage,
   TeacherLicensePage,
   GameStudio,
-  TeacherChat,
   TeacherCloudPage,
   TeacherNotesPage,
-  TeacherTasksPage,
   TeacherViewPage,
   ClassroomGamePlayPage,
   ClassroomPublishedCoursePage,
@@ -696,23 +691,6 @@ const App = () => {
                   }
                 />
                 <Route
-                  path="chat"
-                  element={
-                    isPlatformMessagingChatEnabled() ? (
-                      <RequireAuth>
-                        <RequireOnboarding>
-                          <TeacherChat />
-                        </RequireOnboarding>
-                      </RequireAuth>
-                    ) : (
-                      <Navigate
-                        to="/teacher/dashboard"
-                        replace
-                      />
-                    )
-                  }
-                />
-                <Route
                   path="cloud"
                   element={
                     <RequireAuth>
@@ -747,16 +725,6 @@ const App = () => {
                     <RequireAuth>
                       <RequireOnboarding>
                         <TeacherNotesPage />
-                      </RequireOnboarding>
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="tasks"
-                  element={
-                    <RequireAuth>
-                      <RequireOnboarding>
-                        <TeacherTasksPage />
                       </RequireOnboarding>
                     </RequireAuth>
                   }
@@ -1144,23 +1112,6 @@ const App = () => {
                   }
                 />
                 <Route
-                  path="chat"
-                  element={
-                    isPlatformMessagingChatEnabled() ? (
-                      <RequireAuth>
-                        <RequireOnboarding>
-                          <StudentChat />
-                        </RequireOnboarding>
-                      </RequireAuth>
-                    ) : (
-                      <Navigate
-                        to="/student/dashboard"
-                        replace
-                      />
-                    )
-                  }
-                />
-                <Route
                   path="cloud"
                   element={
                     <RequireAuth>
@@ -1195,16 +1146,6 @@ const App = () => {
                     <RequireAuth>
                       <RequireOnboarding>
                         <StudentNotesPage />
-                      </RequireOnboarding>
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="tasks"
-                  element={
-                    <RequireAuth>
-                      <RequireOnboarding>
-                        <StudentTasksPage />
                       </RequireOnboarding>
                     </RequireAuth>
                   }

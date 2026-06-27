@@ -10,7 +10,7 @@ import {
   SidebarGroupContent,
   SidebarHeader,
 } from '@/components/ui/sidebar'
-import type { Contact } from '@/lib/chat-data'
+import type { Contact } from '@/components/shared/chat/types'
 
 interface AppSidebarProps {
   contacts: Contact[]

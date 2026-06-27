@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { SidebarContext } from '@/components/ui/sidebarContext'
 import { ChatHeaderActionsPopover } from '@/components/shared/chat/ChatHeaderActionsPopover'
 import { cn } from '@/lib/utils'
-import type { Contact } from '@/lib/chat-data'
+import type { Contact } from '@/components/shared/chat/types'
 
 interface ChatHeaderProps {
   contact: Contact | null

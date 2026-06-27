@@ -24,19 +24,3 @@ CREATE INDEX idx_course_deliveries_course_version_id ON public.course_deliveries
 CREATE INDEX idx_course_deliveries_status ON public.course_deliveries (status);
 CREATE INDEX idx_course_deliveries_published_at ON public.course_deliveries (published_at)
   WHERE published_at IS NOT NULL;
-
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1
-    FROM information_schema.table_constraints
-    WHERE table_schema = 'public'
-      AND table_name = 'task_deliveries'
-      AND constraint_name = 'fk_task_deliveries_course_deliveries'
-  ) THEN
-    ALTER TABLE public.task_deliveries
-      ADD CONSTRAINT fk_task_deliveries_course_deliveries
-      FOREIGN KEY (course_delivery_id) REFERENCES public.course_deliveries (id) ON DELETE SET NULL;
-  END IF;
-END;
-$$;

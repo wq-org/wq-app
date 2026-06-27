@@ -16,8 +16,6 @@ CREATE TABLE public.cloud_folders (
   classroom_id uuid,
   course_id uuid,
   lesson_id uuid REFERENCES public.lessons (id) ON DELETE CASCADE,
-  task_id uuid REFERENCES public.task_deliveries (id) ON DELETE CASCADE,
-  conversation_id uuid REFERENCES public.conversations (id) ON DELETE CASCADE,
   game_version_id uuid REFERENCES public.game_versions (id) ON DELETE CASCADE,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now(),
@@ -39,8 +37,6 @@ CREATE TABLE public.cloud_folders (
       AND classroom_id IS NULL
       AND course_id IS NULL
       AND lesson_id IS NULL
-      AND task_id IS NULL
-      AND conversation_id IS NULL
       AND game_version_id IS NULL
     )
     OR (
@@ -48,8 +44,6 @@ CREATE TABLE public.cloud_folders (
       AND classroom_id IS NULL
       AND course_id IS NULL
       AND lesson_id IS NULL
-      AND task_id IS NULL
-      AND conversation_id IS NULL
       AND game_version_id IS NULL
     )
     OR (
@@ -57,8 +51,6 @@ CREATE TABLE public.cloud_folders (
       AND classroom_id IS NOT NULL
       AND course_id IS NULL
       AND lesson_id IS NULL
-      AND task_id IS NULL
-      AND conversation_id IS NULL
       AND game_version_id IS NULL
     )
     OR (
@@ -66,8 +58,6 @@ CREATE TABLE public.cloud_folders (
       AND course_id IS NOT NULL
       AND classroom_id IS NULL
       AND lesson_id IS NULL
-      AND task_id IS NULL
-      AND conversation_id IS NULL
       AND game_version_id IS NULL
     )
     OR (
@@ -75,17 +65,6 @@ CREATE TABLE public.cloud_folders (
       AND lesson_id IS NOT NULL
       AND classroom_id IS NULL
       AND course_id IS NULL
-      AND task_id IS NULL
-      AND conversation_id IS NULL
-      AND game_version_id IS NULL
-    )
-    OR (
-      scope = 'task'::public.cloud_file_scope
-      AND task_id IS NOT NULL
-      AND classroom_id IS NULL
-      AND course_id IS NULL
-      AND lesson_id IS NULL
-      AND conversation_id IS NULL
       AND game_version_id IS NULL
     )
     OR (
@@ -94,17 +73,6 @@ CREATE TABLE public.cloud_folders (
       AND classroom_id IS NULL
       AND course_id IS NULL
       AND lesson_id IS NULL
-      AND task_id IS NULL
-      AND conversation_id IS NULL
-    )
-    OR (
-      scope = 'chat'::public.cloud_file_scope
-      AND conversation_id IS NOT NULL
-      AND classroom_id IS NULL
-      AND course_id IS NULL
-      AND lesson_id IS NULL
-      AND task_id IS NULL
-      AND game_version_id IS NULL
     )
   )
 );
@@ -130,8 +98,6 @@ CREATE TABLE public.cloud_files (
   classroom_id uuid,
   course_id uuid,
   lesson_id uuid REFERENCES public.lessons (id) ON DELETE CASCADE,
-  task_id uuid REFERENCES public.task_deliveries (id) ON DELETE CASCADE,
-  conversation_id uuid REFERENCES public.conversations (id) ON DELETE CASCADE,
   game_version_id uuid REFERENCES public.game_versions (id) ON DELETE CASCADE,
   mime_type text,
   size_bytes bigint NOT NULL DEFAULT 0,
@@ -158,8 +124,6 @@ CREATE TABLE public.cloud_files (
       AND classroom_id IS NULL
       AND course_id IS NULL
       AND lesson_id IS NULL
-      AND task_id IS NULL
-      AND conversation_id IS NULL
       AND game_version_id IS NULL
     )
     OR (
@@ -167,8 +131,6 @@ CREATE TABLE public.cloud_files (
       AND classroom_id IS NULL
       AND course_id IS NULL
       AND lesson_id IS NULL
-      AND task_id IS NULL
-      AND conversation_id IS NULL
       AND game_version_id IS NULL
     )
     OR (
@@ -176,8 +138,6 @@ CREATE TABLE public.cloud_files (
       AND classroom_id IS NOT NULL
       AND course_id IS NULL
       AND lesson_id IS NULL
-      AND task_id IS NULL
-      AND conversation_id IS NULL
       AND game_version_id IS NULL
     )
     OR (
@@ -185,8 +145,6 @@ CREATE TABLE public.cloud_files (
       AND course_id IS NOT NULL
       AND classroom_id IS NULL
       AND lesson_id IS NULL
-      AND task_id IS NULL
-      AND conversation_id IS NULL
       AND game_version_id IS NULL
     )
     OR (
@@ -194,17 +152,6 @@ CREATE TABLE public.cloud_files (
       AND lesson_id IS NOT NULL
       AND classroom_id IS NULL
       AND course_id IS NULL
-      AND task_id IS NULL
-      AND conversation_id IS NULL
-      AND game_version_id IS NULL
-    )
-    OR (
-      scope = 'task'::public.cloud_file_scope
-      AND task_id IS NOT NULL
-      AND classroom_id IS NULL
-      AND course_id IS NULL
-      AND lesson_id IS NULL
-      AND conversation_id IS NULL
       AND game_version_id IS NULL
     )
     OR (
@@ -213,17 +160,6 @@ CREATE TABLE public.cloud_files (
       AND classroom_id IS NULL
       AND course_id IS NULL
       AND lesson_id IS NULL
-      AND task_id IS NULL
-      AND conversation_id IS NULL
-    )
-    OR (
-      scope = 'chat'::public.cloud_file_scope
-      AND conversation_id IS NOT NULL
-      AND classroom_id IS NULL
-      AND course_id IS NULL
-      AND lesson_id IS NULL
-      AND task_id IS NULL
-      AND game_version_id IS NULL
     )
   )
 );

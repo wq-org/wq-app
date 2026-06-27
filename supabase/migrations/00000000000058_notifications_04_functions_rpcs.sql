@@ -32,9 +32,7 @@ CREATE OR REPLACE FUNCTION public.emit_notification(
   p_link_payload jsonb DEFAULT NULL,
   p_classroom_id uuid DEFAULT NULL,
   p_course_delivery_id uuid DEFAULT NULL,
-  p_task_delivery_id uuid DEFAULT NULL,
-  p_game_session_id uuid DEFAULT NULL,
-  p_conversation_id uuid DEFAULT NULL
+  p_game_session_id uuid DEFAULT NULL
 )
 RETURNS uuid
 LANGUAGE plpgsql
@@ -69,9 +67,7 @@ BEGIN
     link_payload,
     classroom_id,
     course_delivery_id,
-    task_delivery_id,
-    game_session_id,
-    conversation_id
+    game_session_id
   )
   VALUES (
     p_institution_id,
@@ -83,9 +79,7 @@ BEGIN
     p_link_payload,
     p_classroom_id,
     p_course_delivery_id,
-    p_task_delivery_id,
-    p_game_session_id,
-    p_conversation_id
+    p_game_session_id
   )
   RETURNING id INTO v_event_id;
 
@@ -102,11 +96,11 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.emit_notification(uuid, text, text, text, uuid[], uuid, text, jsonb, uuid, uuid, uuid, uuid, uuid) IS
+COMMENT ON FUNCTION public.emit_notification(uuid, text, text, text, uuid[], uuid, text, jsonb, uuid, uuid, uuid) IS
   'Creates a notification_event plus one in-app user_notifications row per recipient; returns the existing event id when dedupe_key matches.';
 
-REVOKE ALL ON FUNCTION public.emit_notification(uuid, text, text, text, uuid[], uuid, text, jsonb, uuid, uuid, uuid, uuid, uuid) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.emit_notification(uuid, text, text, text, uuid[], uuid, text, jsonb, uuid, uuid, uuid, uuid, uuid) TO authenticated;
+REVOKE ALL ON FUNCTION public.emit_notification(uuid, text, text, text, uuid[], uuid, text, jsonb, uuid, uuid, uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.emit_notification(uuid, text, text, text, uuid[], uuid, text, jsonb, uuid, uuid, uuid) TO authenticated;
 
 -- -----------------------------------------------------------------------------
 -- Audit — notification_events lifecycle only

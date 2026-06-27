@@ -97,8 +97,6 @@ BEGIN
         'classroom_id',    COALESCE(NEW.classroom_id, OLD.classroom_id),
         'course_id',       COALESCE(NEW.course_id, OLD.course_id),
         'lesson_id',       COALESCE(NEW.lesson_id, OLD.lesson_id),
-        'task_id',         COALESCE(NEW.task_id, OLD.task_id),
-        'conversation_id', COALESCE(NEW.conversation_id, OLD.conversation_id),
         'game_version_id', COALESCE(NEW.game_version_id, OLD.game_version_id)
       ),
       'changed_fields', CASE

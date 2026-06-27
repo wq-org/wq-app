@@ -95,5 +95,4 @@ export type AddType =
   | 'inviteStudent'
   | 'node'
   | 'note'
-  | 'task'
   | 'attendance'

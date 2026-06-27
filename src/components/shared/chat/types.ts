@@ -5,6 +5,27 @@ import type { ChatBubbleRounded, ChatBubbleVariant } from './chat-bubble-variant
 
 export type ChatMessageStatus = 'loading' | 'ready'
 
+/** Legacy messaging sidebar contact row (demo / test UI only). */
+export type Contact = {
+  id: string
+  name: string
+  initials: string
+  online: boolean
+  time: string
+  lastMessage: string
+  unread: number
+}
+
+/** Legacy messaging thread message (demo / test UI only). */
+export type Message = {
+  id: string
+  text: string
+  time: string
+  isMe: boolean
+  images?: string[]
+  status?: ChatMessageStatus
+}
+
 export type ChatHistoryMessageDirection = 'receiving' | 'sending'
 
 export type ChatMessageContentMode = 'text' | 'lexical'

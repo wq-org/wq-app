@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { BookOpen, ClipboardList, GraduationCap } from 'lucide-react'
+import { BookOpen, GraduationCap } from 'lucide-react'
 
 import { AppShell } from '@/components/layout'
 import { LoadingPage } from '@/components/shared'
@@ -118,25 +118,6 @@ export function Dashboard() {
               className="gap-2"
             />
           )}
-        </DashboardSection>
-
-        <DashboardSection
-          title={t('dashboard.sections.tasks.title')}
-          icon={ClipboardList}
-          classNameContainer="min-h-16"
-          showContainerBorder
-        >
-          <Empty className="border-none p-2 md:p-4">
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <ClipboardList className="size-5" />
-              </EmptyMedia>
-              <EmptyTitle className="text-sm font-medium">
-                {t('dashboard.sections.tasks.emptyTitle')}
-              </EmptyTitle>
-              <EmptyDescription>{t('dashboard.sections.tasks.emptyDescription')}</EmptyDescription>
-            </EmptyHeader>
-          </Empty>
         </DashboardSection>
 
         <DashboardSection
