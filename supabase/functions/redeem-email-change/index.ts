@@ -147,17 +147,25 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: redeemError.message }, 500, origin)
   }
 
+  // Best-effort: revoke the requester's existing sessions so the old email can no
+  // longer sign in. The email change above is already committed and the operation
+  // is authorized by the body token (not this header), so a failure here must NOT
+  // fail the request. The redeem link is opened from the new inbox, often without
+  // an active session — then supabase-js sends the anon key as the bearer token,
+  // whose JWT has no `sub` claim and makes admin.signOut throw "missing sub claim".
+  // The client also signs out locally once this call resolves.
   const authHeader = req.headers.get('Authorization')
-  if (authHeader?.startsWith('Bearer ')) {
-    const currentToken = authHeader.slice('Bearer '.length).trim()
-    if (currentToken) {
-      const { error: signOutError } = await serviceSupabase.auth.admin.signOut(
-        currentToken,
-        'global',
+  const anonKey = Deno.env.get('SUPABASE_ANON_KEY')?.trim() ?? ''
+  const currentToken = authHeader?.startsWith('Bearer ')
+    ? authHeader.slice('Bearer '.length).trim()
+    : ''
+  if (currentToken && currentToken !== anonKey && currentToken !== serviceRoleKey) {
+    const { error: signOutError } = await serviceSupabase.auth.admin.signOut(currentToken, 'global')
+    if (signOutError) {
+      console.warn(
+        'redeem-email-change: best-effort session sign-out failed:',
+        signOutError.message,
       )
-      if (signOutError) {
-        return jsonResponse({ error: signOutError.message }, 500, origin)
-      }
     }
   }
 

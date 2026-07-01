@@ -193,7 +193,8 @@
     "gamesLoadError": "Spiele konnten nicht geladen werden.",
     "classroomsEmpty": {
       "title": "Noch keine Klassenräume",
-      "description": "Klassenräume, in denen du unterrichtest, erscheinen hier."
+      "description": "Klassenräume, in denen du unterrichtest, erscheinen hier.",
+      "addClassroom": "Klassenraum hinzufügen"
     },
     "coursesEmpty": {
       "title": "Noch keine Kurse",

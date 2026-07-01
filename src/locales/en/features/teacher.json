@@ -194,7 +194,8 @@
     "gamesLoadError": "Could not load games.",
     "classroomsEmpty": {
       "title": "No classrooms yet",
-      "description": "Classrooms you teach will appear here."
+      "description": "Classrooms you teach will appear here.",
+      "addClassroom": "Add classroom"
     },
     "coursesEmpty": {
       "title": "No courses yet",
