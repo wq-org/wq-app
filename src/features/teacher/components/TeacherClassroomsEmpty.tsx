@@ -16,7 +16,7 @@ export function TeacherClassroomsEmpty() {
   const { t } = useTranslation('features.teacher')
 
   const handleAddClassroom = () => {
-    requestOpenCommandAddDialog({ initialType: 'classroom' })
+    requestOpenCommandAddDialog()
   }
 
   return (
