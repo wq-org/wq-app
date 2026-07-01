@@ -1,9 +1,7 @@
 import {
-  BarChart3,
   BookOpen,
   ChartSpline,
   ClipboardList,
-  Cloud,
   BadgeCheck,
   CreditCard,
   Gamepad2,
@@ -79,16 +77,6 @@ const INSTITUTION_ADMIN_NAV_ITEMS: readonly InstitutionAdminNavItem[] = [
     titleKey: 'nav.billing',
     url: '/billing',
     icon: CreditCard,
-  },
-  {
-    titleKey: 'nav.analytics',
-    url: '/analytics',
-    icon: BarChart3,
-  },
-  {
-    titleKey: 'nav.cloudStorage',
-    url: '/cloud-storage',
-    icon: Cloud,
   },
   {
     titleKey: 'nav.auditLogs',

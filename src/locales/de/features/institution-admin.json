@@ -14,8 +14,6 @@
     "gdprRequest": "DSGVO-Anfragen",
     "license": "Lizenz",
     "billing": "Abrechnung",
-    "analytics": "Analysen",
-    "cloudStorage": "Cloud-Speicher",
     "auditLogs": "Audit-Logs",
     "teachers": "Lehrkräfte",
     "students": "Studierende",
@@ -1194,10 +1192,6 @@
   "gdprRequest": {
     "title": "DSGVO-Anfragen",
     "subtitle": "Anfragen betroffener Personen und Compliance-Aufgaben bearbeiten."
-  },
-  "cloudStorage": {
-    "title": "Cloud-Speicher",
-    "subtitle": "Dateien und Ordner für Ihre Institution."
   },
   "auditLogs": {
     "title": "Audit-Logs",

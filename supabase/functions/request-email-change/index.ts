@@ -131,7 +131,11 @@ Deno.serve(async (req) => {
   }
 
   if (currentEmail === targetEmail) {
-    return jsonResponse({ error: 'The new email must be different from the current email.' }, 422, origin)
+    return jsonResponse(
+      { error: 'The new email must be different from the current email.' },
+      422,
+      origin,
+    )
   }
 
   const { data: membership, error: membershipError } = await serviceSupabase
@@ -212,15 +216,11 @@ Deno.serve(async (req) => {
       emailParagraph(
         `A request was made to change the login email for <strong>${escapeHtml(displayName)}</strong> to <strong>${escapeHtml(targetEmail)}</strong>.`,
       ),
-      emailParagraph(
-        `Open the confirmation link below within 10 minutes to approve the change.`,
-      ),
+      emailParagraph(`Open the confirmation link below within 10 minutes to approve the change.`),
       `<p style="margin:18px 0;text-align:center;">
         <a href="${escapeHtml(confirmationLink)}" style="display:inline-block;padding:12px 14px;border-radius:10px;background:#0f766e;color:#fff!important;text-decoration:none;font-size:14px;font-weight:600;">Confirm email change</a>
       </p>`,
-      emailMutedNote(
-        `If the button does not work, copy this link: ${confirmationLink}.`,
-      ),
+      emailMutedNote(`If the button does not work, copy this link: ${confirmationLink}.`),
       emailMutedNote('If you did not request this change, you can ignore this email.'),
     ].join(''),
   )
@@ -251,7 +251,7 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: `Failed to send email: ${bodyText}` }, 502, origin)
   }
 
-  const { error: auditError } = await serviceSupabase.schema('audit').rpc('log_event', {
+  const { error: auditError } = await serviceSupabase.rpc('log_audit_event', {
     p_event_type: 'institution_email_change_requested',
     p_subject_type: 'institution',
     p_subject_id: institutionId,
@@ -277,4 +277,3 @@ Deno.serve(async (req) => {
     origin,
   )
 })
-

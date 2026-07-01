@@ -117,8 +117,6 @@ import {
   InstitutionAdminCoursesPage,
   InstitutionAdminGameDetailPage,
   InstitutionAdminGamesPage,
-  InstitutionAdminAnalyticsPage,
-  InstitutionAdminCloudStoragePage,
   InstitutionAdminAuditLogsPage,
   InstitutionAdminSettingsPage,
 } from '@/features/institution-admin'
@@ -590,14 +588,6 @@ const App = () => {
                   }
                 />
                 <Route
-                  path="analytics"
-                  element={
-                    <RequireAuth>
-                      <InstitutionAdminAnalyticsPage />
-                    </RequireAuth>
-                  }
-                />
-                <Route
                   path="users"
                   element={
                     <RequireAuth>
@@ -645,15 +635,6 @@ const App = () => {
                     </RequireAuth>
                   }
                 />
-                <Route
-                  path="cloud-storage"
-                  element={
-                    <RequireAuth>
-                      <InstitutionAdminCloudStoragePage />
-                    </RequireAuth>
-                  }
-                />
-
                 <Route
                   path="audit-logs"
                   element={

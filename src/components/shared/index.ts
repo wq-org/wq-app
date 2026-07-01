@@ -35,6 +35,8 @@ export type {
   PdfPanelPreviewProps,
 } from './pdf-viewer'
 export { AccentPicker } from './AccentPicker'
+export { AnimatedPopoverContent } from './AnimatedPopoverContent'
+export { POPOVER_MOTION_TRANSITION, popoverSurfaceMotion } from './popoverMotion.config'
 export { ColorPicker } from './ColorPicker'
 export { DateRangePicker, CalendarWithPresets, CalendarWithTime } from './calendar'
 export type { DateRangePickerProps } from './calendar'

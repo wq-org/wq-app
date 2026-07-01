@@ -82,11 +82,7 @@ Deno.serve(async (req) => {
 
   const expiresAt = new Date(pending.expires_at as string)
   if (Number.isNaN(expiresAt.getTime()) || expiresAt.getTime() <= Date.now()) {
-    return jsonResponse(
-      { error: 'This link has expired. Please request a new one.' },
-      410,
-      origin,
-    )
+    return jsonResponse({ error: 'This link has expired. Please request a new one.' }, 410, origin)
   }
 
   const targetEmail = normalizeEmail(String(pending.target_email))
@@ -165,7 +161,7 @@ Deno.serve(async (req) => {
     }
   }
 
-  const { error: auditError } = await serviceSupabase.schema('audit').rpc('log_event', {
+  const { error: auditError } = await serviceSupabase.rpc('log_audit_event', {
     p_event_type: 'institution_email_changed',
     p_subject_type: 'institution',
     p_subject_id: pending.institution_id,
@@ -190,4 +186,3 @@ Deno.serve(async (req) => {
     origin,
   )
 })
-

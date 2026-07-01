@@ -8,10 +8,15 @@ import { USER_ROLES } from '@/features/auth'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Popover, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { Text } from '@/components/ui/text'
-import { LanguageSwitcher, ThemeAppearanceMenu, ThemeModePopover } from '@/components/shared'
+import {
+  AnimatedPopoverContent,
+  LanguageSwitcher,
+  ThemeAppearanceMenu,
+  ThemeModePopover,
+} from '@/components/shared'
 import { useUser } from '@/contexts/user'
 import { getRoleSettingsPath } from '@/features/auth'
 import { NotificationPanel } from '@/features/notification'
@@ -40,6 +45,7 @@ export function AppNavigation({
   const { logout, profile, loading, getRole, getUserInstitutionId } = useUser()
   const [notificationCount, setNotificationCount] = useState(0)
   const [profileOpen, setProfileOpen] = useState(false)
+  const [notificationOpen, setNotificationOpen] = useState(false)
 
   const role = getRole()
   const settingsPath = getRoleSettingsPath(role)
@@ -150,7 +156,8 @@ export function AppNavigation({
                       </div>
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent
+                  <AnimatedPopoverContent
+                    open={profileOpen}
                     align="start"
                     className="w-max min-w-42 rounded-4xl border border-border/70 bg-popover/95 p-2 text-popover-foreground shadow-xl backdrop-blur-xl supports-backdrop-filter:bg-popover/90"
                   >
@@ -195,7 +202,7 @@ export function AppNavigation({
                         onAfterChange={() => setProfileOpen(false)}
                       />
                     </div>
-                  </PopoverContent>
+                  </AnimatedPopoverContent>
                 </Popover>
                 {profile ? (
                   <div className="flex min-w-0 flex-col gap-0.5 pr-1 leading-tight">
@@ -230,7 +237,10 @@ export function AppNavigation({
                   orientation="vertical"
                   className="bg-border/80"
                 />
-                <Popover>
+                <Popover
+                  open={notificationOpen}
+                  onOpenChange={setNotificationOpen}
+                >
                   <PopoverTrigger asChild>
                     <Button
                       variant="ghost"
@@ -250,9 +260,12 @@ export function AppNavigation({
                       <span className="sr-only">Notifications</span>
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="mr-20 mt-4 h-120 w-90 overflow-hidden rounded-4xl border-border bg-popover/95 p-0 text-popover-foreground shadow-xl backdrop-blur supports-backdrop-filter:bg-popover/90">
+                  <AnimatedPopoverContent
+                    open={notificationOpen}
+                    className="mr-20 mt-4 h-120 w-90 overflow-hidden rounded-4xl border-border bg-popover/95 p-0 text-popover-foreground shadow-xl backdrop-blur supports-backdrop-filter:bg-popover/90"
+                  >
                     <NotificationPanel onTotalCountChange={setNotificationCount} />
-                  </PopoverContent>
+                  </AnimatedPopoverContent>
                 </Popover>
                 <Separator
                   orientation="vertical"

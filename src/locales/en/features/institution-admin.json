@@ -14,8 +14,6 @@
     "gdprRequest": "GDPR requests",
     "license": "License",
     "billing": "Billing",
-    "analytics": "Analytics",
-    "cloudStorage": "Cloud storage",
     "auditLogs": "Audit logs",
     "teachers": "Teachers",
     "students": "Students",
@@ -1194,10 +1192,6 @@
   "gdprRequest": {
     "title": "GDPR requests",
     "subtitle": "Handle data subject requests and compliance tasks."
-  },
-  "cloudStorage": {
-    "title": "Cloud storage",
-    "subtitle": "Files and folders for your institution."
   },
   "auditLogs": {
     "title": "Audit logs",

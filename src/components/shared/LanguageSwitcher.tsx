@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import { Popover, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
 import { Text } from '@/components/ui/text'
+import { AnimatedPopoverContent } from './AnimatedPopoverContent'
 
 const SUPPORTED_LANGUAGES = [{ code: 'de' as const }, { code: 'en' as const }] as const
 
@@ -63,7 +64,8 @@ export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps)
           </Text>
         </Button>
       </PopoverTrigger>
-      <PopoverContent
+      <AnimatedPopoverContent
+        open={open}
         className={cn(
           isAuthVariant
             ? 'w-72 rounded-3xl border border-border bg-popover p-4 text-popover-foreground shadow-lg'
@@ -102,7 +104,7 @@ export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps)
             </button>
           ))}
         </div>
-      </PopoverContent>
+      </AnimatedPopoverContent>
     </Popover>
   )
 }

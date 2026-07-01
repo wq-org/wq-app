@@ -21,8 +21,6 @@ export {
 export { InstitutionCourses as InstitutionAdminCoursesPage } from './pages/courses'
 export { InstitutionAdminGameDetailPage } from './pages/game-detail'
 export { InstitutionGames as InstitutionAdminGamesPage } from './pages/games'
-export { AdminAnalytics as InstitutionAdminAnalyticsPage } from './pages/analytics'
-export { InstitutionCloudStorage as InstitutionAdminCloudStoragePage } from './pages/cloud-storage'
 export { InstitutionAuditLogs as InstitutionAdminAuditLogsPage } from './pages/audit-logs'
 export { InstitutionAdminSettings as InstitutionAdminSettingsPage } from './pages/settings'
 
