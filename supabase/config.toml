@@ -92,7 +92,7 @@ openai_api_key = "env(OPENAI_API_KEY)"
 
 # Local-only email inbox for development. Messages are captured for inspection and are not sent to
 # real recipients. Production mail delivery is configured in the hosted Supabase project settings.
-[inbucket]
+[local_smtp]
 enabled = true
 # Port to use for the email testing server web interface.
 port = 54324

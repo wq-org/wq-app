@@ -4,7 +4,7 @@
  * Local dev: put the same keys in `supabase/.env.local`, then run `npm run supabase:functions:serve`.
  *
  * Required Supabase Edge secrets (Dashboard → Edge Functions → Secrets, or `npm run supabase:secrets:push`):
- * - INSTITUTION_ADMIN_INVITE_KEY — Brevo API key (sent as `api-key` header; see Brevo sendTransacEmail docs).
+ * - BREVO_API_KEY — Brevo API key (sent as `api-key` header; see Brevo sendTransacEmail docs).
  * - BREVO_SENDER_EMAIL — Verified sender address in Brevo.
  * - BREVO_SENDER_NAME — Display name for the From header.
  * - PUBLIC_SITE_URL — App origin without trailing slash (e.g. https://app.example.com) for signup links.
@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: 'Method not allowed' }, 405)
   }
 
-  const brevoKey = Deno.env.get('INSTITUTION_ADMIN_INVITE_KEY')
+  const brevoKey = Deno.env.get('BREVO_API_KEY')
   const senderEmail = Deno.env.get('BREVO_SENDER_EMAIL')
   const senderName = Deno.env.get('BREVO_SENDER_NAME')
   const publicSiteUrlRaw = Deno.env.get('PUBLIC_SITE_URL')
@@ -48,7 +48,7 @@ Deno.serve(async (req) => {
   const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
 
   const missingConfigFields = [
-    !brevoKey ? 'INSTITUTION_ADMIN_INVITE_KEY' : null,
+    !brevoKey ? 'BREVO_API_KEY' : null,
     !senderEmail ? 'BREVO_SENDER_EMAIL' : null,
     !senderName ? 'BREVO_SENDER_NAME' : null,
     !publicSiteUrlRaw ? 'PUBLIC_SITE_URL' : null,

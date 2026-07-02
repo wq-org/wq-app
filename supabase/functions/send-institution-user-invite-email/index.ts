@@ -3,7 +3,7 @@
  *
  * Local dev: `supabase/.env.local` + `npm run supabase:functions:serve` (loads env into the Functions runtime).
  *
- * Secrets: INSTITUTION_ADMIN_INVITE_KEY, BREVO_SENDER_EMAIL, BREVO_SENDER_NAME, PUBLIC_SITE_URL,
+ * Secrets: BREVO_API_KEY, BREVO_SENDER_EMAIL, BREVO_SENDER_NAME, PUBLIC_SITE_URL,
  * SUPABASE_URL, SUPABASE_ANON_KEY (match send-institution-admin-invite-email).
  *
  * Auth: Bearer JWT. Caller must be super_admin OR active institution_admin for invite.institution_id.
@@ -46,7 +46,7 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: 'Method not allowed' }, 405)
   }
 
-  const brevoKey = Deno.env.get('INSTITUTION_ADMIN_INVITE_KEY')
+  const brevoKey = Deno.env.get('BREVO_API_KEY')
   const senderEmail = Deno.env.get('BREVO_SENDER_EMAIL')
   const senderName = Deno.env.get('BREVO_SENDER_NAME')
   const publicSiteUrlRaw = Deno.env.get('PUBLIC_SITE_URL')

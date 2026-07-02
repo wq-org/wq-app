@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
   const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
   const anonKey = Deno.env.get('SUPABASE_ANON_KEY')
-  const brevoKey = Deno.env.get('INSTITUTION_ADMIN_INVITE_KEY')
+  const brevoKey = Deno.env.get('BREVO_API_KEY')
   const senderEmail = Deno.env.get('BREVO_SENDER_EMAIL')
   const senderName = Deno.env.get('BREVO_SENDER_NAME')
 

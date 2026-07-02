@@ -6,7 +6,7 @@
  * Local dev: `supabase/.env.local` + `npm run supabase:functions:serve`.
  *
  * Secrets (same stack as invite emails unless noted):
- * - INSTITUTION_ADMIN_INVITE_KEY — Brevo API key
+ * - BREVO_API_KEY — Brevo API key
  * - BREVO_SENDER_EMAIL — Verified sender address in Brevo
  * - BREVO_SENDER_NAME — From display name
  * - CONTACT_INQUIRY_RECIPIENT_EMAIL — optional; defaults to service@wq-app.de
@@ -315,14 +315,14 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: 'Method not allowed' }, 405)
   }
 
-  const brevoKey = Deno.env.get('INSTITUTION_ADMIN_INVITE_KEY')
+  const brevoKey = Deno.env.get('BREVO_API_KEY')
   const senderEmail = Deno.env.get('BREVO_SENDER_EMAIL')
   const senderName = Deno.env.get('BREVO_SENDER_NAME')
   const recipientEmail =
     Deno.env.get('CONTACT_INQUIRY_RECIPIENT_EMAIL')?.trim() || DEFAULT_RECIPIENT
 
   const missingConfigFields = [
-    !brevoKey ? 'INSTITUTION_ADMIN_INVITE_KEY' : null,
+    !brevoKey ? 'BREVO_API_KEY' : null,
     !senderEmail ? 'BREVO_SENDER_EMAIL' : null,
     !senderName ? 'BREVO_SENDER_NAME' : null,
   ].filter((field): field is string => Boolean(field))
