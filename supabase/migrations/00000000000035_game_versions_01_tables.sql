@@ -11,7 +11,15 @@
 CREATE TABLE public.game_versions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   institution_id uuid NOT NULL REFERENCES public.institutions (id) ON DELETE CASCADE,
-  game_id uuid NOT NULL REFERENCES public.games (id) ON DELETE CASCADE,
+  -- Deferrable: the BEFORE INSERT trigger on public.games inserts the first
+  -- game_versions row (using NEW.id) before the parent games row is visible;
+  -- an immediate FK check would fail with 23503. INITIALLY DEFERRED moves the
+  -- check to transaction commit, by which point the games row exists.
+  game_id uuid NOT NULL
+    CONSTRAINT fk_game_versions_games
+    REFERENCES public.games (id)
+    ON DELETE CASCADE
+    DEFERRABLE INITIALLY DEFERRED,
   version_no integer NOT NULL,
   status text NOT NULL CHECK (status IN ('draft', 'published', 'archived')),
   content jsonb NOT NULL,
@@ -52,6 +60,8 @@ COMMENT ON COLUMN public.game_versions.theme_id IS
   'Game theme copied from games at publish time; immutable for published/archived rows.';
 COMMENT ON COLUMN public.game_versions.published_at IS
   'Timestamp when the version was published. Remains historical once set.';
+COMMENT ON CONSTRAINT fk_game_versions_games ON public.game_versions IS
+  'Deferrable FK so the BEFORE INSERT trigger on games can insert the first game_versions row in the same transaction before the parent games row is committed.';
 
 -- =============================================================================
 -- games — add stable container pointers

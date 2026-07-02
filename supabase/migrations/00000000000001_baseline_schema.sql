@@ -239,6 +239,9 @@ CREATE INDEX IF NOT EXISTS idx_courses_deleted_at ON public.courses(deleted_at);
 CREATE INDEX IF NOT EXISTS idx_topics_course ON public.topics(course_id);
 CREATE INDEX IF NOT EXISTS idx_topics_deleted_at ON public.topics(deleted_at);
 CREATE INDEX IF NOT EXISTS idx_lessons_topic ON public.lessons(topic_id);
+-- Covering index for topic-page lesson lists (WHERE topic_id = $1 ORDER BY
+-- created_at ASC); single-column idx_lessons_topic forces a sort step.
+CREATE INDEX IF NOT EXISTS idx_lessons_topic_id_created_at ON public.lessons(topic_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_games_teacher ON public.games(teacher_id);
 CREATE INDEX IF NOT EXISTS idx_games_topic ON public.games(topic_id);
 CREATE INDEX IF NOT EXISTS idx_games_status ON public.games(status);
@@ -491,9 +494,11 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('cloud', 'cloud', false)
 ON CONFLICT (id) DO UPDATE SET public = EXCLUDED.public;
 
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('avatars', 'avatars', false), ('backgrounds', 'backgrounds', false)
-ON CONFLICT (id) DO NOTHING;
+-- NOTE: The `avatars` and `backgrounds` buckets are provisioned outside of
+-- migrations (dashboard / Storage API) together with their seeded content, so
+-- they are intentionally NOT created here — a db reset would only ever produce
+-- empty buckets. The avatars read policy below still applies once the bucket
+-- exists in the target environment.
 
 -- RLS on storage.objects is already enabled by Supabase; we only add policies here.
 

@@ -13,17 +13,14 @@ CREATE POLICY game_versions_all_super_admin ON public.game_versions
   USING ((SELECT app.is_super_admin()) IS TRUE)
   WITH CHECK ((SELECT app.is_super_admin()) IS TRUE);
 
--- Teachers manage the versions of their own games.
+-- Teachers manage the versions of their own games. Ownership goes through
+-- app.game_teacher_id: an inline EXISTS on public.games re-enters the
+-- games↔game_versions policy cycle (42P17).
 DROP POLICY IF EXISTS game_versions_select_teacher ON public.game_versions;
 CREATE POLICY game_versions_select_teacher ON public.game_versions
   FOR SELECT TO authenticated
   USING (
-    EXISTS (
-      SELECT 1
-      FROM public.games g
-      WHERE g.id = game_versions.game_id
-        AND g.teacher_id = (SELECT app.auth_uid())
-    )
+    app.game_teacher_id(game_versions.game_id) = (SELECT app.auth_uid())
   );
 
 DROP POLICY IF EXISTS game_versions_insert_teacher ON public.game_versions;
@@ -32,12 +29,7 @@ CREATE POLICY game_versions_insert_teacher ON public.game_versions
   WITH CHECK (
     status = 'draft'
     AND created_by = (SELECT app.auth_uid())
-    AND EXISTS (
-      SELECT 1
-      FROM public.games g
-      WHERE g.id = game_versions.game_id
-        AND g.teacher_id = (SELECT app.auth_uid())
-    )
+    AND app.game_teacher_id(game_versions.game_id) = (SELECT app.auth_uid())
   );
 
 DROP POLICY IF EXISTS game_versions_update_teacher ON public.game_versions;
@@ -45,21 +37,11 @@ CREATE POLICY game_versions_update_teacher ON public.game_versions
   FOR UPDATE TO authenticated
   USING (
     status = 'draft'
-    AND EXISTS (
-      SELECT 1
-      FROM public.games g
-      WHERE g.id = game_versions.game_id
-        AND g.teacher_id = (SELECT app.auth_uid())
-    )
+    AND app.game_teacher_id(game_versions.game_id) = (SELECT app.auth_uid())
   )
   WITH CHECK (
     status = 'draft'
-    AND EXISTS (
-      SELECT 1
-      FROM public.games g
-      WHERE g.id = game_versions.game_id
-        AND g.teacher_id = (SELECT app.auth_uid())
-    )
+    AND app.game_teacher_id(game_versions.game_id) = (SELECT app.auth_uid())
   );
 
 -- Institution admins can inspect every version in their institutions.
@@ -102,15 +84,14 @@ CREATE POLICY game_versions_select_run_access ON public.game_versions
             )
           )
           OR gr.started_by = (SELECT app.auth_uid())
-          OR gr.game_id IN (
-            SELECT id FROM public.games
-WHERE teacher_id = (SELECT app.auth_uid())
-          )
+          OR app.game_teacher_id(gr.game_id) = (SELECT app.auth_uid())
         )
     )
   );
 
--- Keep the games published-view policy aligned with the stable published pointer.
+-- Keep the games published-view policy aligned with the stable published
+-- pointer. The pointer check goes through app.game_has_published_pointer:
+-- an inline EXISTS on game_versions re-enters the policy cycle (42P17).
 DROP POLICY IF EXISTS games_select_authenticated_published ON public.games;
 CREATE POLICY games_select_authenticated_published ON public.games
   FOR SELECT TO authenticated
@@ -118,13 +99,7 @@ CREATE POLICY games_select_authenticated_published ON public.games
     (SELECT app.is_super_admin()) IS TRUE
     OR (
       current_published_version_id IS NOT NULL
-      AND EXISTS (
-        SELECT 1
-        FROM public.game_versions game_versions_row
-        WHERE game_versions_row.id = games.current_published_version_id
-          AND game_versions_row.game_id = games.id
-          AND game_versions_row.status = 'published'
-      )
+      AND app.game_has_published_pointer(id)
       AND (
         institution_id IS NULL
         OR institution_id IN (SELECT app.member_institution_ids())

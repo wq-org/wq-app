@@ -55,5 +55,13 @@
       "completionTitle": "Failed to complete onboarding",
       "completionDescription": "An error occurred while saving your profile. Please try again."
     }
+  },
+  "accountStep": {
+    "passwordSectionHint": "Your email was changed — set a new password now, or leave the fields blank to keep your current one.",
+    "newPasswordLabel": "New password",
+    "newPasswordPlaceholder": "Leave blank to keep your current password",
+    "confirmPasswordLabel": "Confirm new password",
+    "confirmPasswordPlaceholder": "Repeat the new password",
+    "passwordMismatch": "Passwords do not match"
   }
 }

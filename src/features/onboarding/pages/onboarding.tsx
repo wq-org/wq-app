@@ -21,6 +21,23 @@ const Onboarding = () => {
   const [accountDetails, setAccountDetails] = useState<AccountDetailsData | null>(null)
   const [selectedAvatar, setSelectedAvatar] = useState<AvatarOption | null>(null)
 
+  // A profile with a username means this account was onboarded before and got
+  // reset (e.g. institution email change flips is_onboarded to false). Prefill
+  // the known details and offer a direct password change.
+  const reonboardingDefaults = useMemo<AccountDetailsData | null>(() => {
+    if (!profile?.username) {
+      return null
+    }
+
+    return {
+      username: profile.username,
+      displayName: profile.display_name ?? '',
+      description: profile.description ?? '',
+    }
+  }, [profile])
+
+  const isReonboarding = reonboardingDefaults !== null
+
   const accountData = useMemo<AccountData | null>(() => {
     if (!accountDetails || !selectedAvatar) {
       return null
@@ -95,7 +112,8 @@ const Onboarding = () => {
               {index === 0 ? (
                 <StepAccount
                   onNext={handleAccountNext}
-                  initialData={accountDetails || undefined}
+                  initialData={accountDetails ?? reonboardingDefaults ?? undefined}
+                  showPasswordFields={isReonboarding}
                 />
               ) : null}
               {index === 1 ? (

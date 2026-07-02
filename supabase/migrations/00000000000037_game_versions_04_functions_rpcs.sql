@@ -7,6 +7,53 @@
 -- -----------------------------------------------------------------------------
 -- helpers
 -- -----------------------------------------------------------------------------
+
+-- RLS-cycle breakers: games policies reference game_versions and vice versa;
+-- Postgres evaluates all permissive policies on each side, so inline EXISTS
+-- subqueries recurse (42P17). These helpers do the cross-table scan with
+-- row_security off, scoped strictly by the row id (and auth.uid() in callers).
+CREATE OR REPLACE FUNCTION app.game_has_published_pointer(p_game_id uuid)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+SET row_security = off
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.games g
+    INNER JOIN public.game_versions gv
+      ON gv.id = g.current_published_version_id
+    WHERE g.id = p_game_id
+      AND g.current_published_version_id IS NOT NULL
+      AND gv.game_id = g.id
+      AND gv.status = 'published'
+  )
+$$;
+
+COMMENT ON FUNCTION app.game_has_published_pointer(uuid) IS
+  'True when public.games.current_published_version_id points at a published public.game_versions row for the same game. SECURITY DEFINER with row_security off only for this scan to break the games↔game_versions RLS cycle; scoped by p_game_id only.';
+
+CREATE OR REPLACE FUNCTION app.game_teacher_id(p_game_id uuid)
+RETURNS uuid
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+SET row_security = off
+AS $$
+  SELECT g.teacher_id
+  FROM public.games g
+  WHERE g.id = p_game_id
+$$;
+
+COMMENT ON FUNCTION app.game_teacher_id(uuid) IS
+  'Returns public.games.teacher_id for a game (or NULL if missing). SECURITY DEFINER with row_security off only for this scan to break the games↔game_versions RLS cycle; scoped by p_game_id only.';
+
+GRANT EXECUTE ON FUNCTION app.game_has_published_pointer(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION app.game_teacher_id(uuid) TO authenticated;
+
 CREATE OR REPLACE FUNCTION public.get_next_game_version_no(p_game_id uuid)
 RETURNS integer
 LANGUAGE sql

@@ -16,6 +16,7 @@ export type RequestInstitutionEmailChangeResponse = {
 
 export type RedeemInstitutionEmailChangeResponse = {
   ok?: boolean
+  targetEmail?: string
   redirectTo?: string
   error?: string
 }
@@ -69,7 +70,9 @@ export async function requestInstitutionEmailChange(
   }
 }
 
-export async function redeemInstitutionEmailChange(token: string): Promise<void> {
+export async function redeemInstitutionEmailChange(
+  token: string,
+): Promise<{ targetEmail: string | null }> {
   const { data, error } = await supabase.functions.invoke<RedeemInstitutionEmailChangeResponse>(
     'redeem-email-change',
     {
@@ -86,5 +89,6 @@ export async function redeemInstitutionEmailChange(token: string): Promise<void>
   if (!data?.ok) {
     throw new Error(data?.error ?? 'Failed to redeem email change')
   }
-}
 
+  return { targetEmail: data.targetEmail?.trim() || null }
+}

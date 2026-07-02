@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { Text } from '@/components/ui/text'
 import { AuthCardLayout } from '../components/AuthCardLayout'
-import { redeemInstitutionEmailChange } from '@/features/settings/api/institutionEmailChangeApi'
+import { redeemInstitutionEmailChange } from '@/features/settings'
 import { supabase } from '@/lib/supabase'
 
 type PageState = 'loading' | 'success' | 'error'
@@ -18,6 +18,7 @@ export function ChangeEmailPage() {
   const [searchParams] = useSearchParams()
   const [pageState, setPageState] = useState<PageState>('loading')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [loginPath, setLoginPath] = useState('/auth/login')
 
   const token = searchParams.get('token')?.trim() ?? ''
 
@@ -34,11 +35,19 @@ export function ChangeEmailPage() {
       }
 
       try {
-        await redeemInstitutionEmailChange(token)
+        const { targetEmail } = await redeemInstitutionEmailChange(token)
         await supabase.auth.signOut()
-        if (!settled) setPageState('success')
+        // Prefill the new email so sign-in flows straight into onboarding,
+        // where the (now non-onboarded) admin sets a new password directly.
+        const nextLoginPath = targetEmail
+          ? `/auth/login?email=${encodeURIComponent(targetEmail)}`
+          : '/auth/login'
+        if (!settled) {
+          setLoginPath(nextLoginPath)
+          setPageState('success')
+        }
         window.setTimeout(() => {
-          navigate('/auth/login', { replace: true })
+          navigate(nextLoginPath, { replace: true })
         }, 2000)
       } catch (error) {
         if (!settled) {
@@ -93,7 +102,7 @@ export function ChangeEmailPage() {
           </Text>
           <Button
             variant="darkblue"
-            onClick={() => navigate('/auth/login', { replace: true })}
+            onClick={() => navigate(loginPath, { replace: true })}
           >
             {t('emailChange.redeemSuccessCta')}
           </Button>
@@ -128,4 +137,3 @@ export function ChangeEmailPage() {
     </AuthCardLayout>
   )
 }
-

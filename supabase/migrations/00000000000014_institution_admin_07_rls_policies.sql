@@ -125,19 +125,15 @@ CREATE POLICY classroom_members_select_own ON public.classroom_members
   FOR SELECT TO authenticated
   USING (user_id = (select app.auth_uid()));
 
+-- Co-teacher check goes through app.auth_is_co_teacher_of_classroom: an inline
+-- EXISTS on classroom_members re-enters this table's own policies (42P17).
 DROP POLICY IF EXISTS classroom_members_teacher_roster_read ON public.classroom_members;
 DROP POLICY IF EXISTS classroom_members_select_teacher_roster ON public.classroom_members;
 CREATE POLICY classroom_members_select_teacher_roster ON public.classroom_members
   FOR SELECT TO authenticated
   USING (
-    app.auth_is_primary_teacher_of_classroom(classroom_members.classroom_id)
-    OR EXISTS (
-      SELECT 1 FROM public.classroom_members cm_lead
-      WHERE cm_lead.classroom_id = classroom_members.classroom_id
-        AND cm_lead.user_id = (select app.auth_uid())
-        AND cm_lead.withdrawn_at IS NULL
-        AND cm_lead.membership_role = 'co_teacher'::public.classroom_member_role
-    )
+    app.auth_is_primary_teacher_of_classroom(classroom_id)
+    OR app.auth_is_co_teacher_of_classroom(classroom_id)
   );
 
 -- Tighten classroom visibility now that classroom_members exists.

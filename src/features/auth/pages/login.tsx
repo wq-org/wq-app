@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { FieldInput } from '@/components/ui/field-input'
 import { FieldSeparator } from '@/components/ui/field'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { loginUser, redeemPendingInstitutionInvites } from '../api/authApi'
 import { Spinner } from '@/components/ui/spinner'
 import { useTranslation } from 'react-i18next'
@@ -21,8 +21,11 @@ export const LoginPage = () => {
   const navigate = useNavigate()
   const { t } = useTranslation('auth')
   const { setPendingRole, clearPendingRole } = useUser()
+  const [searchParams] = useSearchParams()
 
-  const [email, setEmail] = useState('')
+  // Prefilled by flows that just changed the account email (e.g. institution
+  // email change redemption) so the user signs in without retyping it.
+  const [email, setEmail] = useState(() => searchParams.get('email')?.trim() ?? '')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [emailError, setEmailError] = useState<string | null>(null)

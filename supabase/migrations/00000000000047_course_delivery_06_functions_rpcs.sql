@@ -111,9 +111,12 @@ COMMENT ON FUNCTION app.student_can_access_lesson(uuid) IS
   'True if caller may access this lesson via a published course_delivery whose version snapshot includes the lesson.';
 
 -- -----------------------------------------------------------------------------
--- Drift detector views (read-only)
+-- Drift detector views (read-only). security_invoker so RLS on the underlying
+-- tables is evaluated as the querying user, not the view owner (Supabase
+-- advisor rule 0010).
 -- -----------------------------------------------------------------------------
-CREATE OR REPLACE VIEW public.course_enrollment_delivery_drift AS
+CREATE OR REPLACE VIEW public.course_enrollment_delivery_drift
+    WITH (security_invoker = true) AS
 SELECT
   'enrollment_without_delivery_membership'::text AS drift_type,
   ce.student_id AS user_id,
@@ -155,9 +158,10 @@ WHERE cd.deleted_at IS NULL
   );
 
 COMMENT ON VIEW public.course_enrollment_delivery_drift IS
-  'Read-only drift detector between legacy course_enrollments and canonical classroom_members + course_deliveries.';
+  'Read-only drift detector between legacy course_enrollments and canonical classroom_members + course_deliveries. Runs as security invoker so tenant RLS is enforced.';
 
-CREATE OR REPLACE VIEW public.classroom_link_delivery_drift AS
+CREATE OR REPLACE VIEW public.classroom_link_delivery_drift
+    WITH (security_invoker = true) AS
 SELECT
   'link_without_delivery'::text AS drift_type,
   ccl.institution_id,
@@ -188,4 +192,4 @@ WHERE cd.deleted_at IS NULL
   AND cd.legacy_classroom_course_link_id IS NULL;
 
 COMMENT ON VIEW public.classroom_link_delivery_drift IS
-  'Read-only drift detector between legacy classroom_course_links and canonical course_deliveries.';
+  'Read-only drift detector between legacy classroom_course_links and canonical course_deliveries. Runs as security invoker so tenant RLS is enforced.';

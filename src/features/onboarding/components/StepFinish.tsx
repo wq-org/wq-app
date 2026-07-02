@@ -1,7 +1,12 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { useState } from 'react'
-import { getDashboardPathForRole, type UserRole, upsertProfile } from '@/features/auth'
+import {
+  getDashboardPathForRole,
+  type UserRole,
+  upsertProfile,
+  resetPassword,
+} from '@/features/auth'
 import { useUser } from '@/contexts/user'
 import { useAvatarUrl } from '@/hooks/useAvatarUrl'
 import { SuccessDialog } from '@/components/shared'
@@ -45,6 +50,11 @@ export function StepFinish({ onBack, onFinish, accountData }: StepFinishProps) {
     setIsSubmitting(true)
 
     try {
+      // Re-onboarding after an email change may include a new password.
+      if (accountData.password) {
+        await resetPassword(accountData.password)
+      }
+
       // Single upsert: all profile data + role + is_onboarded: true atomically.
       await upsertProfile(session.user.id, {
         email: session.user.email,

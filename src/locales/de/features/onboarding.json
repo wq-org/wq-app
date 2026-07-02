@@ -55,5 +55,13 @@
       "completionTitle": "Onboarding konnte nicht abgeschlossen werden",
       "completionDescription": "Beim Speichern deines Profils ist ein Fehler aufgetreten. Bitte versuche es erneut."
     }
+  },
+  "accountStep": {
+    "passwordSectionHint": "Deine E-Mail wurde geändert — lege jetzt ein neues Passwort fest oder lasse die Felder leer, um dein aktuelles zu behalten.",
+    "newPasswordLabel": "Neues Passwort",
+    "newPasswordPlaceholder": "Leer lassen, um das aktuelle Passwort zu behalten",
+    "confirmPasswordLabel": "Neues Passwort bestätigen",
+    "confirmPasswordPlaceholder": "Neues Passwort wiederholen",
+    "passwordMismatch": "Passwörter stimmen nicht überein"
   }
 }

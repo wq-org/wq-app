@@ -188,7 +188,11 @@ Deno.serve(async (req) => {
   return jsonResponse(
     {
       ok: true,
-      redirectTo: `${publicSiteUrl || ''}/auth/login`,
+      // Token possession proves control of this inbox, so echoing the email
+      // back lets the client prefill the login form for the follow-up
+      // sign-in → onboarding password change flow.
+      targetEmail,
+      redirectTo: `${publicSiteUrl || ''}/auth/login?email=${encodeURIComponent(targetEmail)}`,
     },
     200,
     origin,

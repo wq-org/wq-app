@@ -103,7 +103,7 @@
     "requestError": "Failed to send confirmation link.",
     "redeemLoading": "Confirming your email change...",
     "redeemSuccessTitle": "Email change confirmed",
-    "redeemSuccessBody": "Your account has been updated. You are being signed out so you can log back in with the new email.",
+    "redeemSuccessBody": "Your account has been updated. Sign in with your new email and current password — you will be guided through onboarding to set a new password.",
     "redeemSuccessCta": "Go to login",
     "redeemErrorTitle": "Email change could not be confirmed",
     "redeemErrorCta": "Back to login",

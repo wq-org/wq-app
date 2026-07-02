@@ -11,89 +11,155 @@
 
 -- Set-returning: use in policies as institution_id IN (select app.xxx())
 -- for initPlan-cached evaluation.
+--
+-- These helpers are SECURITY DEFINER with row_security = off for the bounded
+-- membership scan only: policies on institution_memberships call these same
+-- helpers, so an invoker-RLS scan would re-enter itself (54001 stack depth).
+-- Caller identity always comes from auth.uid() (JWT), never client input.
 CREATE OR REPLACE FUNCTION app.admin_institution_ids()
 RETURNS SETOF uuid
-LANGUAGE sql STABLE
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
 SET search_path = ''
+SET row_security = off
 AS $$
-  select m.institution_id
-  from public.institution_memberships m
-  where m.user_id = auth.uid()
-    and m.membership_role = 'institution_admin'
-    and m.status = 'active'
-    and m.deleted_at is null
-    and m.left_institution_at is null
+  SELECT m.institution_id
+  FROM public.institution_memberships m
+  WHERE m.user_id = (SELECT auth.uid())
+    AND m.membership_role = 'institution_admin'::public.membership_role
+    AND m.status = 'active'::public.membership_status
+    AND m.deleted_at IS NULL
+    AND m.left_institution_at IS NULL
 $$;
 
 COMMENT ON FUNCTION app.admin_institution_ids() IS
-  'Institution IDs where the caller is an active institution_admin. Use in RLS IN-subqueries.';
+  'Institution IDs where the caller is an active institution_admin. SECURITY DEFINER with row_security off only for this scan to avoid RLS recursion; scoped by auth.uid().';
 
 CREATE OR REPLACE FUNCTION app.member_institution_ids()
 RETURNS SETOF uuid
-LANGUAGE sql STABLE
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
 SET search_path = ''
+SET row_security = off
 AS $$
-  select m.institution_id
-  from public.institution_memberships m
-  where m.user_id = auth.uid()
-    and m.status = 'active'
-    and m.deleted_at is null
-    and m.left_institution_at is null
+  SELECT m.institution_id
+  FROM public.institution_memberships m
+  WHERE m.user_id = (SELECT auth.uid())
+    AND m.status = 'active'::public.membership_status
+    AND m.deleted_at IS NULL
+    AND m.left_institution_at IS NULL
 $$;
 
 COMMENT ON FUNCTION app.member_institution_ids() IS
-  'Institution IDs where the caller has any active membership. Use in RLS IN-subqueries.';
+  'Institution IDs where the caller has any active membership. SECURITY DEFINER with row_security off only for this scan to avoid RLS recursion; scoped by auth.uid().';
 
 -- Scalar helpers: for RPC / application code.
 CREATE OR REPLACE FUNCTION app.is_institution_admin(p_institution_id uuid)
 RETURNS boolean
-LANGUAGE sql STABLE
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
 SET search_path = ''
+SET row_security = off
 AS $$
-  select exists (
-    select 1 from public.institution_memberships m
-    where m.institution_id = p_institution_id
-      and m.user_id = auth.uid()
-      and m.membership_role = 'institution_admin'
-      and m.status = 'active'
-      and m.deleted_at is null
-      and m.left_institution_at is null
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.institution_memberships m
+    WHERE m.institution_id = p_institution_id
+      AND m.user_id = (SELECT auth.uid())
+      AND m.membership_role = 'institution_admin'::public.membership_role
+      AND m.status = 'active'::public.membership_status
+      AND m.deleted_at IS NULL
+      AND m.left_institution_at IS NULL
   )
 $$;
 
 COMMENT ON FUNCTION app.is_institution_admin(uuid) IS
-  'True when caller is an active institution_admin for the given institution.';
+  'True when caller is an active institution_admin for the institution. SECURITY DEFINER avoids RLS recursion on institution_memberships; scoped by auth.uid().';
 
 CREATE OR REPLACE FUNCTION app.is_institution_member(p_institution_id uuid)
 RETURNS boolean
-LANGUAGE sql STABLE
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
 SET search_path = ''
+SET row_security = off
 AS $$
-  select exists (
-    select 1 from public.institution_memberships m
-    where m.institution_id = p_institution_id
-      and m.user_id = auth.uid()
-      and m.status = 'active'
-      and m.deleted_at is null
-      and m.left_institution_at is null
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.institution_memberships m
+    WHERE m.institution_id = p_institution_id
+      AND m.user_id = (SELECT auth.uid())
+      AND m.status = 'active'::public.membership_status
+      AND m.deleted_at IS NULL
+      AND m.left_institution_at IS NULL
   )
 $$;
 
 COMMENT ON FUNCTION app.is_institution_member(uuid) IS
-  'True when caller has any active membership in the given institution.';
+  'True when caller has any active membership in the institution. SECURITY DEFINER avoids RLS recursion on institution_memberships; scoped by auth.uid().';
 
+REVOKE ALL ON FUNCTION app.admin_institution_ids() FROM PUBLIC;
+REVOKE ALL ON FUNCTION app.member_institution_ids() FROM PUBLIC;
+REVOKE ALL ON FUNCTION app.is_institution_admin(uuid) FROM PUBLIC;
+REVOKE ALL ON FUNCTION app.is_institution_member(uuid) FROM PUBLIC;
+
+GRANT EXECUTE ON FUNCTION app.admin_institution_ids() TO authenticated;
+GRANT EXECUTE ON FUNCTION app.member_institution_ids() TO authenticated;
+GRANT EXECUTE ON FUNCTION app.is_institution_admin(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION app.is_institution_member(uuid) TO authenticated;
+
+-- Resolve tenant context when active_institution_id was never set (invite flows, legacy data).
 CREATE OR REPLACE FUNCTION app.get_current_institution_id()
 RETURNS uuid
-LANGUAGE sql STABLE
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
 SET search_path = ''
+SET row_security = off
 AS $$
-  select active_institution_id
-  from public.profiles
-  where user_id = auth.uid()
+  SELECT COALESCE(
+    p.active_institution_id,
+    (
+      SELECT m.institution_id
+      FROM public.institution_memberships AS m
+      WHERE m.user_id = (SELECT auth.uid())
+        AND m.membership_role = 'institution_admin'::public.membership_role
+        AND m.status = 'active'::public.membership_status
+        AND m.deleted_at IS NULL
+        AND m.left_institution_at IS NULL
+      ORDER BY m.created_at ASC, m.institution_id ASC
+      LIMIT 1
+    ),
+    (
+      SELECT m.institution_id
+      FROM public.institution_memberships AS m
+      WHERE m.user_id = (SELECT auth.uid())
+        AND m.status = 'active'::public.membership_status
+        AND m.deleted_at IS NULL
+        AND m.left_institution_at IS NULL
+      ORDER BY m.created_at ASC, m.institution_id ASC
+      LIMIT 1
+    ),
+    (
+      SELECT ui.institution_id
+      FROM public.user_institutions AS ui
+      WHERE ui.user_id = (SELECT auth.uid())
+      ORDER BY ui.institution_id ASC
+      LIMIT 1
+    )
+  )
+  FROM public.profiles AS p
+  WHERE p.user_id = (SELECT auth.uid())
 $$;
 
 COMMENT ON FUNCTION app.get_current_institution_id() IS
-  'Returns the caller''s active_institution_id from profiles.';
+  'Active tenant: profiles.active_institution_id, else first active institution_admin membership, else first active membership, else legacy user_institutions.';
+
+REVOKE ALL ON FUNCTION app.get_current_institution_id() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION app.get_current_institution_id() TO authenticated;
 
 -- =============================================================================
 -- 11c. APP HELPERS — classroom scoping (student_can_access_* in Phase B after ccl exists)
@@ -137,6 +203,26 @@ $$;
 COMMENT ON FUNCTION app.auth_is_primary_teacher_of_classroom(uuid) IS
   'True when caller is classrooms.primary_teacher_id for the row. SECURITY DEFINER avoids RLS re-entry from classroom_members policies.';
 
+CREATE OR REPLACE FUNCTION app.auth_is_co_teacher_of_classroom(p_classroom_id uuid)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.classroom_members cm
+    WHERE cm.classroom_id = p_classroom_id
+      AND cm.user_id = auth.uid()
+      AND cm.withdrawn_at IS NULL
+      AND cm.membership_role = 'co_teacher'::public.classroom_member_role
+  );
+$$;
+
+COMMENT ON FUNCTION app.auth_is_co_teacher_of_classroom(uuid) IS
+  'True when caller is an active co_teacher in the classroom. SECURITY DEFINER breaks classroom_members RLS self-recursion; scoped by auth.uid().';
+
 CREATE OR REPLACE FUNCTION app.classroom_institution_id(p_classroom_id uuid)
 RETURNS uuid
 LANGUAGE sql
@@ -172,6 +258,7 @@ COMMENT ON FUNCTION app.list_active_classroom_ids() IS
 
 GRANT EXECUTE ON FUNCTION app.auth_has_active_classroom_membership(uuid) TO authenticated;
 GRANT EXECUTE ON FUNCTION app.auth_is_primary_teacher_of_classroom(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION app.auth_is_co_teacher_of_classroom(uuid) TO authenticated;
 GRANT EXECUTE ON FUNCTION app.classroom_institution_id(uuid) TO authenticated;
 GRANT EXECUTE ON FUNCTION app.list_active_classroom_ids() TO authenticated;
 

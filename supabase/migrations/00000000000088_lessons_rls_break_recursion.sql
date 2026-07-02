@@ -113,26 +113,57 @@ COMMENT ON FUNCTION public.create_teacher_lesson(uuid, text, text) IS
 REVOKE ALL ON FUNCTION public.create_teacher_lesson(uuid, text, text) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.create_teacher_lesson(uuid, text, text) TO authenticated;
 
+-- Reads (get_teacher_lesson, get_teacher_lesson_topic_ref) also allow
+-- super-admins for platform review; that path writes an audit event so
+-- privileged cross-tenant reads stay traceable (LfDI Baden-Württemberg).
+-- Writes (create, update, delete) remain teacher-only.
 CREATE OR REPLACE FUNCTION public.get_teacher_lesson(
   p_lesson_id uuid
 )
 RETURNS TABLE (
-  id uuid,
-  title text,
-  description text,
-  content jsonb,
+  id                     uuid,
+  title                  text,
+  description            text,
+  content                jsonb,
   content_schema_version integer,
-  created_at timestamptz,
-  updated_at timestamptz
+  created_at             timestamptz,
+  updated_at             timestamptz
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, auth, pg_temp
+SET search_path = public, auth, app, audit, pg_temp
 SET row_security = off
 AS $$
+DECLARE
+  v_is_super_admin boolean;
+  v_institution_id uuid;
 BEGIN
-  IF NOT app.teacher_can_manage_lesson(p_lesson_id) THEN
+  v_is_super_admin := (SELECT app.is_super_admin());
+
+  IF NOT (app.teacher_can_manage_lesson(p_lesson_id) OR v_is_super_admin) THEN
     RAISE EXCEPTION 'unauthorized: not lesson owner';
+  END IF;
+
+  -- Resolve institution for audit envelope (lesson → topic → course → institution_id)
+  IF v_is_super_admin AND NOT app.teacher_can_manage_lesson(p_lesson_id) THEN
+    SELECT c.institution_id
+    INTO v_institution_id
+    FROM public.lessons lesson_row
+    JOIN public.topics topic_row ON topic_row.id = lesson_row.topic_id
+    JOIN public.courses c ON c.id = topic_row.course_id
+    WHERE lesson_row.id = p_lesson_id;
+
+    PERFORM audit.log_event(
+      p_event_type     := 'super_admin.lesson.read',
+      p_subject_type   := 'lesson',
+      p_subject_id     := p_lesson_id,
+      p_institution_id := v_institution_id,
+      p_payload        := jsonb_build_object('action', 'platform_review'),
+      p_metadata       := jsonb_build_object(
+        'visibility_level', 'super_admin',
+        'context', jsonb_build_object('lesson_id', p_lesson_id)
+      )
+    );
   END IF;
 
   RETURN QUERY
@@ -154,8 +185,8 @@ END;
 $$;
 
 COMMENT ON FUNCTION public.get_teacher_lesson(uuid) IS
-  'Teacher-only lesson detail RPC. Returns the editable lesson header + draft '
-  'without evaluating public.lessons SELECT policies.';
+  'Lesson detail RPC. Owners (teachers) and super-admins may call it; super-admin '
+  'access writes a super_admin.lesson.read audit event per DSGVO traceability requirement.';
 
 REVOKE ALL ON FUNCTION public.get_teacher_lesson(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.get_teacher_lesson(uuid) TO authenticated;
@@ -164,17 +195,43 @@ CREATE OR REPLACE FUNCTION public.get_teacher_lesson_topic_ref(
   p_lesson_id uuid
 )
 RETURNS TABLE (
-  id uuid,
+  id       uuid,
   topic_id uuid
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, auth, pg_temp
+SET search_path = public, auth, app, audit, pg_temp
 SET row_security = off
 AS $$
+DECLARE
+  v_is_super_admin boolean;
+  v_institution_id uuid;
 BEGIN
-  IF NOT app.teacher_can_manage_lesson(p_lesson_id) THEN
+  v_is_super_admin := (SELECT app.is_super_admin());
+
+  IF NOT (app.teacher_can_manage_lesson(p_lesson_id) OR v_is_super_admin) THEN
     RAISE EXCEPTION 'unauthorized: not lesson owner';
+  END IF;
+
+  IF v_is_super_admin AND NOT app.teacher_can_manage_lesson(p_lesson_id) THEN
+    SELECT c.institution_id
+    INTO v_institution_id
+    FROM public.lessons lesson_row
+    JOIN public.topics topic_row ON topic_row.id = lesson_row.topic_id
+    JOIN public.courses c ON c.id = topic_row.course_id
+    WHERE lesson_row.id = p_lesson_id;
+
+    PERFORM audit.log_event(
+      p_event_type     := 'super_admin.lesson.topic_ref.read',
+      p_subject_type   := 'lesson',
+      p_subject_id     := p_lesson_id,
+      p_institution_id := v_institution_id,
+      p_payload        := jsonb_build_object('action', 'topic_ref_lookup'),
+      p_metadata       := jsonb_build_object(
+        'visibility_level', 'super_admin',
+        'context', jsonb_build_object('lesson_id', p_lesson_id)
+      )
+    );
   END IF;
 
   RETURN QUERY
@@ -189,7 +246,8 @@ END;
 $$;
 
 COMMENT ON FUNCTION public.get_teacher_lesson_topic_ref(uuid) IS
-  'Teacher-only lesson topic lookup RPC used for legacy lesson redirect flows.';
+  'Lesson → topic lookup RPC. Owners and super-admins may call it; super-admin '
+  'path writes a super_admin.lesson.topic_ref.read audit event.';
 
 REVOKE ALL ON FUNCTION public.get_teacher_lesson_topic_ref(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.get_teacher_lesson_topic_ref(uuid) TO authenticated;
@@ -332,6 +390,20 @@ COMMENT ON FUNCTION public.delete_teacher_lesson(uuid) IS
 
 REVOKE ALL ON FUNCTION public.delete_teacher_lesson(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.delete_teacher_lesson(uuid) TO authenticated;
+
+-- Institution admins can read lesson content from their own teachers without
+-- hitting the RLS timeout path. Insert/Update/Delete remain teacher-only.
+DROP POLICY IF EXISTS lessons_select_institution_admin ON public.lessons;
+CREATE POLICY lessons_select_institution_admin ON public.lessons
+  FOR SELECT TO authenticated
+  USING (
+    topic_id IN (
+      SELECT t.id
+      FROM public.topics t
+      JOIN public.courses c ON c.id = t.course_id
+      WHERE c.institution_id IN (SELECT app.admin_institution_ids())
+    )
+  );
 
 -- Make the new RPCs visible to PostgREST immediately.
 -- Self-hosted PostgREST caches the schema and only refreshes on this NOTIFY

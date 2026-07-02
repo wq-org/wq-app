@@ -1,27 +1,29 @@
--- HETZNER_TEARDOWN: KEEP_CORE
 -- =============================================================================
--- TOPIC VERSIONS — break RLS recursion (42P17) on student access helpers
+-- TOPIC VERSIONS — resolution + access helpers
+-- Replaces app.student_can_access_topic / app.student_can_access_lesson to use
+-- delivery-scoped topic_versions (pinned or auto_patch) instead of live
+-- topic_availability_rules for enrolled students.
 --
--- Problem:
---   When a teacher fetches `public.lessons`, RLS evaluates every policy on
---   `lessons` — including `lessons_select_member`, which calls
---   `app.student_can_access_lesson(id)`. That helper in turn calls
---   `app.student_can_access_topic_for_delivery` → `app.resolve_delivery_topic_version`,
---   which runs `SELECT … FROM public.topic_versions …` under invoker RLS.
---
---   The `topic_versions_select_student_delivery` policy joins `topic_versions pin`
---   to compare `version_major` against the pinned topic version. That inner
---   `topic_versions` reference re-enters the same policy on `pin`, which joins
---   `topic_versions` again, and so on → `42P17 infinite recursion detected in
---   policy for relation "topic_versions"`.
---
--- Fix (per docs/architecture/principle_database.md "RLS recursion and helper
--- traps"):
---   Make the student-access helpers SECURITY DEFINER with `SET row_security = off`
---   for the bounded internal scans. The helpers still scope every read by
---   `(SELECT app.auth_uid())` joins and the caller-supplied IDs, so the bypass
---   stays bounded to "what this user could see anyway".
+-- The student-access helpers are SECURITY DEFINER with row_security = off for
+-- their bounded internal scans: they are called from RLS policies (e.g.
+-- lessons_select_member), and an invoker-RLS read of topic_versions re-enters
+-- topic_versions_select_student_delivery — whose pin join reads topic_versions
+-- again — recursing to 42P17. Every read stays scoped by (SELECT app.auth_uid())
+-- joins and the caller-supplied IDs.
 -- =============================================================================
+
+CREATE OR REPLACE FUNCTION app.topic_gate_allows_access(p_is_locked boolean, p_unlock_at timestamptz)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SET search_path = ''
+AS $$
+  SELECT COALESCE(p_is_locked, false) = false
+     OR (p_unlock_at IS NOT NULL AND p_unlock_at <= now());
+$$;
+
+COMMENT ON FUNCTION app.topic_gate_allows_access(boolean, timestamptz) IS
+  'True when topic gate fields allow student access (unlocked or scheduled unlock has passed).';
 
 CREATE OR REPLACE FUNCTION app.resolve_delivery_topic_version(
   p_course_delivery_id uuid,
@@ -96,9 +98,6 @@ COMMENT ON FUNCTION app.resolve_delivery_topic_version(uuid, uuid) IS
   'lookup, so callers (RLS policies on lessons / topics / topic_versions) do not re-enter the '
   'topic_versions_select_student_delivery policy and hit 42P17.';
 
-REVOKE ALL ON FUNCTION app.resolve_delivery_topic_version(uuid, uuid) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION app.resolve_delivery_topic_version(uuid, uuid) TO authenticated;
-
 CREATE OR REPLACE FUNCTION app.student_can_access_topic_for_delivery(
   p_course_delivery_id uuid,
   p_source_topic_id uuid
@@ -130,9 +129,6 @@ $fn$;
 COMMENT ON FUNCTION app.student_can_access_topic_for_delivery(uuid, uuid) IS
   'True when the resolved topic_versions gate allows access for this delivery. SECURITY DEFINER '
   'so calls from RLS policies do not re-enter topic_versions RLS.';
-
-REVOKE ALL ON FUNCTION app.student_can_access_topic_for_delivery(uuid, uuid) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION app.student_can_access_topic_for_delivery(uuid, uuid) TO authenticated;
 
 CREATE OR REPLACE FUNCTION app.student_can_access_topic(p_topic_id uuid)
 RETURNS boolean
@@ -170,9 +166,6 @@ COMMENT ON FUNCTION app.student_can_access_topic(uuid) IS
   'True when caller is an active student on a published delivery whose snapshot includes the '
   'topic and the resolved topic_versions gate allows access. SECURITY DEFINER so RLS callers do '
   'not re-enter topics / topic_versions policies.';
-
-REVOKE ALL ON FUNCTION app.student_can_access_topic(uuid) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION app.student_can_access_topic(uuid) TO authenticated;
 
 CREATE OR REPLACE FUNCTION app.student_can_access_lesson(p_lesson_id uuid)
 RETURNS boolean
@@ -213,7 +206,17 @@ COMMENT ON FUNCTION app.student_can_access_lesson(uuid) IS
   'topic_versions gate for that delivery allows the topic. SECURITY DEFINER + row_security off '
   'so RLS callers (e.g. lessons_select_member) do not re-enter topic_versions policies and hit 42P17.';
 
-REVOKE ALL ON FUNCTION app.student_can_access_lesson(uuid) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION app.student_can_access_lesson(uuid) TO authenticated;
+REVOKE ALL ON FUNCTION app.topic_gate_allows_access(boolean, timestamptz) FROM public;
+GRANT EXECUTE ON FUNCTION app.topic_gate_allows_access(boolean, timestamptz) TO authenticated;
 
-NOTIFY pgrst, 'reload schema';
+REVOKE ALL ON FUNCTION app.resolve_delivery_topic_version(uuid, uuid) FROM public;
+GRANT EXECUTE ON FUNCTION app.resolve_delivery_topic_version(uuid, uuid) TO authenticated;
+
+REVOKE ALL ON FUNCTION app.student_can_access_topic_for_delivery(uuid, uuid) FROM public;
+GRANT EXECUTE ON FUNCTION app.student_can_access_topic_for_delivery(uuid, uuid) TO authenticated;
+
+REVOKE ALL ON FUNCTION app.student_can_access_topic(uuid) FROM public;
+GRANT EXECUTE ON FUNCTION app.student_can_access_topic(uuid) TO authenticated;
+
+REVOKE ALL ON FUNCTION app.student_can_access_lesson(uuid) FROM public;
+GRANT EXECUTE ON FUNCTION app.student_can_access_lesson(uuid) TO authenticated;
